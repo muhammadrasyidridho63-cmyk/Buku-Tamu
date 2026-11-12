@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SI-BUKU TAMU (E-Tamu PTUN) — Sistem Buku Tamu Digital Terpadu</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            "background": "#f9f9ff",
+            "surface": "#f9f9ff",
+            "surface-bright": "#f9f9ff",
+            "surface-dim": "#d3daef",
+            "surface-variant": "#dce2f7",
+            "surface-container-lowest": "#ffffff",
+            "surface-container-low": "#f1f3ff",
+            "surface-container": "#e9edff",
+            "surface-container-high": "#e1e8fd",
+            "surface-container-highest": "#dce2f7",
+            "on-surface": "#141b2b",
+            "on-surface-variant": "#414844",
+            "on-background": "#141b2b",
+            "outline": "#717973",
+            "outline-variant": "#c1c8c2",
+            "primary": "#012d1d",
+            "on-primary": "#ffffff",
+            "primary-container": "#1b4332",
+            "on-primary-container": "#86af99",
+            "primary-fixed": "#c1ecd4",
+            "primary-fixed-dim": "#a5d0b9",
+            "on-primary-fixed": "#002114",
+            "on-primary-fixed-variant": "#274e3d",
+            "secondary": "#795900",
+            "on-secondary": "#ffffff",
+            "secondary-container": "#ffc641",
+            "on-secondary-container": "#715300",
+            "secondary-fixed": "#ffdfa0",
+            "secondary-fixed-dim": "#f6be39",
+            "on-secondary-fixed": "#261a00",
+            "on-secondary-fixed-variant": "#5c4300",
+            "tertiary": "#001e6a",
+            "on-tertiary": "#ffffff",
+            "tertiary-fixed": "#dce1ff",
+            "on-tertiary-fixed-variant": "#0039b5",
+            "error": "#ba1a1a",
+            "error-container": "#ffdad6",
+            "on-error-container": "#93000a"
+          },
+          fontFamily: {
+            "sans": ["Inter", "sans-serif"],
+            "display": ["Plus Jakarta Sans", "sans-serif"]
+          }
+        }
+      }
+    };
+  </script>
+  <link rel="stylesheet" href="css/style.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/qrcode-generator@2.0.4/dist/qrcode.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+  <script defer src="js/config.js"></script>
+  <script defer src="js/api.js"></script>
+  <script defer src="js/struk-engine.js"></script>
+  <script defer src="js/struk-printer.js"></script>
+  <script defer src="js/struk-ui.js"></script>
+  <script defer src="js/app.js"></script>
+</head>
+<body class="bg-surface font-sans text-on-surface antialiased selection:bg-secondary-fixed selection:text-on-secondary-fixed min-h-screen flex flex-col">
+
+  <!-- TOP STICKY NAVBAR (Stitch Design Fidelity) -->
+  <header class="fixed top-0 left-0 right-0 w-full z-50 bg-primary-container shadow-[0_4px_20px_rgba(1,45,29,0.18)] no-print">
+    <div class="h-16 w-full max-w-[1440px] mx-auto px-4 sm:px-6 flex items-center justify-between gap-3">
+      <!-- Brand / Emblem -->
+      <button type="button" data-nav="kiosk" class="flex items-center gap-3 shrink-0 text-left">
+        <div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center border border-secondary-fixed/40 shadow-inner">
+          <svg class="w-6 h-6 text-secondary-fixed" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3zm-1 14H8v-2h3v2zm0-4H8V8h3v4zm5 4h-3v-6h3v6z"/>
+          </svg>
+        </div>
+        <div class="flex flex-col">
+          <span class="font-display text-base sm:text-lg text-white font-bold tracking-tight leading-tight flex items-center gap-1.5">
+            SI-BUKU TAMU
+            <span class="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-fixed">E-TAMU</span>
+          </span>
+          <span id="nav-satker-subtitle" class="text-[11px] text-secondary-fixed font-medium leading-none tracking-wide">Pengadilan Tata Usaha Negara</span>
+        </div>
+      </button>
+
+      <!-- Desktop Navigation Tabs -->
+      <nav id="main-nav" class="hidden xl:flex items-center gap-1 bg-primary/40 p-1 rounded-xl">
+        <button type="button" data-nav="kiosk" class="nav-pill px-3 py-1.5 rounded-lg text-xs font-semibold transition-all">Layar Kiosk</button>
+        <button type="button" data-nav="ptsp" class="nav-pill px-3 py-1.5 rounded-lg text-xs font-semibold transition-all">Registrasi PTSP</button>
+        <button type="button" data-nav="sidang" class="nav-pill px-3 py-1.5 rounded-lg text-xs font-semibold transition-all">Registrasi Sidang</button>
+        <button type="button" data-nav="tiket" class="nav-pill px-3 py-1.5 rounded-lg text-xs font-semibold transition-all">Tiket Digital</button>
+        <button type="button" data-nav="pantau" class="nav-pill px-3 py-1.5 rounded-lg text-xs font-semibold transition-all">Layar Pantau Petugas</button>
+        <button type="button" data-nav="dashboard" class="nav-pill px-3 py-1.5 rounded-lg text-xs font-semibold transition-all">Dashboard &amp; Laporan</button>
+      </nav>
+
+      <!-- Live Sync + User Session -->
+      <div class="flex items-center gap-3 shrink-0">
+        <div class="hidden md:flex flex-col items-end pr-2 border-r border-white/15">
+          <div class="flex items-center gap-1.5">
+            <span class="relative flex h-2 w-2">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary-fixed-dim opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-secondary-fixed"></span>
+            </span>
+            <span id="sync-status-label" class="text-[11px] text-secondary-fixed tracking-wide uppercase font-semibold">Live Sync WIB</span>
+          </div>
+          <span id="live-clock" class="text-xs text-white/90 font-medium leading-none mt-1">--:--:-- WIB</span>
+        </div>
+
+        <button type="button" id="btn-auth-chip" class="flex items-center gap-2 pl-1 pr-2.5 py-1.5 rounded-xl bg-primary/50 hover:bg-primary text-white transition-colors border border-white/10">
+          <span class="w-7 h-7 rounded-full bg-secondary-container text-on-secondary-fixed flex items-center justify-center font-bold text-xs" id="user-avatar-initials">T</span>
+          <div class="hidden sm:flex flex-col text-left">
+            <span id="user-chip-name" class="text-xs font-semibold leading-tight">Mode Kiosk</span>
+            <span id="user-chip-role" class="text-[10px] text-primary-fixed-dim leading-none">Publik / Tamu</span>
+          </div>
+          <span class="material-symbols-outlined text-[18px] text-secondary-fixed" id="user-chip-icon">lock</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile / Tablet Quick Nav Strip -->
+    <div class="xl:hidden bg-primary/80 border-t border-white/10 px-3 py-1.5 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+      <button type="button" data-nav="kiosk" class="nav-pill-mob shrink-0 px-3 py-1 rounded-lg text-xs font-semibold">Beranda Kiosk</button>
+      <button type="button" data-nav="ptsp" class="nav-pill-mob shrink-0 px-3 py-1 rounded-lg text-xs font-semibold">PTSP</button>
+      <button type="button" data-nav="sidang" class="nav-pill-mob shrink-0 px-3 py-1 rounded-lg text-xs font-semibold">Sidang</button>
+      <button type="button" data-nav="tiket" class="nav-pill-mob shrink-0 px-3 py-1 rounded-lg text-xs font-semibold">Tiket</button>
+      <button type="button" data-nav="pantau" class="nav-pill-mob shrink-0 px-3 py-1 rounded-lg text-xs font-semibold">Pantau</button>
+      <button type="button" data-nav="dashboard" class="nav-pill-mob shrink-0 px-3 py-1 rounded-lg text-xs font-semibold">Dashboard</button>
+    </div>
+  </header>
+
+  <!-- MAIN WORKSPACE -->
+  <main class="w-full pt-24 xl:pt-16 flex-1 bg-surface">
+    <!-- Banner Mode Simulasi Lokal (hanya tampil bila GAS_URL masih placeholder) -->
+    <div id="demo-banner" class="hidden bg-secondary-fixed/60 border-b border-secondary-fixed-dim px-4 py-2 text-xs text-on-secondary-fixed flex items-center justify-center gap-2 no-print">
+      <span class="material-symbols-outlined text-[16px]">science</span>
+      <span><strong>Mode Pratinjau Lokal Aktif</strong> — Isi <code>GAS_URL</code> di <code>frontend/js/config.js</code> untuk menghubungkan ke backend Google Apps Script Anda.</span>
+      <button type="button" onclick="document.getElementById('demo-banner').classList.add('hidden')" class="ml-2 underline font-semibold">Tutup</button>
+    </div>
+
+    <!-- ================================================================== -->
+    <!-- VIEW 1: LAYAR KIOSK 2 JALUR                                        -->
+    <!-- ================================================================== -->
+    <section id="view-kiosk" class="view-panel max-w-7xl mx-auto px-4 sm:px-8 py-8 flex flex-col gap-8">
+      <!-- Hero -->
+      <div class="flex flex-col items-center text-center gap-4 max-w-4xl mx-auto">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-surface-container-high shadow-sm">
+          <span class="material-symbols-outlined text-secondary text-[18px]" style="font-variation-settings:'FILL' 1;">verified_user</span>
+          <span class="text-xs text-secondary tracking-widest uppercase font-bold">Sistem Buku Tamu Digital Terpadu</span>
+        </div>
+        <h1 class="font-display text-3xl sm:text-5xl text-on-surface tracking-tight font-extrabold leading-tight">
+          Selamat Datang di <span id="hero-satker-name">Pengadilan Tata Usaha Negara</span>
+        </h1>
+        <p class="text-base sm:text-lg text-on-surface-variant max-w-2xl leading-relaxed">
+          Silakan pilih jalur layanan tujuan Anda untuk registrasi mandiri dan mendapatkan nomor antrean digital secara instan.
+        </p>
+
+        <!-- Info Strip -->
+        <div class="w-full mt-1 bg-white rounded-xl p-3.5 shadow-sm border border-outline-variant/40 flex flex-wrap items-center justify-center gap-y-2 gap-x-6 text-sm text-on-surface-variant">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary-container text-[20px]">calendar_today</span>
+            <span>Hari ini: <strong id="kiosk-date-label" class="text-on-surface font-semibold">-</strong></span>
+          </div>
+          <div class="hidden sm:block w-1.5 h-1.5 rounded-full bg-outline-variant"></div>
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary-container text-[20px]">schedule</span>
+            <span>Jam PTSP: <strong id="kiosk-jam-layanan" class="text-on-surface font-semibold">08.00 - 15.00 WIB</strong></span>
+          </div>
+          <div class="hidden sm:block w-1.5 h-1.5 rounded-full bg-outline-variant"></div>
+          <div class="flex items-center gap-2">
+            <span class="inline-flex relative h-2.5 w-2.5">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-600"></span>
+            </span>
+            <span>Status Layanan: <span class="px-2.5 py-0.5 rounded-full text-xs bg-primary-fixed text-on-primary-fixed font-bold">Aktif Berjalan</span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2 Track Selection Cards -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 items-stretch">
+        <!-- JALUR 01: PTSP -->
+        <div class="group relative flex flex-col justify-between bg-white rounded-2xl p-6 sm:p-8 shadow-md border border-outline-variant/40 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl overflow-hidden">
+          <div class="absolute top-0 left-0 right-0 h-2 bg-primary-container"></div>
+          <div class="flex flex-col gap-5">
+            <div class="flex items-center justify-between">
+              <div class="w-16 h-16 rounded-full bg-primary-container flex items-center justify-center text-white shadow-inner">
+                <span class="material-symbols-outlined text-[34px]" style="font-variation-settings:'FILL' 1;">account_balance</span>
+              </div>
+              <span class="text-xs px-3.5 py-1 rounded-full font-bold uppercase tracking-wider bg-surface-container text-on-primary-fixed-variant">Jalur 01</span>
+            </div>
+            <div>
+              <h2 class="font-display text-2xl font-bold text-on-surface group-hover:text-primary-container transition-colors">Tamu Pelayanan PTSP</h2>
+              <p class="mt-1.5 text-sm sm:text-base text-on-surface-variant leading-relaxed">
+                Untuk administrasi perkara, pendaftaran e-Court, legalisasi produk pengadilan, dan permohonan informasi publik (PPID).
+              </p>
+            </div>
+            <div>
+              <span class="text-[11px] uppercase tracking-wider font-semibold text-outline">Layanan Meja Terbuka:</span>
+              <div class="mt-2 flex flex-wrap gap-2">
+                <span class="px-3 py-1.5 rounded-lg bg-surface-container-low text-xs font-medium text-on-surface">Loket e-Court</span>
+                <span class="px-3 py-1.5 rounded-lg bg-surface-container-low text-xs font-medium text-on-surface">Informasi / Posbakum</span>
+                <span class="px-3 py-1.5 rounded-lg bg-surface-container-low text-xs font-medium text-on-surface">Kepaniteraan Hukum</span>
+                <span class="px-3 py-1.5 rounded-lg bg-surface-container-low text-xs font-medium text-on-surface">Umum &amp; Kesekretariatan</span>
+              </div>
+            </div>
+            <div class="bg-surface-container-low rounded-xl p-4 flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="p-2.5 rounded-lg bg-white text-primary-container shadow-sm">
+                  <span class="material-symbols-outlined text-[24px]">confirmation_number</span>
+                </div>
+                <div>
+                  <span class="block text-[11px] text-outline uppercase font-semibold">Antrean Berjalan</span>
+                  <span id="kiosk-ptsp-berjalan" class="font-display text-xl text-primary-container font-bold">P-000</span>
+                </div>
+              </div>
+              <div class="text-right">
+                <span class="block text-[11px] text-outline uppercase font-semibold">Menunggu</span>
+                <span id="kiosk-ptsp-menunggu" class="text-sm font-bold text-secondary">0 Orang</span>
+              </div>
+            </div>
+          </div>
+          <button type="button" data-nav="ptsp" class="mt-6 w-full h-14 sm:h-16 rounded-xl bg-primary-container hover:bg-primary text-white font-display font-bold text-base sm:text-lg flex items-center justify-between px-6 shadow-md transition-all">
+            <span class="flex items-center gap-2.5">
+              <span class="material-symbols-outlined">person_add</span>
+              Daftar Tamu PTSP
+            </span>
+            <span class="material-symbols-outlined">arrow_forward</span>
+          </button>
+        </div>
+
+        <!-- JALUR 02: PERSIDANGAN -->
+        <div class="group relative flex flex-col justify-between bg-white rounded-2xl p-6 sm:p-8 shadow-md border border-outline-variant/40 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl overflow-hidden">
+          <div class="absolute top-0 left-0 right-0 h-2 bg-secondary-container"></div>
+          <div class="flex flex-col gap-5">
+            <div class="flex items-center justify-between">
+              <div class="w-16 h-16 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-fixed shadow-inner">
+                <span class="material-symbols-outlined text-[34px]" style="font-variation-settings:'FILL' 1;">gavel</span>
+              </div>
+              <span class="text-xs px-3.5 py-1 rounded-full font-bold uppercase tracking-wider bg-secondary-fixed text-on-secondary-fixed-variant">Jalur 02</span>
+            </div>
+            <div>
+              <h2 class="font-display text-2xl font-bold text-on-surface group-hover:text-secondary transition-colors">Tamu Persidangan</h2>
+              <p class="mt-1.5 text-sm sm:text-base text-on-surface-variant leading-relaxed">
+                Untuk para pihak berperkara, kuasa hukum, saksi, dan ahli yang menghadiri agenda persidangan hari ini.
+              </p>
+            </div>
+            <div>
+              <span class="text-[11px] uppercase tracking-wider font-semibold text-outline">Kategori Kehadiran:</span>
+              <div class="mt-2 flex flex-wrap gap-2">
+                <span class="px-3 py-1.5 rounded-lg bg-surface-container-low text-xs font-medium text-on-surface">Penggugat</span>
+                <span class="px-3 py-1.5 rounded-lg bg-surface-container-low text-xs font-medium text-on-surface">Tergugat</span>
+                <span class="px-3 py-1.5 rounded-lg bg-surface-container-low text-xs font-medium text-on-surface">Turut Tergugat</span>
+                <span class="px-3 py-1.5 rounded-lg bg-surface-container-low text-xs font-medium text-on-surface">Kuasa Hukum</span>
+                <span class="px-3 py-1.5 rounded-lg bg-surface-container-low text-xs font-medium text-on-surface">Saksi / Ahli</span>
+              </div>
+            </div>
+            <div class="bg-surface-container-low rounded-xl p-4 flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="p-2.5 rounded-lg bg-white text-secondary shadow-sm">
+                  <span class="material-symbols-outlined text-[24px]">event_note</span>
+                </div>
+                <div>
+                  <span class="block text-[11px] text-outline uppercase font-semibold">Sidang Terjadwal Hari Ini</span>
+                  <span id="kiosk-sidang-count" class="font-display text-xl text-on-surface font-bold">0 Perkara</span>
+                </div>
+              </div>
+              <div class="text-right">
+                <span class="block text-[11px] text-outline uppercase font-semibold">Antrean Berikutnya</span>
+                <span id="kiosk-sidang-next" class="text-sm font-bold text-primary-container">S-001</span>
+              </div>
+            </div>
+          </div>
+          <button type="button" data-nav="sidang" class="mt-6 w-full h-14 sm:h-16 rounded-xl bg-secondary-container hover:bg-secondary-fixed-dim text-on-secondary-fixed font-display font-bold text-base sm:text-lg flex items-center justify-between px-6 shadow-md transition-all">
+            <span class="flex items-center gap-2.5">
+              <span class="material-symbols-outlined">badge</span>
+              Daftar Tamu Sidang
+            </span>
+            <span class="material-symbols-outlined">arrow_forward</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Help Bar -->
+      <div class="bg-white rounded-2xl p-4 sm:p-5 border border-outline-variant/40 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div class="flex items-center gap-3.5">
+          <div class="w-11 h-11 rounded-full bg-surface-container flex items-center justify-center text-primary-container shrink-0">
+            <span class="material-symbols-outlined">support_agent</span>
+          </div>
+          <div>
+            <h3 class="font-display font-bold text-sm sm:text-base text-on-surface">Butuh Bantuan Langsung?</h3>
+            <p class="text-xs sm:text-sm text-on-surface-variant">Hubungi Petugas Resepsionis / Satpam di meja depan untuk panduan pendaftaran atau pindai QR verifikasi tiket.</p>
+          </div>
+        </div>
+        <div class="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
+          <button type="button" id="btn-cek-qr-manual" class="flex-1 sm:flex-none px-4 h-11 rounded-xl border border-outline-variant bg-white hover:bg-surface-container-low text-xs font-semibold flex items-center justify-center gap-1.5">
+            <span class="material-symbols-outlined text-[18px]">qr_code_scanner</span> Cek Tiket
+          </button>
+          <button type="button" id="btn-panduan" class="flex-1 sm:flex-none px-4 h-11 rounded-xl border border-outline-variant bg-white hover:bg-surface-container-low text-xs font-semibold flex items-center justify-center gap-1.5">
+            <span class="material-symbols-outlined text-[18px]">help</span> Panduan
+          </button>
+          <button type="button" id="btn-panggil-petugas" class="flex-1 sm:flex-none px-4 h-11 rounded-xl bg-primary-container hover:bg-primary text-white text-xs font-semibold flex items-center justify-center gap-1.5 shadow-sm">
+            <span class="material-symbols-outlined text-[18px]">notifications_active</span> Panggil Petugas
+          </button>
+        </div>
+      </div>
+
+      <!-- Realtime Summary Strip -->
+      <div class="bg-white rounded-2xl p-4 border border-outline-variant/40 shadow-sm">
+        <div class="flex items-center justify-between text-[11px] uppercase tracking-wider font-semibold text-outline mb-3">
+          <span>Ringkasan Kunjungan Hari Ini (Real-Time)</span>
+          <span class="text-emerald-700 flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-600 inline-block"></span> Tersinkronisasi</span>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div class="p-3 rounded-xl bg-surface-container-low/60">
+            <span class="text-xs text-on-surface-variant">Buku Tamu Hari Ini</span>
+            <div id="kiosk-stat-total" class="font-display text-lg font-bold text-on-surface mt-0.5">0 Terdaftar</div>
+          </div>
+          <div class="p-3 rounded-xl bg-surface-container-low/60">
+            <span class="text-xs text-on-surface-variant">Tamu PTSP</span>
+            <div id="kiosk-stat-ptsp" class="font-display text-lg font-bold text-primary-container mt-0.5">0 Orang</div>
+          </div>
+          <div class="p-3 rounded-xl bg-surface-container-low/60">
+            <span class="text-xs text-on-surface-variant">Tamu Persidangan</span>
+            <div id="kiosk-stat-sidang" class="font-display text-lg font-bold text-secondary mt-0.5">0 Orang</div>
+          </div>
+          <div class="p-3 rounded-xl bg-surface-container-low/60">
+            <span class="text-xs text-on-surface-variant">Selesai Dilayani</span>
+            <div id="kiosk-stat-selesai" class="font-display text-lg font-bold text-emerald-700 mt-0.5">0 Orang</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================== -->
+    <!-- VIEW 2: FORM REGISTRASI TAMU PTSP (TANPA KOLOM NIK)                -->
+    <!-- ================================================================== -->
+    <section id="view-form-ptsp" class="view-panel hidden max-w-3xl mx-auto px-4 py-8">
+      <div class="bg-white rounded-2xl shadow-lg border border-outline-variant/40 overflow-hidden">
+        <div class="h-2 bg-primary-container"></div>
+        <div class="p-6 sm:p-8 flex flex-col gap-6">
+          <div class="flex items-center justify-between gap-2">
+            <button type="button" data-nav="kiosk" class="inline-flex items-center gap-1.5 text-sm font-semibold text-on-surface-variant hover:text-primary-container">
+              <span class="material-symbols-outlined text-[18px]">arrow_back</span> Kembali ke Layar Awal (Kiosk)
+            </button>
+            <span class="px-3 py-1 rounded-full text-xs font-bold bg-primary-fixed text-on-primary-fixed">• Jalur Pelayanan PTSP</span>
+          </div>
+
+          <div>
+            <h1 class="font-display text-2xl sm:text-3xl font-bold text-on-surface">Formulir Registrasi Tamu PTSP</h1>
+            <p class="text-sm text-on-surface-variant mt-1">Isi data pengunjung dengan benar untuk mendapatkan nomor tiket antrean loket (<strong id="ptsp-next-badge">P-001</strong>).</p>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-primary-fixed/40 border border-primary-fixed-dim/60 flex items-start gap-3 text-xs text-on-primary-fixed">
+            <span class="material-symbols-outlined text-primary-container text-[20px] shrink-0">verified_user</span>
+            <div>
+              <strong>Protokol Kemudahan Layanan Publik:</strong> Sesuai kebijakan privasi, pengunjung <strong>tidak diwajibkan</strong> mengisi NIK/KTP sehingga proses registrasi di lobi lebih cepat dan aman.
+            </div>
+          </div>
+
+          <form id="form-ptsp" class="flex flex-col gap-5" novalidate>
+            <div>
+              <div class="flex justify-between mb-1.5">
+                <label for="ptsp-nama" class="text-sm font-semibold text-on-surface">Nama Lengkap Pengunjung <span class="text-error">*</span></label>
+                <span class="text-xs text-outline">Wajib</span>
+              </div>
+              <input id="ptsp-nama" type="text" required placeholder="Contoh: Dr. Hendra Wijaya, S.H." class="w-full h-12 px-4 rounded-xl border border-outline-variant bg-surface-container-low/40 focus:bg-white focus:border-primary-container text-sm" />
+              <p id="err-ptsp-nama" class="hidden text-xs text-error mt-1"></p>
+            </div>
+
+            <div>
+              <div class="flex justify-between mb-1.5">
+                <label for="ptsp-instansi" class="text-sm font-semibold text-on-surface">Asal Instansi / Kantor Hukum / Pribadi <span class="text-error">*</span></label>
+                <span class="text-xs text-outline">Wajib</span>
+              </div>
+              <input id="ptsp-instansi" type="text" required placeholder="Contoh: PT Maju Bersama / Kantor Hukum Hendra / Pribadi" class="w-full h-12 px-4 rounded-xl border border-outline-variant bg-surface-container-low/40 focus:bg-white focus:border-primary-container text-sm" />
+              <p id="err-ptsp-instansi" class="hidden text-xs text-error mt-1"></p>
+            </div>
+
+            <div>
+              <div class="flex justify-between mb-1.5">
+                <label for="ptsp-hp" class="text-sm font-semibold text-on-surface">Nomor WhatsApp / HP</label>
+                <span class="text-xs text-secondary font-medium">Untuk kirim tiket digital</span>
+              </div>
+              <div class="flex">
+                <span class="inline-flex items-center px-3.5 rounded-l-xl border border-r-0 border-outline-variant bg-surface-container text-xs font-bold text-primary-container">ID +62</span>
+                <input id="ptsp-hp" type="tel" placeholder="812-3456-7890" class="w-full h-12 px-4 rounded-r-xl border border-outline-variant bg-surface-container-low/40 focus:bg-white focus:border-primary-container text-sm" />
+              </div>
+            </div>
+
+            <div>
+              <div class="flex justify-between mb-2">
+                <label class="text-sm font-semibold text-on-surface">Pilih Loket Layanan PTSP <span class="text-error">*</span></label>
+                <span id="ptsp-loket-terpilih" class="text-xs font-semibold text-primary-container">e-Court Terpilih</span>
+              </div>
+              <div id="ptsp-loket-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <button type="button" data-loket="e-Court" class="loket-card text-left p-4 rounded-xl border-2 transition-all bg-primary-container text-white border-primary-container">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="font-display font-bold text-sm">Loket e-Court</span>
+                    <span class="text-[10px] px-2 py-0.5 rounded bg-secondary-container text-on-secondary-fixed font-bold">LOKET 1</span>
+                  </div>
+                  <p class="text-xs opacity-85">Pendaftaran perkara online, e-Filing &amp; aktivasi akun.</p>
+                </button>
+                <button type="button" data-loket="Informasi" class="loket-card text-left p-4 rounded-xl border-2 transition-all bg-surface-container-low/60 text-on-surface border-transparent hover:border-outline-variant">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="font-display font-bold text-sm">Informasi &amp; Posbakum</span>
+                    <span class="text-[10px] px-2 py-0.5 rounded bg-white text-outline font-bold">LOKET 2</span>
+                  </div>
+                  <p class="text-xs text-on-surface-variant">Informasi publik, PPID &amp; layanan konsultasi hukum.</p>
+                </button>
+                <button type="button" data-loket="Hukum" class="loket-card text-left p-4 rounded-xl border-2 transition-all bg-surface-container-low/60 text-on-surface border-transparent hover:border-outline-variant">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="font-display font-bold text-sm">Kepaniteraan Hukum</span>
+                    <span class="text-[10px] px-2 py-0.5 rounded bg-white text-outline font-bold">LOKET 3</span>
+                  </div>
+                  <p class="text-xs text-on-surface-variant">Legalisasi surat kuasa, surat keterangan &amp; salinan putusan.</p>
+                </button>
+                <button type="button" data-loket="Umum" class="loket-card text-left p-4 rounded-xl border-2 transition-all bg-surface-container-low/60 text-on-surface border-transparent hover:border-outline-variant">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="font-display font-bold text-sm">Umum &amp; Kesekretariatan</span>
+                    <span class="text-[10px] px-2 py-0.5 rounded bg-white text-outline font-bold">LOKET 4</span>
+                  </div>
+                  <p class="text-xs text-on-surface-variant">Surat masuk/keluar, kepegawaian &amp; audiensi kedinasan.</p>
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <div class="flex justify-between mb-1.5">
+                <label for="ptsp-keperluan" class="text-sm font-semibold text-on-surface">Keperluan Singkat <span class="text-xs font-normal text-outline">(Opsional)</span></label>
+                <span class="text-xs text-outline">Maks. 200 karakter</span>
+              </div>
+              <textarea id="ptsp-keperluan" rows="2" maxlength="200" placeholder="Contoh: Mengambil salinan putusan perkara atau verifikasi akun advokat" class="w-full p-3.5 rounded-xl border border-outline-variant bg-surface-container-low/40 focus:bg-white focus:border-primary-container text-sm"></textarea>
+            </div>
+
+            <!-- Opsional Foto Kamera -->
+            <div class="p-4 rounded-xl bg-surface-container-low/60 border border-dashed border-outline-variant flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <div id="ptsp-foto-preview" class="w-12 h-12 rounded-xl bg-white border border-outline-variant flex items-center justify-center overflow-hidden shrink-0">
+                  <span class="material-symbols-outlined text-outline">photo_camera</span>
+                </div>
+                <div>
+                  <span class="block text-sm font-semibold text-on-surface">Foto Pengunjung (Opsional)</span>
+                  <span class="text-xs text-on-surface-variant">Ambil potret cepat dari kamera Kiosk/HP untuk arsip.</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <button type="button" id="btn-ptsp-kamera" class="px-4 h-10 rounded-lg bg-white border border-outline-variant hover:border-primary-container text-xs font-semibold">Ambil Foto</button>
+                <button type="button" id="btn-ptsp-hapus-foto" class="hidden px-3 h-10 rounded-lg text-xs font-semibold text-error hover:bg-error-container/40">Hapus</button>
+              </div>
+            </div>
+
+            <div class="pt-2 flex flex-col sm:flex-row gap-3">
+              <button type="button" id="btn-ptsp-reset" class="h-12 px-6 rounded-xl border border-outline-variant bg-surface-container-low hover:bg-surface-container text-sm font-semibold flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">restart_alt</span> Reset Form
+              </button>
+              <button type="submit" id="btn-ptsp-submit" class="flex-1 h-12 px-6 rounded-xl bg-primary-container hover:bg-primary text-white font-display font-bold text-base flex items-center justify-center gap-2 shadow-md transition-all">
+                <span class="material-symbols-outlined">confirmation_number</span>
+                <span id="btn-ptsp-submit-label">Terbitkan Tiket Antrean</span>
+                <span class="material-symbols-outlined">arrow_forward</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================== -->
+    <!-- VIEW 3: FORM REGISTRASI TAMU SIDANG (TANPA KOLOM NIK)              -->
+    <!-- ================================================================== -->
+    <section id="view-form-sidang" class="view-panel hidden max-w-3xl mx-auto px-4 py-8">
+      <div class="bg-white rounded-2xl shadow-lg border border-outline-variant/40 overflow-hidden">
+        <div class="h-2 bg-secondary-container"></div>
+        <div class="p-6 sm:p-8 flex flex-col gap-6">
+          <div class="flex items-center justify-between gap-2">
+            <button type="button" data-nav="kiosk" class="inline-flex items-center gap-1.5 text-sm font-semibold text-on-surface-variant hover:text-primary-container">
+              <span class="material-symbols-outlined text-[18px]">arrow_back</span> Kembali ke Layar Awal (Kiosk)
+            </button>
+            <span class="px-3 py-1 rounded-full text-xs font-bold bg-secondary-fixed text-on-secondary-fixed-variant">• Jalur Tamu Persidangan</span>
+          </div>
+
+          <div>
+            <h1 class="font-display text-2xl sm:text-3xl font-bold text-on-surface">Formulir Kehadiran Sidang</h1>
+            <p class="text-sm text-on-surface-variant mt-1">Konfirmasi kehadiran para pihak perkara untuk Panitera Pengganti &amp; Majelis Hakim sebelum persidangan dibuka.</p>
+          </div>
+
+          <form id="form-sidang" class="flex flex-col gap-5" novalidate>
+            <div>
+              <div class="flex justify-between mb-2">
+                <label class="text-sm font-semibold text-on-surface">Peran dalam Persidangan <span class="text-error">*</span></label>
+                <span class="text-xs text-outline">Pilih satu yang mewakili</span>
+              </div>
+              <div id="sidang-peran-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                <button type="button" data-peran="Penggugat" class="peran-card p-3 rounded-xl border-2 text-left transition-all bg-primary-container text-white border-primary-container">
+                  <span class="block font-display font-bold text-sm">Penggugat</span>
+                  <span class="block text-[11px] opacity-80">Pihak Utama</span>
+                </button>
+                <button type="button" data-peran="Tergugat" class="peran-card p-3 rounded-xl border-2 text-left transition-all bg-surface-container-low/60 text-on-surface border-transparent hover:border-outline-variant">
+                  <span class="block font-display font-bold text-sm">Tergugat</span>
+                  <span class="block text-[11px] text-on-surface-variant">Instansi / Pejabat</span>
+                </button>
+                <button type="button" data-peran="Turut Tergugat" class="peran-card p-3 rounded-xl border-2 text-left transition-all bg-surface-container-low/60 text-on-surface border-transparent hover:border-outline-variant">
+                  <span class="block font-display font-bold text-sm">Turut Tergugat</span>
+                  <span class="block text-[11px] text-on-surface-variant">Pihak Terkait</span>
+                </button>
+                <button type="button" data-peran="Kuasa Hukum" class="peran-card p-3 rounded-xl border-2 text-left transition-all bg-surface-container-low/60 text-on-surface border-transparent hover:border-outline-variant">
+                  <span class="block font-display font-bold text-sm">Kuasa Hukum</span>
+                  <span class="block text-[11px] text-on-surface-variant">Advokat / Jaksa TUN</span>
+                </button>
+                <button type="button" data-peran="Saksi" class="peran-card p-3 rounded-xl border-2 text-left transition-all bg-surface-container-low/60 text-on-surface border-transparent hover:border-outline-variant">
+                  <span class="block font-display font-bold text-sm">Saksi</span>
+                  <span class="block text-[11px] text-on-surface-variant">Fakta / Kejadian</span>
+                </button>
+                <button type="button" data-peran="Ahli" class="peran-card p-3 rounded-xl border-2 text-left transition-all bg-surface-container-low/60 text-on-surface border-transparent hover:border-outline-variant">
+                  <span class="block font-display font-bold text-sm">Ahli</span>
+                  <span class="block text-[11px] text-on-surface-variant">Keterangan Khusus</span>
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label for="sidang-nama" class="block text-sm font-semibold text-on-surface mb-1.5">Nama Lengkap Sesuai Identitas / Berita Acara <span class="text-error">*</span></label>
+              <input id="sidang-nama" type="text" required placeholder="Contoh: Muhammad Rizky Pratama, S.H." class="w-full h-12 px-4 rounded-xl border border-outline-variant bg-surface-container-low/40 focus:bg-white focus:border-primary-container text-sm" />
+              <p id="err-sidang-nama" class="hidden text-xs text-error mt-1"></p>
+            </div>
+
+            <div>
+              <label for="sidang-hp" class="block text-sm font-semibold text-on-surface mb-1.5">Nomor WhatsApp / HP Aktif</label>
+              <input id="sidang-hp" type="tel" placeholder="Contoh: 0811-9876-5432" class="w-full h-12 px-4 rounded-xl border border-outline-variant bg-surface-container-low/40 focus:bg-white focus:border-primary-container text-sm" />
+            </div>
+
+            <!-- Nomor Perkara Jadwal Hari Ini + Manual Fallback -->
+            <div>
+              <div class="flex justify-between items-center mb-1.5">
+                <label for="sidang-cari-perkara" class="text-sm font-semibold text-on-surface">Nomor Perkara Sidang Hari Ini <span class="text-error">*</span></label>
+                <span id="sidang-jadwal-badge" class="text-xs font-semibold text-secondary">0 Sidang Terjadwal</span>
+              </div>
+              <div class="relative mb-2">
+                <span class="material-symbols-outlined text-outline text-[18px] absolute left-3.5 top-3.5">search</span>
+                <input id="sidang-cari-perkara" type="text" placeholder="Ketik atau pilih nomor perkara (misal: 24/G/2026/PTUN.PLG)..." class="w-full h-12 pl-10 pr-4 rounded-xl border border-outline-variant bg-white focus:border-primary-container text-sm" />
+              </div>
+              <div id="sidang-jadwal-list" class="flex flex-col gap-2 max-h-56 overflow-y-auto"></div>
+              <p id="err-sidang-perkara" class="hidden text-xs text-error mt-1"></p>
+            </div>
+
+            <!-- Auto-filled Ruang Sidang & Agenda -->
+            <div class="p-4 rounded-xl bg-surface-container-low border border-outline-variant/40 grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label for="sidang-ruang" class="block text-xs font-semibold text-outline uppercase mb-1">Ruang Sidang</label>
+                <input id="sidang-ruang" type="text" value="Ruang Sidang Utama (Kartika)" class="w-full h-10 px-3 rounded-lg border border-outline-variant bg-white text-sm font-semibold" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-outline uppercase mb-1">Agenda Sidang</label>
+                <div id="sidang-agenda-box" class="h-10 px-3 rounded-lg bg-white border border-outline-variant/60 flex items-center text-xs text-on-surface-variant truncate">Pilih jadwal atau ketik nomor perkara</div>
+              </div>
+            </div>
+
+            <!-- Opsional Foto Kamera -->
+            <div class="p-4 rounded-xl bg-surface-container-low/60 border border-dashed border-outline-variant flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <div id="sidang-foto-preview" class="w-12 h-12 rounded-xl bg-white border border-outline-variant flex items-center justify-center overflow-hidden shrink-0">
+                  <span class="material-symbols-outlined text-outline">photo_camera</span>
+                </div>
+                <div>
+                  <span class="block text-sm font-semibold text-on-surface">Foto Kehadiran (Opsional)</span>
+                  <span class="text-xs text-on-surface-variant">Potret wajah opsional dari kamera Kiosk/HP.</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-2">
+                <button type="button" id="btn-sidang-kamera" class="px-4 h-10 rounded-lg bg-white border border-outline-variant hover:border-primary-container text-xs font-semibold">Ambil Foto</button>
+                <button type="button" id="btn-sidang-hapus-foto" class="hidden px-3 h-10 rounded-lg text-xs font-semibold text-error hover:bg-error-container/40">Hapus</button>
+              </div>
+            </div>
+
+            <div class="p-3.5 rounded-xl bg-secondary-fixed/40 border border-secondary-fixed-dim/60 flex items-start gap-2.5 text-xs text-on-secondary-fixed">
+              <span class="material-symbols-outlined text-secondary text-[18px] shrink-0">info</span>
+              <span><strong>Tata Tertib Sidang:</strong> Para pihak dimohon mengenakan pakaian rapi, menonaktifkan nada dering ponsel, dan menunggu panggilan di ruang tunggu sidang.</span>
+            </div>
+
+            <div class="pt-2 flex flex-col sm:flex-row gap-3">
+              <button type="button" data-nav="kiosk" class="h-12 px-6 rounded-xl border border-outline-variant bg-surface-container-low hover:bg-surface-container text-sm font-semibold">Kembali</button>
+              <button type="submit" id="btn-sidang-submit" class="flex-1 h-12 px-6 rounded-xl bg-primary-container hover:bg-primary text-white font-display font-bold text-base flex items-center justify-center gap-2 shadow-md transition-all">
+                <span class="material-symbols-outlined">how_to_reg</span>
+                <span id="btn-sidang-submit-label">Konfirmasi Kehadiran Sidang</span>
+                <span class="material-symbols-outlined">arrow_forward</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================== -->
+    <!-- VIEW 4: TIKET DIGITAL & CETAK STRUK THERMAL                        -->
+    <!-- ================================================================== -->
+    <section id="view-tiket" class="view-panel hidden max-w-xl mx-auto px-4 py-8 flex flex-col gap-5">
+      <div id="tiket-empty-state" class="hidden bg-white rounded-2xl p-8 text-center shadow-sm border border-outline-variant/40">
+        <span class="material-symbols-outlined text-5xl text-outline mb-2">confirmation_number</span>
+        <h2 class="font-display text-xl font-bold text-on-surface">Belum Ada Tiket Aktif</h2>
+        <p class="text-sm text-on-surface-variant mt-1 mb-5">Silakan lakukan registrasi pada jalur PTSP atau Persidangan terlebih dahulu untuk menerbitkan tiket digital.</p>
+        <button type="button" data-nav="kiosk" class="px-6 h-11 rounded-xl bg-primary-container text-white font-semibold text-sm">Ke Layar Kiosk</button>
+      </div>
+
+      <div id="tiket-content-wrap" class="flex flex-col gap-5">
+        <div class="bg-white rounded-2xl p-4 border border-outline-variant/40 shadow-sm flex items-center gap-3.5">
+          <div class="w-11 h-11 rounded-full bg-primary-fixed text-on-primary-fixed flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[24px]">check_circle</span>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-display font-bold text-base text-on-surface">REGISTRASI BERHASIL!</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary-fixed text-on-primary-fixed">AKTIF</span>
+            </div>
+            <p class="text-xs text-on-surface-variant">Nomor antrean Anda telah diterbitkan dan langsung tampil pada layar pantau petugas terkait.</p>
+          </div>
+        </div>
+
+        <!-- Perforated Digital Ticket Card -->
+        <div class="ticket-perforated bg-white rounded-2xl shadow-xl border border-outline-variant/40 overflow-hidden">
+          <div class="p-6 text-center border-b border-dashed border-outline-variant">
+            <div class="w-11 h-11 mx-auto rounded-full bg-primary-container text-secondary-fixed flex items-center justify-center mb-2">
+              <span class="material-symbols-outlined">account_balance</span>
+            </div>
+            <h2 id="tkt-satker-nama" class="font-display font-bold text-sm text-on-surface uppercase tracking-wide">PENGADILAN TATA USAHA NEGARA</h2>
+            <p id="tkt-satker-alamat" class="text-xs text-on-surface-variant mt-0.5">-</p>
+          </div>
+
+          <div class="p-6 flex flex-col gap-4">
+            <div class="bg-surface-container-low rounded-2xl p-5 text-center">
+              <span class="text-[11px] uppercase tracking-widest font-semibold text-outline">Nomor Antrean</span>
+              <div id="tkt-nomor-antrean" class="font-display text-5xl font-extrabold text-primary-container tracking-tight my-1">P-001</div>
+              <span id="tkt-badge-tujuan" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-tertiary-fixed text-on-tertiary-fixed-variant">LOKET E-COURT</span>
+            </div>
+
+            <div class="divide-y divide-outline-variant/40 text-sm">
+              <div class="py-2 flex justify-between gap-3"><span class="text-on-surface-variant">Nama Pengunjung</span><strong id="tkt-nama" class="text-right text-on-surface">-</strong></div>
+              <div class="py-2 flex justify-between gap-3"><span id="tkt-label-meta" class="text-on-surface-variant">Asal Instansi</span><strong id="tkt-val-meta" class="text-right text-on-surface">-</strong></div>
+              <div class="py-2 flex justify-between gap-3"><span class="text-on-surface-variant">Waktu Registrasi</span><strong id="tkt-waktu" class="text-right text-on-surface">-</strong></div>
+              <div class="py-2 flex justify-between gap-3"><span class="text-on-surface-variant">Status Tiket</span><span id="tkt-status" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-secondary-fixed text-on-secondary-fixed-variant">Menunggu</span></div>
+            </div>
+
+            <div class="pt-2 flex flex-col items-center text-center">
+              <div id="tkt-qr-box" class="p-2.5 bg-white rounded-xl border border-outline-variant/60 shadow-sm"></div>
+              <span id="tkt-id-code" class="mt-2 font-mono text-xs font-bold text-on-surface">KODE TIKET: -</span>
+              <p class="text-[11px] text-on-surface-variant mt-1 max-w-xs">Pindai QR ini pada scanner petugas untuk verifikasi keaslian HMAC atau pencatatan check-out.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Thermal & Action Buttons -->
+        <div class="flex flex-col gap-2.5">
+          <button type="button" id="btn-tkt-cetak" class="w-full h-13 py-3.5 rounded-xl bg-primary-container hover:bg-primary text-white font-display font-bold text-sm flex items-center justify-center gap-2 shadow-md transition-all">
+            <span class="material-symbols-outlined">print</span> Cetak Struk Thermal (58mm / 80mm)
+          </button>
+          <button type="button" id="btn-tkt-wa" class="w-full h-11 rounded-xl bg-white border border-outline-variant hover:border-emerald-600 text-emerald-700 font-semibold text-sm flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">chat</span> Kirim Tiket ke WhatsApp / Simpan
+          </button>
+          <div class="bg-surface-container-low rounded-xl p-3 flex items-center justify-between gap-3">
+            <span class="text-xs text-on-surface-variant flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[16px]">timer</span>
+              Kembali ke Kiosk dalam <strong id="tkt-countdown">30</strong> detik...
+            </span>
+            <button type="button" id="btn-tkt-selesai" class="px-3.5 py-1.5 rounded-lg bg-surface-container-high hover:bg-primary-container hover:text-white text-xs font-bold transition-colors">
+              Selesai Sekarang
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================== -->
+    <!-- VIEW 5: LAYAR PANTAU PETUGAS REAL-TIME (PTSP / PANITERA / SATPAM)  -->
+    <!-- ================================================================== -->
+    <section id="view-pantau" class="view-panel hidden max-w-[1440px] mx-auto px-4 sm:px-6 py-6 flex flex-col gap-6">
+      <!-- Role Bar + Live Indicator -->
+      <div class="bg-white rounded-2xl p-3 border border-outline-variant/40 shadow-sm flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-1.5" id="pantau-mode-tabs">
+          <button type="button" data-pview="PTSP" class="pview-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 bg-primary-container text-white">
+            <span class="material-symbols-outlined text-[18px]">support_agent</span> Petugas PTSP
+          </button>
+          <button type="button" data-pview="SIDANG" class="pview-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 text-on-surface-variant hover:bg-surface-container-low">
+            <span class="material-symbols-outlined text-[18px]">gavel</span> Panitera Pengganti (Sidang)
+          </button>
+          <button type="button" data-pview="SATPAM" class="pview-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 text-on-surface-variant hover:bg-surface-container-low">
+            <span class="material-symbols-outlined text-[18px]">shield</span> Pos Keamanan / Satpam
+          </button>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="px-3 py-1.5 rounded-full bg-primary-fixed/50 text-on-primary-fixed text-xs font-semibold flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span> Live Sync Aktif
+          </span>
+          <button type="button" id="btn-pantau-refresh" class="w-9 h-9 rounded-xl border border-outline-variant bg-white hover:bg-surface-container-low flex items-center justify-center" title="Muat Ulang Data">
+            <span class="material-symbols-outlined text-[18px]">refresh</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 4 KPI Cards -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white rounded-2xl p-4 sm:p-5 border border-outline-variant/40 shadow-sm border-b-4 border-b-secondary-container">
+          <div class="flex justify-between items-start">
+            <span class="text-xs font-bold uppercase tracking-wider text-outline">Menunggu Panggilan</span>
+            <span class="p-2 rounded-lg bg-secondary-fixed/60 text-secondary material-symbols-outlined text-[20px]">hourglass_top</span>
+          </div>
+          <div id="pt-kpi-menunggu" class="font-display text-3xl font-extrabold text-on-surface mt-2">0</div>
+          <span class="text-xs text-on-surface-variant">Antrean aktif belum dipanggil</span>
+        </div>
+        <div class="bg-white rounded-2xl p-4 sm:p-5 border border-outline-variant/40 shadow-sm border-b-4 border-b-blue-600">
+          <div class="flex justify-between items-start">
+            <span class="text-xs font-bold uppercase tracking-wider text-outline">Sedang Dilayani / Sidang</span>
+            <span class="p-2 rounded-lg bg-blue-100 text-blue-700 material-symbols-outlined text-[20px]">record_voice_over</span>
+          </div>
+          <div id="pt-kpi-dilayani" class="font-display text-3xl font-extrabold text-on-surface mt-2">0</div>
+          <span class="text-xs text-on-surface-variant">Berlangsung di loket / ruang sidang</span>
+        </div>
+        <div class="bg-white rounded-2xl p-4 sm:p-5 border border-outline-variant/40 shadow-sm border-b-4 border-b-emerald-600">
+          <div class="flex justify-between items-start">
+            <span class="text-xs font-bold uppercase tracking-wider text-outline">Selesai Hari Ini</span>
+            <span class="p-2 rounded-lg bg-primary-fixed text-on-primary-fixed material-symbols-outlined text-[20px]">task_alt</span>
+          </div>
+          <div id="pt-kpi-selesai" class="font-display text-3xl font-extrabold text-on-surface mt-2">0</div>
+          <span class="text-xs text-on-surface-variant">Layanan / persidangan rampung</span>
+        </div>
+        <div class="bg-white rounded-2xl p-4 sm:p-5 border border-outline-variant/40 shadow-sm border-b-4 border-b-primary-container">
+          <div class="flex justify-between items-start">
+            <span class="text-xs font-bold uppercase tracking-wider text-outline">Tamu Masih di Gedung</span>
+            <span class="p-2 rounded-lg bg-surface-container text-primary-container material-symbols-outlined text-[20px]">security</span>
+          </div>
+          <div id="pt-kpi-digedung" class="font-display text-3xl font-extrabold text-on-surface mt-2">0</div>
+          <span class="text-xs text-on-surface-variant">Belum melakukan check-out keluar</span>
+        </div>
+      </div>
+
+      <!-- Filter & Search -->
+      <div class="bg-white rounded-2xl p-4 border border-outline-variant/40 shadow-sm flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
+        <div class="relative flex-1 max-w-md">
+          <span class="material-symbols-outlined text-outline text-[18px] absolute left-3.5 top-3">search</span>
+          <input id="pantau-search" type="text" placeholder="Cari nama tamu, kode tiket, instansi, atau nomor perkara..." class="w-full h-10 pl-10 pr-4 rounded-xl border border-outline-variant bg-surface-container-low/40 focus:bg-white text-sm" />
+        </div>
+        <div id="pantau-filter-chips" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar"></div>
+      </div>
+
+      <!-- Main Live Table -->
+      <div class="bg-white rounded-2xl border border-outline-variant/40 shadow-sm overflow-hidden">
+        <div class="px-5 py-4 border-b border-outline-variant/40 flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary-container">list_alt</span>
+            <h2 class="font-display font-bold text-base text-on-surface">Daftar Antrean &amp; Kehadiran Tamu Hari Ini</h2>
+          </div>
+          <span id="pantau-count-label" class="text-xs text-on-surface-variant font-medium">0 Pengunjung</span>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-surface-container-low/60 border-b border-outline-variant/50 text-[11px] uppercase tracking-wider font-semibold text-outline">
+                <th class="py-3 px-4">No. Antrean &amp; Masuk</th>
+                <th class="py-3 px-4">Nama Tamu &amp; Asal / Peran</th>
+                <th class="py-3 px-4">Tujuan / No. Perkara &amp; Ruang</th>
+                <th class="py-3 px-4">Status</th>
+                <th class="py-3 px-4 text-right">Aksi Cepat Petugas</th>
+              </tr>
+            </thead>
+            <tbody id="pantau-tbody" class="divide-y divide-outline-variant/30 text-sm"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Bottom 2-Column Live Summary: Rol Sidang & Status Loket -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        <div class="lg:col-span-7 bg-white rounded-2xl p-5 border border-outline-variant/40 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="font-display font-bold text-base text-on-surface flex items-center gap-2">
+                <span class="material-symbols-outlined text-secondary">balance</span> Jadwal Kehadiran Sidang Hari Ini (Rol Sidang)
+              </h3>
+              <p class="text-xs text-on-surface-variant">Pengelompokan otomatis kehadiran pihak per nomor perkara.</p>
+            </div>
+          </div>
+          <div id="pantau-rol-sidang" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+        </div>
+        <div class="lg:col-span-5 bg-white rounded-2xl p-5 border border-outline-variant/40 shadow-sm">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-display font-bold text-base text-on-surface flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary-container">storefront</span> Status Antrean Loket PTSP
+            </h3>
+          </div>
+          <div id="pantau-loket-status" class="flex flex-col gap-2.5"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================== -->
+    <!-- VIEW 6: DASHBOARD ANALITIK & LAPORAN PIMPINAN (ADMIN)              -->
+    <!-- ================================================================== -->
+    <section id="view-dashboard" class="view-panel hidden max-w-[1440px] mx-auto px-4 sm:px-6 py-6 flex flex-col gap-6">
+      <!-- Header + Export -->
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-2.5">
+            <h1 class="font-display text-2xl sm:text-3xl font-extrabold text-on-surface">Dashboard Analitik &amp; Rekapitulasi Buku Tamu</h1>
+            <span class="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-secondary-fixed text-on-secondary-fixed-variant">Eksekutif Pimpinan</span>
+          </div>
+          <p class="text-sm text-on-surface-variant mt-1">Laporan terpadu kunjungan PTSP dan kehadiran persidangan Pengadilan Tata Usaha Negara.</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2.5 no-print">
+          <input id="dash-start" type="date" class="h-10 px-3 rounded-xl border border-outline-variant bg-white text-xs font-semibold" />
+          <span class="text-xs text-outline">s/d</span>
+          <input id="dash-end" type="date" class="h-10 px-3 rounded-xl border border-outline-variant bg-white text-xs font-semibold" />
+          <select id="dash-jalur" class="h-10 px-3 rounded-xl border border-outline-variant bg-white text-xs font-semibold">
+            <option value="ALL">Semua Jalur Layanan</option>
+            <option value="PTSP">Khusus PTSP</option>
+            <option value="SIDANG">Khusus Persidangan</option>
+          </select>
+          <button type="button" id="btn-dash-filter" class="h-10 px-4 rounded-xl bg-surface-container hover:bg-surface-container-high text-xs font-bold">Terapkan</button>
+          <button type="button" id="btn-export-csv" class="h-10 px-4 rounded-xl border border-outline-variant bg-white hover:bg-surface-container-low text-xs font-bold flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[16px]">table_view</span> Unduh Excel (.csv)
+          </button>
+          <button type="button" id="btn-export-pdf" class="h-10 px-4 rounded-xl bg-primary-container hover:bg-primary text-white text-xs font-bold flex items-center gap-1.5 shadow-sm">
+            <span class="material-symbols-outlined text-[16px]">picture_as_pdf</span> Cetak Rekap PDF
+          </button>
+        </div>
+      </div>
+
+      <!-- 4 KPI Cards -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white rounded-2xl p-5 border border-outline-variant/40 shadow-sm">
+          <span class="text-xs font-bold uppercase tracking-wider text-outline">Total Pengunjung</span>
+          <div id="d-kpi-total" class="font-display text-3xl font-extrabold text-on-surface mt-2">0</div>
+          <span class="text-xs text-emerald-700 font-medium">Akumulasi rentang terpilih</span>
+        </div>
+        <div class="bg-white rounded-2xl p-5 border border-outline-variant/40 shadow-sm">
+          <span class="text-xs font-bold uppercase tracking-wider text-outline">Tamu Pelayanan PTSP</span>
+          <div id="d-kpi-ptsp" class="font-display text-3xl font-extrabold text-primary-container mt-2">0</div>
+          <span id="d-kpi-ptsp-pct" class="text-xs text-on-surface-variant">0% dari total kunjungan</span>
+        </div>
+        <div class="bg-white rounded-2xl p-5 border border-outline-variant/40 shadow-sm">
+          <span class="text-xs font-bold uppercase tracking-wider text-outline">Tamu Persidangan</span>
+          <div id="d-kpi-sidang" class="font-display text-3xl font-extrabold text-secondary mt-2">0</div>
+          <span id="d-kpi-sidang-pct" class="text-xs text-on-surface-variant">0% dari total kunjungan</span>
+        </div>
+        <div class="bg-white rounded-2xl p-5 border border-outline-variant/40 shadow-sm">
+          <span class="text-xs font-bold uppercase tracking-wider text-outline">Rata-rata Durasi Layanan</span>
+          <div id="d-kpi-durasi" class="font-display text-3xl font-extrabold text-on-surface mt-2">0 m</div>
+          <span class="text-xs text-emerald-700 font-medium">Check-in s/d Check-out</span>
+        </div>
+      </div>
+
+      <!-- Charts Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+        <div class="lg:col-span-8 bg-white rounded-2xl p-5 border border-outline-variant/40 shadow-sm">
+          <h2 class="font-display font-bold text-base text-on-surface mb-1">Tren Kunjungan Harian</h2>
+          <p class="text-xs text-on-surface-variant mb-4">Perbandingan volume kunjungan PTSP vs Kehadiran Sidang</p>
+          <div class="h-64"><canvas id="chart-tren"></canvas></div>
+        </div>
+        <div class="lg:col-span-4 bg-white rounded-2xl p-5 border border-outline-variant/40 shadow-sm">
+          <h2 class="font-display font-bold text-base text-on-surface mb-1">Distribusi Layanan PTSP</h2>
+          <p class="text-xs text-on-surface-variant mb-4">Proporsi permohonan per loket tujuan</p>
+          <div class="h-64 flex items-center justify-center"><canvas id="chart-distribusi"></canvas></div>
+        </div>
+      </div>
+
+      <!-- Admin Sub-Tabs -->
+      <div class="bg-white rounded-2xl border border-outline-variant/40 shadow-sm overflow-hidden">
+        <div class="px-4 pt-3 border-b border-outline-variant/40 flex items-center gap-2 overflow-x-auto no-scrollbar no-print" id="admin-subtabs">
+          <button type="button" data-atab="riwayat" class="atab-btn px-4 py-2.5 text-xs sm:text-sm font-bold border-b-2 border-primary-container text-primary-container whitespace-nowrap">Riwayat Transaksi Tamu</button>
+          <button type="button" data-atab="jadwal" class="atab-btn px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-on-surface-variant hover:text-on-surface whitespace-nowrap">Kelola Jadwal Sidang</button>
+          <button type="button" data-atab="users" class="atab-btn px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-on-surface-variant hover:text-on-surface whitespace-nowrap">Manajemen Pengguna (RBAC)</button>
+          <button type="button" data-atab="pengaturan" class="atab-btn px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-on-surface-variant hover:text-on-surface whitespace-nowrap">Pengaturan, Printer &amp; Template</button>
+          <button type="button" data-atab="migrasi" class="atab-btn px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-on-surface-variant hover:text-on-surface whitespace-nowrap">Rahasia &amp; Migrasi Database</button>
+        </div>
+
+        <!-- TAB 1: RIWAYAT -->
+        <div id="atab-riwayat" class="atab-pane p-5">
+          <div class="flex flex-wrap items-center justify-between gap-3 mb-4 no-print">
+            <input id="dash-search-riwayat" type="text" placeholder="Cari nama tamu, kode tiket, instansi, atau nomor perkara..." class="w-full sm:w-80 h-10 px-3.5 rounded-xl border border-outline-variant bg-surface-container-low/40 text-sm" />
+            <span id="dash-riwayat-count" class="text-xs text-on-surface-variant font-medium">0 Data</span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-surface-container-low/60 border-b border-outline-variant/50 text-[11px] uppercase tracking-wider font-semibold text-outline">
+                  <th class="py-3 px-3">No. Tiket</th>
+                  <th class="py-3 px-3">Nama Tamu</th>
+                  <th class="py-3 px-3">Jalur &amp; Tujuan</th>
+                  <th class="py-3 px-3">Check-In</th>
+                  <th class="py-3 px-3">Check-Out</th>
+                  <th class="py-3 px-3">Status</th>
+                  <th class="py-3 px-3 text-right no-print">Struk</th>
+                </tr>
+              </thead>
+              <tbody id="dash-riwayat-tbody" class="divide-y divide-outline-variant/30 text-sm"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- TAB 2: JADWAL SIDANG -->
+        <div id="atab-jadwal" class="atab-pane hidden p-5">
+          <form id="form-jadwal" class="grid grid-cols-1 sm:grid-cols-5 gap-3 mb-5 p-4 rounded-xl bg-surface-container-low/60 border border-outline-variant/40">
+            <input type="hidden" id="jdw-id" />
+            <input id="jdw-tgl" type="date" required class="h-10 px-3 rounded-lg border border-outline-variant bg-white text-sm" />
+            <input id="jdw-perkara" type="text" required placeholder="No. Perkara (24/G/2026/PTUN.PLG)" class="h-10 px-3 rounded-lg border border-outline-variant bg-white text-sm" />
+            <input id="jdw-ruang" type="text" required placeholder="Ruang Sidang Utama" class="h-10 px-3 rounded-lg border border-outline-variant bg-white text-sm" />
+            <input id="jdw-agenda" type="text" placeholder="Agenda Sidang" class="h-10 px-3 rounded-lg border border-outline-variant bg-white text-sm" />
+            <button type="submit" class="h-10 px-4 rounded-lg bg-primary-container hover:bg-primary text-white text-xs font-bold">Simpan Jadwal</button>
+          </form>
+          <div id="admin-jadwal-list" class="flex flex-col gap-2"></div>
+        </div>
+
+        <!-- TAB 3: USERS RBAC -->
+        <div id="atab-users" class="atab-pane hidden p-5">
+          <form id="form-user" class="grid grid-cols-1 sm:grid-cols-5 gap-3 mb-5 p-4 rounded-xl bg-surface-container-low/60 border border-outline-variant/40">
+            <input id="usr-username" type="text" required placeholder="Username (tanpa spasi)" class="h-10 px-3 rounded-lg border border-outline-variant bg-white text-sm" />
+            <input id="usr-nama" type="text" required placeholder="Nama Petugas" class="h-10 px-3 rounded-lg border border-outline-variant bg-white text-sm" />
+            <select id="usr-role" class="h-10 px-3 rounded-lg border border-outline-variant bg-white text-sm">
+              <option value="PTSP">Petugas PTSP</option>
+              <option value="Panitera">Panitera Pengganti</option>
+              <option value="Satpam">Satpam / Resepsionis</option>
+              <option value="Admin">Admin / Pimpinan</option>
+            </select>
+            <input id="usr-pin" type="password" placeholder="PIN / Sandi Baru" class="h-10 px-3 rounded-lg border border-outline-variant bg-white text-sm" />
+            <button type="submit" class="h-10 px-4 rounded-lg bg-primary-container hover:bg-primary text-white text-xs font-bold">Simpan Pengguna</button>
+          </form>
+          <div id="admin-users-list" class="overflow-x-auto"></div>
+        </div>
+
+        <!-- TAB 4: PENGATURAN, PRINTER & EDITOR TEMPLATE -->
+        <div id="atab-pengaturan" class="atab-pane hidden p-5 flex flex-col gap-6">
+          <form id="form-pengaturan" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-4 rounded-xl bg-surface-container-low/60 border border-outline-variant/40">
+            <div><label class="block text-xs font-semibold mb-1">Nama Satuan Kerja</label><input id="cfg-nama" type="text" class="w-full h-10 px-3 rounded-lg border border-outline-variant bg-white text-sm" /></div>
+            <div><label class="block text-xs font-semibold mb-1">Alamat Satuan Kerja</label><input id="cfg-alamat" type="text" class="w-full h-10 px-3 rounded-lg border border-outline-variant bg-white text-sm" /></div>
+            <div><label class="block text-xs font-semibold mb-1">Jam Layanan PTSP</label><input id="cfg-jam" type="text" class="w-full h-10 px-3 rounded-lg border border-outline-variant bg-white text-sm" /></div>
+            <div><label class="block text-xs font-semibold mb-1">Catatan Kaki Struk</label><input id="cfg-kaki" type="text" class="w-full h-10 px-3 rounded-lg border border-outline-variant bg-white text-sm" /></div>
+            <div class="sm:col-span-2 lg:col-span-4 flex justify-end">
+              <button type="submit" class="h-10 px-5 rounded-lg bg-primary-container text-white text-xs font-bold">Simpan Pengaturan Satker</button>
+            </div>
+          </form>
+          <div>
+            <h3 class="font-display font-bold text-base mb-3">Editor Template Struk Thermal &amp; Pratinjau</h3>
+            <div id="admin-template-editor"></div>
+          </div>
+        </div>
+
+        <!-- TAB 5: RAHASIA SCRIPT PROPERTIES & MIGRASI DATABASE -->
+        <div id="atab-migrasi" class="atab-pane hidden p-5 grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Rahasia Kelas A -->
+          <div class="p-5 rounded-xl border border-outline-variant/50 bg-surface-container-low/30 flex flex-col gap-3">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-primary-container">key</span>
+              <h3 class="font-display font-bold text-base">Rahasia Integrasi (Script Properties)</h3>
+            </div>
+            <p class="text-xs text-on-surface-variant">Token tersimpan terisolasi di server GAS dan tidak pernah dikirim mentah ke browser. Kosongkan jika tidak ingin mengubah; isi <code>__HAPUS__</code> untuk menghapus.</p>
+            <form id="form-rahasia" class="flex flex-col gap-3">
+              <div>
+                <label class="block text-xs font-semibold mb-1">WA Gateway Token <span id="mask-WA_GATEWAY_TOKEN" class="text-outline font-mono"></span></label>
+                <input id="sec-wa-token" type="password" placeholder="Masukkan token baru atau biarkan kosong" class="w-full h-10 px-3 rounded-lg border border-outline-variant bg-white text-sm" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold mb-1">WA Gateway URL <span id="mask-WA_GATEWAY_URL" class="text-outline font-mono"></span></label>
+                <input id="sec-wa-url" type="text" placeholder="https://api.fonnte.com/send" class="w-full h-10 px-3 rounded-lg border border-outline-variant bg-white text-sm" />
+              </div>
+              <div>
+                <label class="block text-xs font-semibold mb-1">SIPP Sync Key <span id="mask-SIPP_SYNC_KEY" class="text-outline font-mono"></span></label>
+                <input id="sec-sipp-key" type="password" placeholder="Masukkan key baru atau biarkan kosong" class="w-full h-10 px-3 rounded-lg border border-outline-variant bg-white text-sm" />
+              </div>
+              <button type="submit" class="h-10 px-4 rounded-lg bg-primary-container text-white text-xs font-bold self-start">Simpan Rahasia ke Script Properties</button>
+            </form>
+          </div>
+
+          <!-- Migrasi Database -->
+          <div class="p-5 rounded-xl border border-outline-variant/50 bg-surface-container-low/30 flex flex-col gap-3">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-secondary">sync_alt</span>
+              <h3 class="font-display font-bold text-base">Migrasi &amp; Delta-Sync Spreadsheet Lama</h3>
+            </div>
+            <p class="text-xs text-on-surface-variant">Pindahkan data dari Google Spreadsheet versi lama tanpa menyentuh atau mengubah spreadsheet sumber (Idempoten &amp; Header-based).</p>
+            <input id="mig-source-id" type="text" placeholder="Tempel URL atau ID Spreadsheet Lama..." class="w-full h-10 px-3 rounded-lg border border-outline-variant bg-white text-sm" />
+            <div class="flex flex-wrap gap-2">
+              <button type="button" id="btn-mig-pindai" class="h-10 px-4 rounded-lg border border-primary-container text-primary-container hover:bg-white text-xs font-bold">1. Pindai (Dry-Run)</button>
+              <button type="button" id="btn-mig-eksekusi" class="h-10 px-4 rounded-lg bg-secondary-container hover:bg-secondary-fixed-dim text-on-secondary-fixed text-xs font-bold">2. Jalankan Delta-Sync</button>
+            </div>
+            <div id="mig-result-box" class="hidden p-3 rounded-xl bg-white border border-outline-variant text-xs font-mono"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-white border-t border-outline-variant/40 py-4 px-6 text-xs text-on-surface-variant no-print">
+    <div class="max-w-[1440px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+      <span><strong>SI-BUKU TAMU</strong> • Pengadilan Tata Usaha Negara Republik Indonesia</span>
+      <span>Arsitektur GAS Pure REST API • Thermal 58mm/80mm Ready</span>
+    </div>
+  </footer>
+
+  <!-- MODAL LOGIN PETUGAS -->
+  <div id="modal-login" class="hidden fixed inset-0 z-[90] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-outline-variant/40">
+      <div class="bg-primary-container text-white px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-secondary-fixed">lock</span>
+          <h3 class="font-display font-bold text-base">Login Petugas &amp; Pimpinan</h3>
+        </div>
+        <button type="button" id="btn-close-login" class="p-1 rounded-lg hover:bg-white/10"><span class="material-symbols-outlined">close</span></button>
+      </div>
+      <form id="form-login" class="p-6 flex flex-col gap-4">
+        <p class="text-xs text-on-surface-variant">Masukkan Username dan PIN/Sandi yang diberikan oleh Administrator Satker. (Maks 5x percobaan gagal akan mengunci sementara 15 menit).</p>
+        <div>
+          <label class="block text-xs font-semibold mb-1">Username</label>
+          <input id="login-username" type="text" required placeholder="admin / ptsp / panitera / satpam" class="w-full h-11 px-3.5 rounded-xl border border-outline-variant text-sm" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold mb-1">PIN / Sandi</label>
+          <input id="login-pin" type="password" required placeholder="••••••" class="w-full h-11 px-3.5 rounded-xl border border-outline-variant text-sm" />
+        </div>
+        <p id="login-err" class="hidden text-xs text-error font-semibold"></p>
+        <button type="submit" id="btn-login-submit" class="h-11 rounded-xl bg-primary-container hover:bg-primary text-white font-bold text-sm">Masuk ke Panel Petugas</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL KAMERA WEBCAM -->
+  <div id="modal-kamera" class="hidden fixed inset-0 z-[95] bg-slate-900/75 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+      <div class="bg-primary-container text-white px-5 py-3 flex items-center justify-between">
+        <span class="font-display font-bold text-sm">Ambil Foto Pengunjung</span>
+        <button type="button" id="btn-close-kamera" class="p-1 rounded-lg hover:bg-white/10"><span class="material-symbols-outlined">close</span></button>
+      </div>
+      <div class="p-4 flex flex-col items-center gap-3">
+        <video id="kamera-video" autoplay playsinline class="w-full rounded-xl bg-slate-900 aspect-[4/3] object-cover"></video>
+        <button type="button" id="btn-jepret" class="w-full h-12 rounded-xl bg-primary-container text-white font-bold text-sm flex items-center justify-center gap-2">
+          <span class="material-symbols-outlined">photo_camera</span> Ambil Gambar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL VERIFIKASI QR / PANDUAN -->
+  <div id="modal-info" class="hidden fixed inset-0 z-[92] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+      <div class="bg-primary-container text-white px-5 py-3.5 flex items-center justify-between">
+        <h3 id="modal-info-title" class="font-display font-bold text-sm">Informasi</h3>
+        <button type="button" id="btn-close-info" class="p-1 rounded-lg hover:bg-white/10"><span class="material-symbols-outlined">close</span></button>
+      </div>
+      <div id="modal-info-body" class="p-5 text-sm"></div>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATIONS -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-[110] flex flex-col gap-2 max-w-sm no-print"></div>
+</body>
+</html>

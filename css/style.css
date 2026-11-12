@@ -1,0 +1,126 @@
+/* ==========================================================================
+   SI-BUKU TAMU (E-Tamu PTUN) — Custom Styles & Print Media
+   ========================================================================== */
+
+@layer base {
+  html, body {
+    margin: 0;
+    padding: 0;
+    scroll-behavior: smooth;
+  }
+  body {
+    overscroll-behavior-y: contain;
+  }
+}
+
+/* Sembunyikan scrollbar horizontal pada pill filter sambil tetap bisa digeser */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Animasi Skeleton Shimmer */
+.skeleton-shimmer {
+  background: linear-gradient(90deg, #e9edff 25%, #f1f3ff 50%, #e9edff 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite linear;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Transisi Halaman Instan (0ms feel tanpa kedip) */
+.view-panel {
+  animation: fadeSlideIn 0.16s ease-out;
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0.55;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Kartu Tiket Perforasi Kertas Thermal */
+.ticket-perforated {
+  position: relative;
+  background-image: radial-gradient(circle at 0 50%, #f9f9ff 10px, transparent 10.5px),
+                    radial-gradient(circle at 100% 50%, #f9f9ff 10px, transparent 10.5px);
+}
+
+.thermal-paper-preview {
+  font-family: 'Courier New', Courier, monospace;
+  background: #ffffff;
+  color: #111827;
+  line-height: 1.35;
+  box-shadow: 0 10px 30px rgba(1, 45, 29, 0.12);
+}
+
+.thermal-paper-58 {
+  width: 268px;
+  font-size: 11.5px;
+}
+
+.thermal-paper-80 {
+  width: 360px;
+  font-size: 12.5px;
+}
+
+.thermal-box-highlight {
+  background: #111827;
+  color: #ffffff;
+  padding: 2px 8px;
+  display: inline-block;
+  font-weight: 700;
+  border-radius: 2px;
+}
+
+/* Fokus Keyboard Aksesibel */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid #D4A017;
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+   PRINT MEDIA: Cetak Struk Thermal (58mm/80mm) vs Cetak Laporan Rekap PDF
+   ========================================================================== */
+@media print {
+  body.printing-thermal * {
+    visibility: hidden !important;
+  }
+  body.printing-thermal #thermal-print-area,
+  body.printing-thermal #thermal-print-area * {
+    visibility: visible !important;
+  }
+  body.printing-thermal #thermal-print-area {
+    position: fixed !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 2mm !important;
+    box-shadow: none !important;
+    border: none !important;
+  }
+
+  body.printing-report header,
+  body.printing-report .no-print {
+    display: none !important;
+  }
+  body.printing-report main {
+    padding-top: 0 !important;
+  }
+}
