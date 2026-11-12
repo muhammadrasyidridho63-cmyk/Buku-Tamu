@@ -211,6 +211,23 @@ window.AppUI = (function () {
     }
   }
 
+  function applySatkerName(nama) {
+    const clean = String(nama || '').trim();
+    if (!clean) return;
+    if (state.boot && state.boot.pengaturan) {
+      state.boot.pengaturan.NAMA_SATKER = clean;
+    }
+    ['hero-satker-name', 'nav-satker-subtitle', 'dash-satker-name', 'footer-satker-name', 'tkt-satker-nama'].forEach(function (id) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = clean;
+    });
+    const dashInp = document.getElementById('dash-nama-pengadilan');
+    if (dashInp && document.activeElement !== dashInp) dashInp.value = clean;
+    const cfgInp = document.getElementById('cfg-nama');
+    if (cfgInp && document.activeElement !== cfgInp) cfgInp.value = clean;
+    document.title = 'SI-BUKU TAMU — ' + clean;
+  }
+
   function applyBootData(d) {
     state.boot = d;
     const cfg = d.pengaturan || {};
@@ -218,10 +235,7 @@ window.AppUI = (function () {
     const jadwal = d.jadwalHariIni || [];
 
     if (cfg.NAMA_SATKER) {
-      const hero = document.getElementById('hero-satker-name');
-      const navSub = document.getElementById('nav-satker-subtitle');
-      if (hero) hero.textContent = cfg.NAMA_SATKER;
-      if (navSub) navSub.textContent = cfg.NAMA_SATKER;
+      applySatkerName(cfg.NAMA_SATKER);
     }
     if (cfg.JAM_LAYANAN) {
       const jl = document.getElementById('kiosk-jam-layanan');
@@ -883,6 +897,12 @@ window.AppUI = (function () {
   // VIEW 6: DASHBOARD ANALITIK, LAPORAN & ADMINISTRASI
   // ==========================================================================
   async function loadDashboardData() {
+    const curNama = state.boot && state.boot.pengaturan && state.boot.pengaturan.NAMA_SATKER;
+    if (curNama) {
+      const dashInp = document.getElementById('dash-nama-pengadilan');
+      if (dashInp) dashInp.value = curNama;
+    }
+
     const startEl = document.getElementById('dash-start');
     const endEl = document.getElementById('dash-end');
     if (!endEl.value) endEl.value = todayYmd();
@@ -900,6 +920,9 @@ window.AppUI = (function () {
     if (res && res.success && res.data) {
       state.dash = res.data;
       renderDashboard();
+    }
+    if (!curNama) {
+      loadBootPublic(false);
     }
   }
 
@@ -1116,18 +1139,59 @@ window.AppUI = (function () {
       }
     };
 
+    // Simpan Cepat Nama Pengadilan dari Dashboard Admin
+    document.getElementById('form-dash-nama-pengadilan').onsubmit = async function (e) {
+      e.preventDefault();
+      const inp = document.getElementById('dash-nama-pengadilan');
+      const namaBaru = String(inp.value || '').trim();
+      if (!namaBaru) {
+        toast('Nama pengadilan tidak boleh kosong.', 'warning');
+        inp.focus();
+        return;
+      }
+      const btn = document.getElementById('btn-simpan-nama-pengadilan');
+      btn.disabled = true;
+      btn.classList.add('opacity-70');
+      const res = await window.ApiClient.call('pengaturan.simpan', { NAMA_SATKER: namaBaru });
+      btn.disabled = false;
+      btn.classList.remove('opacity-70');
+      if (res && res.success) {
+        applySatkerName((res.data && res.data.NAMA_SATKER) || namaBaru);
+        toast('Nama pengadilan berhasil diperbarui.', 'success');
+        loadBootPublic(false);
+      } else {
+        toast((res && res.message) || 'Gagal memperbarui nama pengadilan.', 'error');
+      }
+    };
+
+    document.getElementById('btn-ke-pengaturan-lengkap').onclick = function () {
+      const tabBtn = document.querySelector('.atab-btn[data-atab="pengaturan"]');
+      if (tabBtn) {
+        tabBtn.click();
+        tabBtn.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    };
+
     // Simpan Pengaturan
     document.getElementById('form-pengaturan').onsubmit = async function (e) {
       e.preventDefault();
+      const namaBaru = String(document.getElementById('cfg-nama').value || '').trim();
+      if (!namaBaru) {
+        toast('Nama pengadilan tidak boleh kosong.', 'warning');
+        document.getElementById('cfg-nama').focus();
+        return;
+      }
       const res = await window.ApiClient.call('pengaturan.simpan', {
-        NAMA_SATKER: document.getElementById('cfg-nama').value,
+        NAMA_SATKER: namaBaru,
         ALAMAT_SATKER: document.getElementById('cfg-alamat').value,
         JAM_LAYANAN: document.getElementById('cfg-jam').value,
         CATATAN_KAKI_STRUK: document.getElementById('cfg-kaki').value
       });
       if (res && res.success) {
+        applySatkerName((res.data && res.data.NAMA_SATKER) || namaBaru);
         toast(res.message, 'success');
         loadBootPublic(false);
+        loadAdminPengaturan();
       } else {
         toast((res && res.message) || 'Gagal menyimpan pengaturan.', 'error');
       }
@@ -1202,6 +1266,7 @@ window.AppUI = (function () {
     document.getElementById('cfg-alamat').value = p.ALAMAT_SATKER || '';
     document.getElementById('cfg-jam').value = p.JAM_LAYANAN || '';
     document.getElementById('cfg-kaki').value = p.CATATAN_KAKI_STRUK || '';
+    if (p.NAMA_SATKER) applySatkerName(p.NAMA_SATKER);
 
     applyMaskedSecrets(res.data.rahasia || {});
 
@@ -1213,7 +1278,8 @@ window.AppUI = (function () {
         toast(msg || 'Template diperbarui.', 'success');
         loadBootPublic(false);
         loadAdminPengaturan();
-      }
+      },
+      p
     );
   }
 

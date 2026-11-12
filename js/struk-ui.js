@@ -231,15 +231,16 @@ window.StrukUI = (function () {
   /**
    * Editor Template Struk untuk Admin di tab Pengaturan
    */
-  function renderEditor(container, templates, printerCfg, onSaved) {
+  function renderEditor(container, templates, printerCfg, onSaved, satkerCfg) {
     if (!container) return;
     let activeTpl = templates[0] || { ID_Template: 'TIKET_PTSP', Nama_Template: 'Tiket PTSP', Jenis: 'PTSP', Isi_Direktif: '', Versi: 1, Riwayat_JSON: '[]' };
     let textVal = activeTpl.Isi_Direktif || '';
+    const cfg = satkerCfg || {};
     const sampleDict = {
-      SATKER_NAMA: 'PENGADILAN TATA USAHA NEGARA',
-      SATKER_ALAMAT: 'Jl. Kolonel H. Barlian No. 45',
-      KODE_UNIT: 'W2.TUN.01 • PTSP & SIDANG',
-      CATATAN_KAKI: 'Simpan struk ini selama berada di pengadilan.',
+      SATKER_NAMA: cfg.NAMA_SATKER || 'PENGADILAN TATA USAHA NEGARA',
+      SATKER_ALAMAT: cfg.ALAMAT_SATKER || 'Jl. Kolonel H. Barlian No. 45',
+      KODE_UNIT: cfg.KODE_UNIT || 'W2.TUN.01 • PTSP & SIDANG',
+      CATATAN_KAKI: cfg.CATATAN_KAKI_STRUK || 'Simpan struk ini selama berada di pengadilan.',
       ID_TIKET: 'PTSP-20261112-001',
       NOMOR_ANTREAN: 'P-015',
       NAMA: 'Dr. Hendra Wijaya, S.H.',
