@@ -348,14 +348,19 @@ window.AppUI = (function () {
       initEl.textContent = (u.nama || u.username || 'P').charAt(0).toUpperCase();
       nameEl.textContent = u.nama || u.username;
       roleEl.textContent = u.role + ' (Aktif)';
-      iconEl.textContent = 'manage_accounts';
-      document.getElementById('btn-auth-chip').title = 'Profil, Ubah Password & Logout';
+      iconEl.textContent = 'expand_more';
+      document.getElementById('btn-auth-chip').title = 'Menu Akun: Edit Password / Keluar';
+      const ddName = document.getElementById('dd-user-name');
+      const ddRole = document.getElementById('dd-user-role');
+      if (ddName) ddName.textContent = u.nama || u.username;
+      if (ddRole) ddRole.textContent = '@' + u.username + ' • ' + u.role;
     } else {
       initEl.textContent = 'T';
       nameEl.textContent = 'Mode Kiosk';
       roleEl.textContent = 'Publik / Tamu';
       iconEl.textContent = 'lock';
       document.getElementById('btn-auth-chip').title = 'Login Petugas / Pimpinan';
+      closeUserDropdown();
     }
 
     const btnAturRuang = document.getElementById('btn-shortcut-atur-ruang');
@@ -2136,21 +2141,60 @@ window.AppUI = (function () {
     document.getElementById('profil-pin-lama').focus();
   }
 
+  function closeUserDropdown() {
+    const dd = document.getElementById('user-dropdown-menu');
+    if (dd) dd.classList.add('hidden');
+  }
+
+  function toggleUserDropdown() {
+    const dd = document.getElementById('user-dropdown-menu');
+    if (dd) dd.classList.toggle('hidden');
+  }
+
   function closeProfilModal() {
     document.getElementById('modal-profil').classList.add('hidden');
   }
 
+  async function performLogout() {
+    closeUserDropdown();
+    closeProfilModal();
+    await window.ApiClient.call('auth.logout', {});
+    window.ApiClient.setSession('', null);
+    updateAuthChip();
+    toast('Berhasil keluar dari sesi petugas.', 'info');
+    if (state.view === 'pantau' || state.view === 'dashboard') goView('kiosk');
+  }
+
   function initModals() {
-    document.getElementById('btn-auth-chip').onclick = function () {
+    document.getElementById('btn-auth-chip').onclick = function (e) {
+      e.stopPropagation();
       const u = window.ApiClient.getUser();
       if (u) {
-        openProfilModal();
+        toggleUserDropdown();
       } else {
         openLoginModal();
       }
     };
 
+    document.getElementById('btn-menu-edit-pw').onclick = function () {
+      closeUserDropdown();
+      openProfilModal();
+    };
+
+    document.getElementById('btn-menu-logout').onclick = performLogout;
+
+    document.addEventListener('click', function (e) {
+      const wrap = document.getElementById('user-menu-wrap');
+      if (wrap && !wrap.contains(e.target)) closeUserDropdown();
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeUserDropdown();
+    });
+
     document.getElementById('btn-close-profil').onclick = closeProfilModal;
+    const btnBatalProfil = document.getElementById('btn-batal-profil');
+    if (btnBatalProfil) btnBatalProfil.onclick = closeProfilModal;
 
     const showPwCb = document.getElementById('profil-show-pw');
     if (showPwCb) {
@@ -2162,15 +2206,6 @@ window.AppUI = (function () {
         });
       };
     }
-
-    document.getElementById('btn-profil-logout').onclick = async function () {
-      closeProfilModal();
-      await window.ApiClient.call('auth.logout', {});
-      window.ApiClient.setSession('', null);
-      updateAuthChip();
-      toast('Berhasil keluar dari sesi petugas.', 'info');
-      if (state.view === 'pantau' || state.view === 'dashboard') goView('kiosk');
-    };
 
     document.getElementById('form-profil').onsubmit = async function (e) {
       e.preventDefault();
