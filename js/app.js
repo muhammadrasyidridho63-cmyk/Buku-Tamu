@@ -356,6 +356,11 @@ window.AppUI = (function () {
       iconEl.textContent = 'lock';
       document.getElementById('btn-auth-chip').title = 'Login Petugas / Pimpinan';
     }
+
+    const btnAturRuang = document.getElementById('btn-shortcut-atur-ruang');
+    if (btnAturRuang) {
+      btnAturRuang.classList.toggle('hidden', !(u && u.role === 'Admin'));
+    }
   }
 
   async function loadBootPublic(useCacheFirst) {
@@ -1217,24 +1222,36 @@ window.AppUI = (function () {
     toast('File Excel (.csv) berhasil diunduh.', 'success');
   }
 
+  function openAdminTab(t) {
+    document.querySelectorAll('.atab-btn').forEach(function (b) {
+      const active = b.getAttribute('data-atab') === t;
+      b.className = active
+        ? 'atab-btn px-4 py-2.5 text-xs sm:text-sm font-bold border-b-2 border-primary-container text-primary-container whitespace-nowrap'
+        : 'atab-btn px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-on-surface-variant hover:text-on-surface whitespace-nowrap';
+    });
+    document.querySelectorAll('.atab-pane').forEach(function (p) {
+      p.classList.toggle('hidden', p.id !== 'atab-' + t);
+    });
+    if (t === 'jadwal') loadAdminJadwal();
+    if (t === 'ruang') { renderAdminRuangList(); loadAdminPengaturan(); }
+    if (t === 'users') loadAdminUsers();
+    if (t === 'pengaturan' || t === 'migrasi') loadAdminPengaturan();
+  }
+
   function initAdminTabs() {
     document.querySelectorAll('.atab-btn').forEach(function (btn) {
       btn.onclick = function () {
-        const t = btn.getAttribute('data-atab');
-        document.querySelectorAll('.atab-btn').forEach(function (b) {
-          const active = b.getAttribute('data-atab') === t;
-          b.className = active
-            ? 'atab-btn px-4 py-2.5 text-xs sm:text-sm font-bold border-b-2 border-primary-container text-primary-container whitespace-nowrap'
-            : 'atab-btn px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-on-surface-variant hover:text-on-surface whitespace-nowrap';
-        });
-        document.querySelectorAll('.atab-pane').forEach(function (p) {
-          p.classList.toggle('hidden', p.id !== 'atab-' + t);
-        });
-        if (t === 'jadwal') loadAdminJadwal();
-        if (t === 'users') loadAdminUsers();
-        if (t === 'pengaturan' || t === 'migrasi') loadAdminPengaturan();
+        openAdminTab(btn.getAttribute('data-atab'));
       };
     });
+
+    const btnShortcutRuang = document.getElementById('btn-shortcut-atur-ruang');
+    if (btnShortcutRuang) {
+      btnShortcutRuang.onclick = function () {
+        goView('dashboard');
+        openAdminTab('ruang');
+      };
+    }
 
     document.getElementById('btn-dash-filter').onclick = loadDashboardData;
     document.getElementById('dash-search-riwayat').oninput = renderRiwayatTable;
