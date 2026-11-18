@@ -230,6 +230,12 @@ window.ApiClient = (function () {
             { nama: 'Kuasa Hukum', keterangan: 'Advokat / Jaksa TUN' },
             { nama: 'Saksi', keterangan: 'Fakta / Kejadian' },
             { nama: 'Ahli', keterangan: 'Keterangan Khusus' }
+          ]),
+          RUANG_SIDANG_JSON: JSON.stringify([
+            { nama: 'Ruang Sidang Utama (Kartika)', keterangan: 'Lantai 1' },
+            { nama: 'Ruang Sidang II (Tirta)', keterangan: 'Lantai 1' },
+            { nama: 'Ruang Sidang III (Candra)', keterangan: 'Lantai 2' },
+            { nama: 'Ruang Pemeriksaan Persiapan / Mediasi', keterangan: 'Lantai 1' }
           ])
         },
         jadwal: [
@@ -506,7 +512,8 @@ window.ApiClient = (function () {
           No_HP: data.noHp || '',
           Peran_Sidang: data.peran || 'Penggugat',
           Nomor_Perkara: data.nomorPerkara.trim(),
-          Ruang_Sidang: data.ruangSidang || 'Ruang Sidang Utama',
+          Ruang_Sidang: data.ruangSidang || 'Ruang Sidang Utama (Kartika)',
+          Agenda: data.agenda || '',
           Status_Kehadiran: 'Hadir di Ruang Tunggu',
           Link_Foto: data.fotoBase64 || '',
           Petugas_Input: action === 'sidang.daftarPetugas' ? 'Petugas' : 'Mandiri',
@@ -687,6 +694,13 @@ window.ApiClient = (function () {
         db.pengaturan.PERAN_SIDANG_JSON = JSON.stringify(list);
         saveDb(db);
         return { success: true, data: list, message: 'Daftar sebutan pihak berhasil diperbarui (' + list.length + ' peran).' };
+      }
+      if (action === 'ruang.simpan') {
+        const list = Array.isArray(data.ruangList) ? data.ruangList : [];
+        if (!list.length) return { success: false, message: 'Minimal harus ada 1 ruang sidang aktif.' };
+        db.pengaturan.RUANG_SIDANG_JSON = JSON.stringify(list);
+        saveDb(db);
+        return { success: true, data: list, message: 'Daftar ruang sidang berhasil diperbarui (' + list.length + ' ruang).' };
       }
       if (action === 'rahasia.simpan') return { success: true, data: { WA_GATEWAY_TOKEN: { ada: true, samar: 'DEMO••••••XYZ' } }, message: 'Rahasia disimpan (Simulasi).' };
       if (action === 'printer.simpan') { db.printer = data; saveDb(db); return { success: true, data: db.printer, message: 'Printer disimpan.' }; }

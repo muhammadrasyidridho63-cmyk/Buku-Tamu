@@ -50,6 +50,53 @@ window.AppUI = (function () {
     { nama: 'Saksi', keterangan: 'Fakta / Kejadian' },
     { nama: 'Ahli', keterangan: 'Keterangan Khusus' }
   ];
+  const DEFAULT_RUANG_SIDANG = [
+    { nama: 'Ruang Sidang Utama (Kartika)', keterangan: 'Lantai 1' },
+    { nama: 'Ruang Sidang II (Tirta)', keterangan: 'Lantai 1' },
+    { nama: 'Ruang Sidang III (Candra)', keterangan: 'Lantai 2' },
+    { nama: 'Ruang Pemeriksaan Persiapan / Mediasi', keterangan: 'Lantai 1' }
+  ];
+
+  function getRuangSidangList() {
+    const raw = state.boot && state.boot.pengaturan && state.boot.pengaturan.RUANG_SIDANG_JSON;
+    if (raw) {
+      try {
+        const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+        if (Array.isArray(parsed) && parsed.length) return parsed;
+      } catch (e) {}
+    }
+    return DEFAULT_RUANG_SIDANG.slice();
+  }
+
+  function setSelectValueSafe(sel, val) {
+    if (!sel || !val) return;
+    const exists = Array.prototype.some.call(sel.options, function (o) { return o.value === val; });
+    if (!exists) {
+      const opt = document.createElement('option');
+      opt.value = val;
+      opt.textContent = val;
+      sel.appendChild(opt);
+    }
+    sel.value = val;
+  }
+
+  function renderRuangSidangSelects() {
+    const list = getRuangSidangList();
+    ['sidang-ruang', 'jdw-ruang'].forEach(function (id) {
+      const sel = document.getElementById(id);
+      if (!sel) return;
+      const prev = sel.value;
+      sel.innerHTML = list.map(function (r) {
+        const label = r.keterangan ? (r.nama + ' — ' + r.keterangan) : r.nama;
+        return '<option value="' + esc(r.nama) + '">' + esc(label) + '</option>';
+      }).join('');
+      if (prev && list.some(function (r) { return r.nama === prev; })) {
+        sel.value = prev;
+      } else if (list.length) {
+        sel.value = list[0].nama;
+      }
+    });
+  }
 
   function getPeranSidangList() {
     const raw = state.boot && state.boot.pengaturan && state.boot.pengaturan.PERAN_SIDANG_JSON;
@@ -379,6 +426,7 @@ window.AppUI = (function () {
     renderPtspLoketGrid();
     renderKioskPeranPills();
     renderSidangPeranGrid();
+    renderRuangSidangSelects();
     if (state.view === 'sidang') renderJadwalOptions();
     if (state.view === 'pantau') renderPantau();
   }
@@ -387,11 +435,12 @@ window.AppUI = (function () {
   // FORM REGISTRASI PTSP & SIDANG (TANPA NIK) + KAMERA TERKOMPRESI
   // ==========================================================================
   function initForms() {
-    // Render & pasang klik kartu Loket PTSP & Peran Sidang dinamis
+    // Render & pasang klik kartu Loket PTSP, Peran Sidang & Dropdown Ruang Sidang dinamis
     renderKioskLoketPills();
     renderPtspLoketGrid();
     renderKioskPeranPills();
     renderSidangPeranGrid();
+    renderRuangSidangSelects();
 
     // Pencarian Jadwal Sidang
     const cariPerkara = document.getElementById('sidang-cari-perkara');
@@ -472,6 +521,7 @@ window.AppUI = (function () {
       const noHp = document.getElementById('sidang-hp').value.trim();
       const nomorPerkara = document.getElementById('sidang-cari-perkara').value.trim();
       const ruangSidang = document.getElementById('sidang-ruang').value.trim();
+      const agendaSidang = document.getElementById('sidang-agenda').value.trim();
 
       const errNama = document.getElementById('err-sidang-nama');
       const errPerkara = document.getElementById('err-sidang-perkara');
@@ -502,7 +552,8 @@ window.AppUI = (function () {
         noHp: noHp,
         peran: state.sidangPeran,
         nomorPerkara: nomorPerkara,
-        ruangSidang: ruangSidang || 'Ruang Sidang Utama',
+        ruangSidang: ruangSidang || (getRuangSidangList()[0] && getRuangSidangList()[0].nama) || 'Ruang Sidang Utama',
+        agenda: agendaSidang,
         fotoBase64: state.sidangFoto
       });
 
@@ -567,8 +618,9 @@ window.AppUI = (function () {
         const ag = b.getAttribute('data-agenda');
         state.sidangPerkara = np;
         document.getElementById('sidang-cari-perkara').value = np;
-        document.getElementById('sidang-ruang').value = rs;
-        document.getElementById('sidang-agenda-box').textContent = ag || '-';
+        setSelectValueSafe(document.getElementById('sidang-ruang'), rs);
+        const agInp = document.getElementById('sidang-agenda');
+        if (agInp) agInp.value = ag || '';
         renderJadwalOptions();
       };
     });
@@ -1398,6 +1450,153 @@ window.AppUI = (function () {
 
     const btnCancelPrn = document.getElementById('btn-prn-cancel');
     if (btnCancelPrn) btnCancelPrn.onclick = resetPeranForm;
+
+    // Kelola Pilihan Ruang Sidang (Tambah / Edit / Batal)
+    const formRuang = document.getElementById('form-ruang');
+    if (formRuang) {
+      formRuang.onsubmit = function (e) {
+        e.preventDefault();
+        const editIdx = Number(document.getElementById('rng-edit-idx').value);
+        const nama = document.getElementById('rng-nama').value.trim();
+        const keterangan = document.getElementById('rng-ket').value.trim();
+
+        if (!nama) {
+          toast('Nama ruang sidang wajib diisi.', 'warning');
+          return;
+        }
+
+        const list = getRuangSidangList().slice();
+        const dupIdx = list.findIndex(function (r, i) {
+          return i !== editIdx && String(r.nama).toLowerCase() === nama.toLowerCase();
+        });
+        if (dupIdx > -1) {
+          toast('Ruang sidang "' + nama + '" sudah ada dalam daftar.', 'warning');
+          return;
+        }
+
+        const item = { nama: nama, keterangan: keterangan };
+        if (editIdx > -1 && editIdx < list.length) {
+          list[editIdx] = item;
+        } else {
+          list.push(item);
+        }
+
+        resetRuangForm();
+        saveRuangList(list);
+      };
+    }
+
+    const btnCancelRng = document.getElementById('btn-rng-cancel');
+    if (btnCancelRng) btnCancelRng.onclick = resetRuangForm;
+  }
+
+  function resetRuangForm() {
+    const f = document.getElementById('form-ruang');
+    if (f) f.reset();
+    const idxEl = document.getElementById('rng-edit-idx');
+    if (idxEl) idxEl.value = '-1';
+    const lbl = document.getElementById('btn-rng-label');
+    if (lbl) lbl.textContent = 'Tambah';
+    const cancel = document.getElementById('btn-rng-cancel');
+    if (cancel) cancel.classList.add('hidden');
+  }
+
+  async function saveRuangList(nextList) {
+    if (!nextList.length) {
+      toast('Minimal harus tersisa 1 ruang sidang aktif.', 'warning');
+      return;
+    }
+    const prevRaw = state.boot && state.boot.pengaturan ? state.boot.pengaturan.RUANG_SIDANG_JSON : '';
+    if (!state.boot) state.boot = { pengaturan: {} };
+    if (!state.boot.pengaturan) state.boot.pengaturan = {};
+    state.boot.pengaturan.RUANG_SIDANG_JSON = JSON.stringify(nextList);
+    renderAdminRuangList();
+    renderRuangSidangSelects();
+
+    const res = await window.ApiClient.call('ruang.simpan', { ruangList: nextList });
+    if (res && res.success) {
+      toast(res.message || 'Daftar ruang sidang diperbarui.', 'success');
+      loadBootPublic(false);
+    } else {
+      state.boot.pengaturan.RUANG_SIDANG_JSON = prevRaw;
+      renderAdminRuangList();
+      renderRuangSidangSelects();
+      toast((res && res.message) || 'Gagal menyimpan ruang sidang.', 'error');
+    }
+  }
+
+  function renderAdminRuangList() {
+    const box = document.getElementById('admin-ruang-list');
+    const countEl = document.getElementById('admin-ruang-count');
+    if (!box) return;
+    const list = getRuangSidangList();
+    if (countEl) countEl.textContent = list.length + ' Ruang Aktif';
+
+    box.innerHTML = list.map(function (r, idx) {
+      return '<div class="p-3.5 rounded-xl bg-white border border-outline-variant/50 flex flex-col justify-between gap-2.5 shadow-sm">' +
+        '<div>' +
+          '<div class="font-display font-bold text-sm text-on-surface">' + esc(r.nama) + '</div>' +
+          '<div class="text-xs text-on-surface-variant mt-0.5">' + esc(r.keterangan || '-') + '</div>' +
+        '</div>' +
+        '<div class="pt-2 border-t border-outline-variant/30 flex items-center justify-between gap-2">' +
+          '<div class="flex items-center gap-1">' +
+            '<button type="button" data-rng-up="' + idx + '" ' + (idx === 0 ? 'disabled ' : '') + 'class="px-2 h-8 rounded-lg border border-outline-variant text-xs hover:bg-surface-container-low disabled:opacity-35" title="Geser Naik">↑</button>' +
+            '<button type="button" data-rng-down="' + idx + '" ' + (idx === list.length - 1 ? 'disabled ' : '') + 'class="px-2 h-8 rounded-lg border border-outline-variant text-xs hover:bg-surface-container-low disabled:opacity-35" title="Geser Turun">↓</button>' +
+          '</div>' +
+          '<div class="flex items-center gap-1.5">' +
+            '<button type="button" data-rng-edit="' + idx + '" class="px-3 h-8 rounded-lg border border-outline-variant hover:border-primary-container text-xs font-semibold">Edit</button>' +
+            '<button type="button" data-rng-del="' + idx + '" ' + (list.length <= 1 ? 'disabled ' : '') + 'class="px-3 h-8 rounded-lg text-xs font-semibold text-error hover:bg-error-container/40 disabled:opacity-35">Hapus</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+
+    box.querySelectorAll('[data-rng-edit]').forEach(function (b) {
+      b.onclick = function () {
+        const i = Number(b.getAttribute('data-rng-edit'));
+        const item = list[i];
+        if (!item) return;
+        document.getElementById('rng-edit-idx').value = String(i);
+        document.getElementById('rng-nama').value = item.nama || '';
+        document.getElementById('rng-ket').value = item.keterangan || '';
+        document.getElementById('btn-rng-label').textContent = 'Simpan';
+        document.getElementById('btn-rng-cancel').classList.remove('hidden');
+        document.getElementById('rng-nama').focus();
+      };
+    });
+
+    box.querySelectorAll('[data-rng-del]').forEach(function (b) {
+      b.onclick = function () {
+        const i = Number(b.getAttribute('data-rng-del'));
+        if (list.length <= 1) {
+          toast('Minimal harus tersisa 1 ruang sidang aktif.', 'warning');
+          return;
+        }
+        const next = list.filter(function (_, idx) { return idx !== i; });
+        resetRuangForm();
+        saveRuangList(next);
+      };
+    });
+
+    box.querySelectorAll('[data-rng-up]').forEach(function (b) {
+      b.onclick = function () {
+        const i = Number(b.getAttribute('data-rng-up'));
+        if (i <= 0) return;
+        const next = list.slice();
+        const tmp = next[i - 1]; next[i - 1] = next[i]; next[i] = tmp;
+        saveRuangList(next);
+      };
+    });
+
+    box.querySelectorAll('[data-rng-down]').forEach(function (b) {
+      b.onclick = function () {
+        const i = Number(b.getAttribute('data-rng-down'));
+        if (i >= list.length - 1) return;
+        const next = list.slice();
+        const tmp = next[i + 1]; next[i + 1] = next[i]; next[i] = tmp;
+        saveRuangList(next);
+      };
+    });
   }
 
   function resetPeranForm() {
@@ -1631,6 +1830,7 @@ window.AppUI = (function () {
   }
 
   async function loadAdminJadwal() {
+    renderRuangSidangSelects();
     document.getElementById('jdw-tgl').value = document.getElementById('jdw-tgl').value || todayYmd();
     const res = await window.ApiClient.call('jadwal.list', {});
     const list = (res && res.success && res.data) ? res.data : [];
@@ -1688,8 +1888,15 @@ window.AppUI = (function () {
       if (!state.boot.pengaturan) state.boot.pengaturan = {};
       state.boot.pengaturan.PERAN_SIDANG_JSON = p.PERAN_SIDANG_JSON;
     }
+    if (p.RUANG_SIDANG_JSON) {
+      if (!state.boot) state.boot = { pengaturan: {} };
+      if (!state.boot.pengaturan) state.boot.pengaturan = {};
+      state.boot.pengaturan.RUANG_SIDANG_JSON = p.RUANG_SIDANG_JSON;
+    }
     renderAdminLoketList();
     renderAdminPeranList();
+    renderAdminRuangList();
+    renderRuangSidangSelects();
 
     applyMaskedSecrets(res.data.rahasia || {});
 
