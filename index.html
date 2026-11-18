@@ -206,7 +206,7 @@
             </div>
             <div>
               <span class="text-[11px] uppercase tracking-wider font-semibold text-outline">Layanan Meja Terbuka:</span>
-              <div class="mt-2 flex flex-wrap gap-2">
+              <div id="kiosk-loket-pills" class="mt-2 flex flex-wrap gap-2">
                 <span class="px-3 py-1.5 rounded-lg bg-surface-container-low text-xs font-medium text-on-surface">Loket e-Court</span>
                 <span class="px-3 py-1.5 rounded-lg bg-surface-container-low text-xs font-medium text-on-surface">Informasi / Posbakum</span>
                 <span class="px-3 py-1.5 rounded-lg bg-surface-container-low text-xs font-medium text-on-surface">Kepaniteraan Hukum</span>
@@ -962,6 +962,50 @@
               <button type="submit" class="h-10 px-5 rounded-lg bg-primary-container text-white text-xs font-bold">Simpan Pengaturan Pengadilan</button>
             </div>
           </form>
+
+          <!-- KELOLA LOKET LAYANAN PTSP (DINAMIS: TAMBAH / EDIT / URUTKAN / HAPUS) -->
+          <div class="p-5 rounded-xl bg-surface-container-low/40 border border-outline-variant/50 flex flex-col gap-4">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <h3 class="font-display font-bold text-base text-on-surface flex items-center gap-2">
+                  <span class="material-symbols-outlined text-primary-container text-[20px]">storefront</span>
+                  Kelola Loket Layanan PTSP
+                </h3>
+                <p class="text-xs text-on-surface-variant">Tambah, ubah, atur urutan, atau hapus loket layanan PTSP. Perubahan langsung tampil di Layar Kiosk, Form PTSP, Layar Pantau, dan Statistik.</p>
+              </div>
+              <span id="admin-loket-count" class="px-2.5 py-1 rounded-full text-xs font-bold bg-primary-fixed text-on-primary-fixed">4 Loket Aktif</span>
+            </div>
+
+            <form id="form-loket" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 p-4 rounded-xl bg-white border border-outline-variant/50">
+              <input type="hidden" id="lkt-edit-idx" value="-1" />
+              <div class="lg:col-span-2">
+                <label class="block text-[11px] font-semibold text-outline uppercase mb-1">Kode Singkat *</label>
+                <input id="lkt-kode" type="text" required maxlength="40" placeholder="cth: Kasir" class="w-full h-10 px-3 rounded-lg border border-outline-variant bg-surface-container-low/30 focus:bg-white text-sm" />
+              </div>
+              <div class="lg:col-span-3">
+                <label class="block text-[11px] font-semibold text-outline uppercase mb-1">Judul Kartu Loket *</label>
+                <input id="lkt-nama" type="text" required maxlength="80" placeholder="cth: Loket Kasir & Panjar" class="w-full h-10 px-3 rounded-lg border border-outline-variant bg-surface-container-low/30 focus:bg-white text-sm" />
+              </div>
+              <div class="lg:col-span-2">
+                <label class="block text-[11px] font-semibold text-outline uppercase mb-1">Label Badge</label>
+                <input id="lkt-badge" type="text" maxlength="24" placeholder="cth: LOKET 5" class="w-full h-10 px-3 rounded-lg border border-outline-variant bg-surface-container-low/30 focus:bg-white text-sm" />
+              </div>
+              <div class="lg:col-span-3">
+                <label class="block text-[11px] font-semibold text-outline uppercase mb-1">Deskripsi Layanan</label>
+                <input id="lkt-desk" type="text" maxlength="160" placeholder="cth: Pembayaran panjar & pengembalian sisa" class="w-full h-10 px-3 rounded-lg border border-outline-variant bg-surface-container-low/30 focus:bg-white text-sm" />
+              </div>
+              <div class="lg:col-span-2 flex items-end gap-1.5">
+                <button type="submit" id="btn-lkt-submit" class="flex-1 h-10 px-3 rounded-lg bg-primary-container hover:bg-primary text-white text-xs font-bold flex items-center justify-center gap-1">
+                  <span class="material-symbols-outlined text-[16px]">add</span>
+                  <span id="btn-lkt-label">Tambah</span>
+                </button>
+                <button type="button" id="btn-lkt-cancel" class="hidden h-10 px-2.5 rounded-lg border border-outline-variant text-xs font-semibold hover:bg-surface-container-low">Batal</button>
+              </div>
+            </form>
+
+            <div id="admin-loket-list" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+          </div>
+
           <div>
             <h3 class="font-display font-bold text-base mb-3">Editor Template Struk Thermal &amp; Pratinjau</h3>
             <div id="admin-template-editor"></div>

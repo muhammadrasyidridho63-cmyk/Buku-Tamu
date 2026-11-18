@@ -216,7 +216,13 @@ window.ApiClient = (function () {
           PREFIX_PTSP: 'P-',
           PREFIX_SIDANG: 'S-',
           CATATAN_KAKI_STRUK: 'Simpan struk ini selama berada di lingkungan pengadilan.',
-          AUTO_RESET_DETIK: '30'
+          AUTO_RESET_DETIK: '30',
+          LOKET_PTSP_JSON: JSON.stringify([
+            { kode: 'e-Court', nama: 'Loket e-Court', badge: 'LOKET 1', deskripsi: 'Pendaftaran perkara online, e-Filing & aktivasi akun.' },
+            { kode: 'Informasi', nama: 'Informasi & Posbakum', badge: 'LOKET 2', deskripsi: 'Informasi publik, PPID & layanan konsultasi hukum.' },
+            { kode: 'Hukum', nama: 'Kepaniteraan Hukum', badge: 'LOKET 3', deskripsi: 'Legalisasi surat kuasa, surat keterangan & salinan putusan.' },
+            { kode: 'Umum', nama: 'Umum & Kesekretariatan', badge: 'LOKET 4', deskripsi: 'Surat masuk/keluar, kepegawaian & audiensi kedinasan.' }
+          ])
         },
         jadwal: [
           { ID_Jadwal: 'JDW-01', Tanggal: ymd, Nomor_Perkara: '24/G/2026/PTUN.PLG', Ruang_Sidang: 'Ruang Sidang Utama (Kartika)', Agenda: 'Pembuktian Surat & Saksi Penggugat', Status_Jadwal: 'Aktif' },
@@ -591,7 +597,13 @@ window.ApiClient = (function () {
           if (!dailyMap[d]) dailyMap[d] = { tanggal: d, ptsp: 0, sidang: 0 };
           dailyMap[d].sidang++;
         });
-        const loketDist = { 'e-Court': 0, 'Informasi': 0, 'Hukum': 0, 'Umum': 0 };
+        const loketDist = {};
+        try {
+          const parsedLoket = JSON.parse(db.pengaturan.LOKET_PTSP_JSON || '[]');
+          if (Array.isArray(parsedLoket)) {
+            parsedLoket.forEach(function (l) { if (l && l.kode) loketDist[l.kode] = 0; });
+          }
+        } catch (e) {}
         ptsp.forEach(function (r) { loketDist[r.Loket_Tujuan] = (loketDist[r.Loket_Tujuan] || 0) + 1; });
         const peranDist = {};
         sidang.forEach(function (r) { peranDist[r.Peran_Sidang] = (peranDist[r.Peran_Sidang] || 0) + 1; });
@@ -653,6 +665,13 @@ window.ApiClient = (function () {
         Object.assign(db.pengaturan, data);
         saveDb(db);
         return { success: true, data: db.pengaturan, message: 'Pengaturan disimpan.' };
+      }
+      if (action === 'loket.simpan') {
+        const list = Array.isArray(data.loketList) ? data.loketList : [];
+        if (!list.length) return { success: false, message: 'Minimal harus ada 1 loket layanan aktif.' };
+        db.pengaturan.LOKET_PTSP_JSON = JSON.stringify(list);
+        saveDb(db);
+        return { success: true, data: list, message: 'Daftar loket layanan PTSP berhasil diperbarui (' + list.length + ' loket).' };
       }
       if (action === 'rahasia.simpan') return { success: true, data: { WA_GATEWAY_TOKEN: { ada: true, samar: 'DEMO••••••XYZ' } }, message: 'Rahasia disimpan (Simulasi).' };
       if (action === 'printer.simpan') { db.printer = data; saveDb(db); return { success: true, data: db.printer, message: 'Printer disimpan.' }; }

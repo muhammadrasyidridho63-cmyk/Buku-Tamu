@@ -36,6 +36,64 @@ window.AppUI = (function () {
 
   const BULAN = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
   const HARI = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+  const DEFAULT_LOKET_PTSP = [
+    { kode: 'e-Court', nama: 'Loket e-Court', badge: 'LOKET 1', deskripsi: 'Pendaftaran perkara online, e-Filing & aktivasi akun.' },
+    { kode: 'Informasi', nama: 'Informasi & Posbakum', badge: 'LOKET 2', deskripsi: 'Informasi publik, PPID & layanan konsultasi hukum.' },
+    { kode: 'Hukum', nama: 'Kepaniteraan Hukum', badge: 'LOKET 3', deskripsi: 'Legalisasi surat kuasa, surat keterangan & salinan putusan.' },
+    { kode: 'Umum', nama: 'Umum & Kesekretariatan', badge: 'LOKET 4', deskripsi: 'Surat masuk/keluar, kepegawaian & audiensi kedinasan.' }
+  ];
+
+  function getLoketList() {
+    const raw = state.boot && state.boot.pengaturan && state.boot.pengaturan.LOKET_PTSP_JSON;
+    if (raw) {
+      try {
+        const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+        if (Array.isArray(parsed) && parsed.length) return parsed;
+      } catch (e) {}
+    }
+    return DEFAULT_LOKET_PTSP.slice();
+  }
+
+  function renderKioskLoketPills() {
+    const box = document.getElementById('kiosk-loket-pills');
+    if (!box) return;
+    box.innerHTML = getLoketList().map(function (l) {
+      return '<span class="px-3 py-1.5 rounded-lg bg-surface-container-low text-xs font-medium text-on-surface">' + esc(l.nama || l.kode) + '</span>';
+    }).join('');
+  }
+
+  function renderPtspLoketGrid() {
+    const grid = document.getElementById('ptsp-loket-grid');
+    if (!grid) return;
+    const list = getLoketList();
+    const stillExists = list.some(function (l) { return l.kode === state.ptspLoket; });
+    if (!stillExists && list.length) {
+      state.ptspLoket = list[0].kode;
+    }
+
+    const selLabel = document.getElementById('ptsp-loket-terpilih');
+    if (selLabel) selLabel.textContent = (state.ptspLoket || '-') + ' Terpilih';
+
+    grid.innerHTML = list.map(function (l, idx) {
+      const active = l.kode === state.ptspLoket;
+      const badge = l.badge || ('LOKET ' + (idx + 1));
+      return '<button type="button" data-loket="' + esc(l.kode) + '" class="loket-card text-left p-4 rounded-xl border-2 transition-all ' +
+        (active ? 'bg-primary-container text-white border-primary-container shadow-sm' : 'bg-surface-container-low/60 text-on-surface border-transparent hover:border-outline-variant') + '">' +
+        '<div class="flex items-center justify-between gap-2 mb-1">' +
+          '<span class="font-display font-bold text-sm">' + esc(l.nama || l.kode) + '</span>' +
+          '<span class="text-[10px] px-2 py-0.5 rounded font-bold shrink-0 ' + (active ? 'bg-secondary-container text-on-secondary-fixed' : 'bg-white text-outline') + '">' + esc(badge) + '</span>' +
+        '</div>' +
+        '<p class="text-xs ' + (active ? 'opacity-85' : 'text-on-surface-variant') + '">' + esc(l.deskripsi || 'Layanan loket ' + l.kode) + '</p>' +
+      '</button>';
+    }).join('');
+
+    grid.querySelectorAll('.loket-card').forEach(function (card) {
+      card.onclick = function () {
+        state.ptspLoket = card.getAttribute('data-loket');
+        renderPtspLoketGrid();
+      };
+    });
+  }
 
   function esc(s) {
     return String(s === undefined || s === null ? '' : s)
@@ -264,26 +322,19 @@ window.AppUI = (function () {
       });
     }
 
+    renderKioskLoketPills();
+    renderPtspLoketGrid();
     if (state.view === 'sidang') renderJadwalOptions();
+    if (state.view === 'pantau') renderPantau();
   }
 
   // ==========================================================================
   // FORM REGISTRASI PTSP & SIDANG (TANPA NIK) + KAMERA TERKOMPRESI
   // ==========================================================================
   function initForms() {
-    // Pilih Loket PTSP
-    document.querySelectorAll('.loket-card').forEach(function (card) {
-      card.onclick = function () {
-        state.ptspLoket = card.getAttribute('data-loket');
-        document.getElementById('ptsp-loket-terpilih').textContent = state.ptspLoket + ' Terpilih';
-        document.querySelectorAll('.loket-card').forEach(function (c) {
-          const active = c.getAttribute('data-loket') === state.ptspLoket;
-          c.className = active
-            ? 'loket-card text-left p-4 rounded-xl border-2 transition-all bg-primary-container text-white border-primary-container'
-            : 'loket-card text-left p-4 rounded-xl border-2 transition-all bg-surface-container-low/60 text-on-surface border-transparent hover:border-outline-variant';
-        });
-      };
-    });
+    // Render & pasang klik kartu Loket PTSP dinamis
+    renderKioskLoketPills();
+    renderPtspLoketGrid();
 
     // Pilih Peran Sidang
     document.querySelectorAll('.peran-card').forEach(function (card) {
@@ -711,7 +762,7 @@ window.AppUI = (function () {
     const chipsBox = document.getElementById('pantau-filter-chips');
     let chips = [];
     if (state.pantauMode === 'PTSP') {
-      chips = ['ALL', 'e-Court', 'Informasi', 'Hukum', 'Umum'];
+      chips = ['ALL'].concat(getLoketList().map(function (l) { return l.kode; }));
     } else if (state.pantauMode === 'SIDANG') {
       chips = ['ALL', 'Hadir di Ruang Tunggu', 'Masuk Ruang Sidang', 'Selesai'];
     } else {
@@ -821,13 +872,14 @@ window.AppUI = (function () {
       }).join('');
     }
 
-    // Bottom Status Loket PTSP
-    const lokets = ['e-Court', 'Informasi', 'Hukum', 'Umum'];
-    document.getElementById('pantau-loket-status').innerHTML = lokets.map(function (lk) {
+    // Bottom Status Loket PTSP (Dinamis sesuai pengaturan loket)
+    const lokets = getLoketList();
+    document.getElementById('pantau-loket-status').innerHTML = lokets.map(function (l) {
+      const lk = l.kode;
       const active = ptsp.find(function (r) { return r.Loket_Tujuan === lk && r.Status_Layanan === 'Dilayani'; });
       const wait = ptsp.filter(function (r) { return r.Loket_Tujuan === lk && r.Status_Layanan === 'Menunggu'; }).length;
       return '<div class="p-3.5 rounded-xl border border-outline-variant/40 bg-surface-container-low/40 flex items-center justify-between">' +
-        '<div><div class="font-display font-bold text-sm text-on-surface">Loket ' + esc(lk) + '</div><div class="text-xs text-on-surface-variant">' + (active ? ('Melayani ' + esc(active.Nomor_Antrean) + ' (' + esc(active.Nama_Lengkap) + ')') : ('Siap melayani • ' + wait + ' menunggu')) + '</div></div>' +
+        '<div><div class="font-display font-bold text-sm text-on-surface">' + esc(l.nama || ('Loket ' + lk)) + '</div><div class="text-xs text-on-surface-variant">' + (active ? ('Melayani ' + esc(active.Nomor_Antrean) + ' (' + esc(active.Nama_Lengkap) + ')') : ('Siap melayani • ' + wait + ' menunggu')) + '</div></div>' +
         '<span class="px-2.5 py-1 rounded-full text-[11px] font-bold ' + (active ? 'bg-blue-100 text-blue-800' : 'bg-primary-fixed text-on-primary-fixed') + '">' + (active ? 'Melayani' : 'Siap') + '</span>' +
       '</div>';
     }).join('');
@@ -968,13 +1020,14 @@ window.AppUI = (function () {
     if (state.charts.dist) state.charts.dist.destroy();
     const ctxDist = document.getElementById('chart-distribusi').getContext('2d');
     const keys = Object.keys(dist);
+    const palette = ['#012d1d', '#1b4332', '#d4a017', '#a5d0b9', '#0039b5', '#795900', '#3f6653', '#64748b'];
     state.charts.dist = new window.Chart(ctxDist, {
       type: 'doughnut',
       data: {
         labels: keys,
         datasets: [{
           data: keys.map(function (k) { return dist[k]; }),
-          backgroundColor: ['#012d1d', '#1b4332', '#d4a017', '#a5d0b9'],
+          backgroundColor: keys.map(function (_, i) { return palette[i % palette.length]; }),
           borderWidth: 2,
           borderColor: '#ffffff'
         }]
@@ -1217,6 +1270,171 @@ window.AppUI = (function () {
     // Migrasi Dry-Run & Delta-Sync
     document.getElementById('btn-mig-pindai').onclick = function () { runMigrasi(true); };
     document.getElementById('btn-mig-eksekusi').onclick = function () { runMigrasi(false); };
+
+    // Kelola Loket Layanan PTSP (Tambah / Edit / Batal)
+    const formLoket = document.getElementById('form-loket');
+    if (formLoket) {
+      formLoket.onsubmit = function (e) {
+        e.preventDefault();
+        const editIdx = Number(document.getElementById('lkt-edit-idx').value);
+        const kode = document.getElementById('lkt-kode').value.trim();
+        const nama = document.getElementById('lkt-nama').value.trim();
+        const badge = document.getElementById('lkt-badge').value.trim();
+        const deskripsi = document.getElementById('lkt-desk').value.trim();
+
+        if (!kode || !nama) {
+          toast('Kode singkat dan judul loket wajib diisi.', 'warning');
+          return;
+        }
+
+        const list = getLoketList().slice();
+        const dupIdx = list.findIndex(function (l, i) {
+          return i !== editIdx && String(l.kode).toLowerCase() === kode.toLowerCase();
+        });
+        if (dupIdx > -1) {
+          toast('Kode loket "' + kode + '" sudah digunakan.', 'warning');
+          return;
+        }
+
+        const item = {
+          kode: kode,
+          nama: nama,
+          badge: badge || ('LOKET ' + (editIdx > -1 ? editIdx + 1 : list.length + 1)),
+          deskripsi: deskripsi
+        };
+
+        if (editIdx > -1 && editIdx < list.length) {
+          list[editIdx] = item;
+        } else {
+          list.push(item);
+        }
+
+        resetLoketForm();
+        saveLoketList(list);
+      };
+    }
+
+    const btnCancelLkt = document.getElementById('btn-lkt-cancel');
+    if (btnCancelLkt) btnCancelLkt.onclick = resetLoketForm;
+  }
+
+  function resetLoketForm() {
+    const f = document.getElementById('form-loket');
+    if (f) f.reset();
+    const idxEl = document.getElementById('lkt-edit-idx');
+    if (idxEl) idxEl.value = '-1';
+    const lbl = document.getElementById('btn-lkt-label');
+    if (lbl) lbl.textContent = 'Tambah';
+    const cancel = document.getElementById('btn-lkt-cancel');
+    if (cancel) cancel.classList.add('hidden');
+  }
+
+  async function saveLoketList(nextList) {
+    if (!nextList.length) {
+      toast('Minimal harus tersisa 1 loket layanan PTSP aktif.', 'warning');
+      return;
+    }
+    const prevRaw = state.boot && state.boot.pengaturan ? state.boot.pengaturan.LOKET_PTSP_JSON : '';
+    // Optimistic UI (0ms langsung tampil di seluruh halaman)
+    if (!state.boot) state.boot = { pengaturan: {} };
+    if (!state.boot.pengaturan) state.boot.pengaturan = {};
+    state.boot.pengaturan.LOKET_PTSP_JSON = JSON.stringify(nextList);
+    renderAdminLoketList();
+    renderKioskLoketPills();
+    renderPtspLoketGrid();
+    if (state.pantau) renderPantau();
+
+    const res = await window.ApiClient.call('loket.simpan', { loketList: nextList });
+    if (res && res.success) {
+      toast(res.message || 'Daftar loket diperbarui.', 'success');
+      loadBootPublic(false);
+    } else {
+      state.boot.pengaturan.LOKET_PTSP_JSON = prevRaw;
+      renderAdminLoketList();
+      renderKioskLoketPills();
+      renderPtspLoketGrid();
+      toast((res && res.message) || 'Gagal menyimpan daftar loket.', 'error');
+    }
+  }
+
+  function renderAdminLoketList() {
+    const box = document.getElementById('admin-loket-list');
+    const countEl = document.getElementById('admin-loket-count');
+    if (!box) return;
+    const list = getLoketList();
+    if (countEl) countEl.textContent = list.length + ' Loket Aktif';
+
+    box.innerHTML = list.map(function (l, idx) {
+      return '<div class="p-4 rounded-xl bg-white border border-outline-variant/50 flex flex-col justify-between gap-3 shadow-sm">' +
+        '<div>' +
+          '<div class="flex items-center justify-between gap-2 mb-1">' +
+            '<span class="font-display font-bold text-sm text-on-surface">' + esc(l.nama) + '</span>' +
+            '<span class="text-[10px] px-2 py-0.5 rounded bg-secondary-fixed text-on-secondary-fixed font-bold">' + esc(l.badge || ('LOKET ' + (idx + 1))) + '</span>' +
+          '</div>' +
+          '<div class="text-[11px] font-mono text-primary-container font-semibold mb-1">Kode: ' + esc(l.kode) + '</div>' +
+          '<p class="text-xs text-on-surface-variant">' + esc(l.deskripsi || '-') + '</p>' +
+        '</div>' +
+        '<div class="pt-2 border-t border-outline-variant/30 flex items-center justify-between gap-2">' +
+          '<div class="flex items-center gap-1">' +
+            '<button type="button" data-lkt-up="' + idx + '" ' + (idx === 0 ? 'disabled ' : '') + 'class="px-2 h-8 rounded-lg border border-outline-variant text-xs hover:bg-surface-container-low disabled:opacity-35" title="Geser Naik">↑</button>' +
+            '<button type="button" data-lkt-down="' + idx + '" ' + (idx === list.length - 1 ? 'disabled ' : '') + 'class="px-2 h-8 rounded-lg border border-outline-variant text-xs hover:bg-surface-container-low disabled:opacity-35" title="Geser Turun">↓</button>' +
+          '</div>' +
+          '<div class="flex items-center gap-1.5">' +
+            '<button type="button" data-lkt-edit="' + idx + '" class="px-3 h-8 rounded-lg border border-outline-variant hover:border-primary-container text-xs font-semibold">Edit</button>' +
+            '<button type="button" data-lkt-del="' + idx + '" ' + (list.length <= 1 ? 'disabled ' : '') + 'class="px-3 h-8 rounded-lg text-xs font-semibold text-error hover:bg-error-container/40 disabled:opacity-35">Hapus</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+
+    box.querySelectorAll('[data-lkt-edit]').forEach(function (b) {
+      b.onclick = function () {
+        const i = Number(b.getAttribute('data-lkt-edit'));
+        const item = list[i];
+        if (!item) return;
+        document.getElementById('lkt-edit-idx').value = String(i);
+        document.getElementById('lkt-kode').value = item.kode || '';
+        document.getElementById('lkt-nama').value = item.nama || '';
+        document.getElementById('lkt-badge').value = item.badge || '';
+        document.getElementById('lkt-desk').value = item.deskripsi || '';
+        document.getElementById('btn-lkt-label').textContent = 'Simpan';
+        document.getElementById('btn-lkt-cancel').classList.remove('hidden');
+        document.getElementById('lkt-kode').focus();
+      };
+    });
+
+    box.querySelectorAll('[data-lkt-del]').forEach(function (b) {
+      b.onclick = function () {
+        const i = Number(b.getAttribute('data-lkt-del'));
+        if (list.length <= 1) {
+          toast('Minimal harus tersisa 1 loket layanan PTSP.', 'warning');
+          return;
+        }
+        const next = list.filter(function (_, idx) { return idx !== i; });
+        resetLoketForm();
+        saveLoketList(next);
+      };
+    });
+
+    box.querySelectorAll('[data-lkt-up]').forEach(function (b) {
+      b.onclick = function () {
+        const i = Number(b.getAttribute('data-lkt-up'));
+        if (i <= 0) return;
+        const next = list.slice();
+        const tmp = next[i - 1]; next[i - 1] = next[i]; next[i] = tmp;
+        saveLoketList(next);
+      };
+    });
+
+    box.querySelectorAll('[data-lkt-down]').forEach(function (b) {
+      b.onclick = function () {
+        const i = Number(b.getAttribute('data-lkt-down'));
+        if (i >= list.length - 1) return;
+        const next = list.slice();
+        const tmp = next[i + 1]; next[i + 1] = next[i]; next[i] = tmp;
+        saveLoketList(next);
+      };
+    });
   }
 
   async function loadAdminJadwal() {
@@ -1267,6 +1485,12 @@ window.AppUI = (function () {
     document.getElementById('cfg-jam').value = p.JAM_LAYANAN || '';
     document.getElementById('cfg-kaki').value = p.CATATAN_KAKI_STRUK || '';
     if (p.NAMA_SATKER) applySatkerName(p.NAMA_SATKER);
+    if (p.LOKET_PTSP_JSON) {
+      if (!state.boot) state.boot = { pengaturan: {} };
+      if (!state.boot.pengaturan) state.boot.pengaturan = {};
+      state.boot.pengaturan.LOKET_PTSP_JSON = p.LOKET_PTSP_JSON;
+    }
+    renderAdminLoketList();
 
     applyMaskedSecrets(res.data.rahasia || {});
 
