@@ -400,13 +400,13 @@
             </div>
 
             <div>
-              <div class="flex justify-between mb-1.5">
-                <label for="ptsp-hp" class="text-sm font-semibold text-on-surface">Nomor WhatsApp / HP</label>
-                <span class="text-xs text-secondary font-medium">Untuk kirim tiket digital</span>
-              </div>
-              <div class="flex">
-                <span class="inline-flex items-center px-3.5 rounded-l-xl border border-r-0 border-outline-variant bg-surface-container text-xs font-bold text-primary-container">ID +62</span>
-                <input id="ptsp-hp" type="tel" placeholder="812-3456-7890" class="w-full h-12 px-4 rounded-r-xl border border-outline-variant bg-surface-container-low/40 focus:bg-white focus:border-primary-container text-sm" />
+              <label for="ptsp-hp" class="block text-sm font-semibold text-on-surface mb-1.5">Nomor WhatsApp / HP</label>
+              <div class="flex items-stretch">
+                <span class="inline-flex items-center gap-1.5 px-3.5 h-12 rounded-l-xl border border-r-0 border-outline-variant bg-surface-container text-sm font-semibold text-primary-container whitespace-nowrap shrink-0 select-none">
+                  <span class="text-[11px] font-bold tracking-wide text-on-surface-variant">ID</span>
+                  <span>+62</span>
+                </span>
+                <input id="ptsp-hp" type="tel" inputmode="tel" autocomplete="tel-national" maxlength="16" placeholder="812-3456-7890" class="flex-1 min-w-0 h-12 px-4 rounded-r-xl border border-outline-variant bg-surface-container-low/40 focus:bg-white focus:border-primary-container text-sm tracking-wide" />
               </div>
             </div>
 
@@ -548,7 +548,13 @@
 
             <div>
               <label for="sidang-hp" class="block text-sm font-semibold text-on-surface mb-1.5">Nomor WhatsApp / HP Aktif</label>
-              <input id="sidang-hp" type="tel" placeholder="Contoh: 0811-9876-5432" class="w-full h-12 px-4 rounded-xl border border-outline-variant bg-surface-container-low/40 focus:bg-white focus:border-primary-container text-sm" />
+              <div class="flex items-stretch">
+                <span class="inline-flex items-center gap-1.5 px-3.5 h-12 rounded-l-xl border border-r-0 border-outline-variant bg-surface-container text-sm font-semibold text-primary-container whitespace-nowrap shrink-0 select-none">
+                  <span class="text-[11px] font-bold tracking-wide text-on-surface-variant">ID</span>
+                  <span>+62</span>
+                </span>
+                <input id="sidang-hp" type="tel" inputmode="tel" autocomplete="tel-national" maxlength="16" placeholder="812-3456-7890" class="flex-1 min-w-0 h-12 px-4 rounded-r-xl border border-outline-variant bg-surface-container-low/40 focus:bg-white focus:border-primary-container text-sm tracking-wide" />
+              </div>
             </div>
 
             <!-- Nomor Perkara Jadwal Hari Ini + Manual Fallback -->

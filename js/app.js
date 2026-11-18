@@ -493,6 +493,34 @@ window.AppUI = (function () {
   // ==========================================================================
   // FORM REGISTRASI PTSP & SIDANG (TANPA NIK) + KAMERA TERKOMPRESI
   // ==========================================================================
+  function formatNomorWaInput(raw) {
+    let digits = String(raw || '').replace(/\D/g, '');
+    if (digits.indexOf('628') === 0) digits = digits.slice(2);
+    else if (digits.indexOf('0') === 0) digits = digits.replace(/^0+/, '');
+    digits = digits.slice(0, 13);
+    if (digits.length <= 3) return digits;
+    if (digits.length <= 7) return digits.slice(0, 3) + '-' + digits.slice(3);
+    return digits.slice(0, 3) + '-' + digits.slice(3, 7) + '-' + digits.slice(7);
+  }
+
+  function normalisasiNoHpSubmit(raw) {
+    let digits = String(raw || '').replace(/\D/g, '');
+    if (!digits) return '';
+    if (digits.indexOf('62') === 0 && digits.length > 9) digits = '0' + digits.slice(2);
+    else if (digits.indexOf('0') !== 0) digits = '0' + digits;
+    return digits;
+  }
+
+  function bindInputNomorWa(el) {
+    if (!el) return;
+    el.addEventListener('input', function () {
+      const formatted = formatNomorWaInput(el.value);
+      if (el.value !== formatted) {
+        el.value = formatted;
+      }
+    });
+  }
+
   function initForms() {
     // Render & pasang klik kartu Loket PTSP, Peran Sidang & Dropdown Ruang Sidang dinamis
     renderKioskLoketPills();
@@ -500,6 +528,10 @@ window.AppUI = (function () {
     renderKioskPeranPills();
     renderSidangPeranGrid();
     renderRuangSidangSelects();
+
+    // Format otomatis penulisan nomor WhatsApp / HP (812-3456-7890)
+    bindInputNomorWa(document.getElementById('ptsp-hp'));
+    bindInputNomorWa(document.getElementById('sidang-hp'));
 
     // Pencarian Jadwal Sidang
     const cariPerkara = document.getElementById('sidang-cari-perkara');
@@ -550,7 +582,7 @@ window.AppUI = (function () {
       const res = await window.ApiClient.call(action, {
         nama: nama,
         instansi: instansi,
-        noHp: noHp ? (noHp.indexOf('0') === 0 || noHp.indexOf('62') === 0 ? noHp : '0' + noHp) : '',
+        noHp: normalisasiNoHpSubmit(noHp),
         loket: state.ptspLoket,
         keperluan: keperluan,
         fotoBase64: state.ptspFoto
@@ -608,7 +640,7 @@ window.AppUI = (function () {
       const action = user ? 'sidang.daftarPetugas' : 'daftarSidang';
       const res = await window.ApiClient.call(action, {
         nama: nama,
-        noHp: noHp,
+        noHp: normalisasiNoHpSubmit(noHp),
         peran: state.sidangPeran,
         nomorPerkara: nomorPerkara,
         ruangSidang: ruangSidang || (getRuangSidangList()[0] && getRuangSidangList()[0].nama) || 'Ruang Sidang Utama',
