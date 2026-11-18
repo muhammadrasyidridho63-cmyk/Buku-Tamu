@@ -256,7 +256,7 @@
             </div>
             <div>
               <span class="text-[11px] uppercase tracking-wider font-semibold text-outline">Kategori Kehadiran:</span>
-              <div class="mt-2 flex flex-wrap gap-2">
+              <div id="kiosk-peran-pills" class="mt-2 flex flex-wrap gap-2">
                 <span class="px-3 py-1.5 rounded-lg bg-surface-container-low text-xs font-medium text-on-surface">Penggugat</span>
                 <span class="px-3 py-1.5 rounded-lg bg-surface-container-low text-xs font-medium text-on-surface">Tergugat</span>
                 <span class="px-3 py-1.5 rounded-lg bg-surface-container-low text-xs font-medium text-on-surface">Turut Tergugat</span>
@@ -1004,6 +1004,41 @@
             </form>
 
             <div id="admin-loket-list" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
+          </div>
+
+          <!-- KELOLA SEBUTAN PIHAK / PERAN PERSIDANGAN (DINAMIS: TAMBAH / EDIT / URUTKAN / HAPUS) -->
+          <div class="p-5 rounded-xl bg-surface-container-low/40 border border-outline-variant/50 flex flex-col gap-4">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <h3 class="font-display font-bold text-base text-on-surface flex items-center gap-2">
+                  <span class="material-symbols-outlined text-secondary text-[20px]">gavel</span>
+                  Kelola Sebutan Pihak / Peran Persidangan
+                </h3>
+                <p class="text-xs text-on-surface-variant">Tambah, ubah, atur urutan, atau hapus sebutan pihak persidangan (mis. Penggugat, Pemohon, Termohon, Pihak Intervensi). Perubahan langsung tampil di Layar Kiosk dan Form Registrasi Sidang.</p>
+              </div>
+              <span id="admin-peran-count" class="px-2.5 py-1 rounded-full text-xs font-bold bg-secondary-fixed text-on-secondary-fixed">6 Sebutan Aktif</span>
+            </div>
+
+            <form id="form-peran" class="grid grid-cols-1 sm:grid-cols-12 gap-3 p-4 rounded-xl bg-white border border-outline-variant/50">
+              <input type="hidden" id="prn-edit-idx" value="-1" />
+              <div class="sm:col-span-5">
+                <label class="block text-[11px] font-semibold text-outline uppercase mb-1">Sebutan Pihak / Peran *</label>
+                <input id="prn-nama" type="text" required maxlength="50" placeholder="cth: Pemohon / Pihak Intervensi" class="w-full h-10 px-3 rounded-lg border border-outline-variant bg-surface-container-low/30 focus:bg-white text-sm" />
+              </div>
+              <div class="sm:col-span-5">
+                <label class="block text-[11px] font-semibold text-outline uppercase mb-1">Keterangan Singkat</label>
+                <input id="prn-ket" type="text" maxlength="80" placeholder="cth: Pihak Ketiga Berkepentingan" class="w-full h-10 px-3 rounded-lg border border-outline-variant bg-surface-container-low/30 focus:bg-white text-sm" />
+              </div>
+              <div class="sm:col-span-2 flex items-end gap-1.5">
+                <button type="submit" id="btn-prn-submit" class="flex-1 h-10 px-3 rounded-lg bg-primary-container hover:bg-primary text-white text-xs font-bold flex items-center justify-center gap-1">
+                  <span class="material-symbols-outlined text-[16px]">add</span>
+                  <span id="btn-prn-label">Tambah</span>
+                </button>
+                <button type="button" id="btn-prn-cancel" class="hidden h-10 px-2.5 rounded-lg border border-outline-variant text-xs font-semibold hover:bg-surface-container-low">Batal</button>
+              </div>
+            </form>
+
+            <div id="admin-peran-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
           </div>
 
           <div>

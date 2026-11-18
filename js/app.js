@@ -42,6 +42,59 @@ window.AppUI = (function () {
     { kode: 'Hukum', nama: 'Kepaniteraan Hukum', badge: 'LOKET 3', deskripsi: 'Legalisasi surat kuasa, surat keterangan & salinan putusan.' },
     { kode: 'Umum', nama: 'Umum & Kesekretariatan', badge: 'LOKET 4', deskripsi: 'Surat masuk/keluar, kepegawaian & audiensi kedinasan.' }
   ];
+  const DEFAULT_PERAN_SIDANG = [
+    { nama: 'Penggugat', keterangan: 'Pihak Utama' },
+    { nama: 'Tergugat', keterangan: 'Instansi / Pejabat' },
+    { nama: 'Turut Tergugat', keterangan: 'Pihak Terkait' },
+    { nama: 'Kuasa Hukum', keterangan: 'Advokat / Jaksa TUN' },
+    { nama: 'Saksi', keterangan: 'Fakta / Kejadian' },
+    { nama: 'Ahli', keterangan: 'Keterangan Khusus' }
+  ];
+
+  function getPeranSidangList() {
+    const raw = state.boot && state.boot.pengaturan && state.boot.pengaturan.PERAN_SIDANG_JSON;
+    if (raw) {
+      try {
+        const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+        if (Array.isArray(parsed) && parsed.length) return parsed;
+      } catch (e) {}
+    }
+    return DEFAULT_PERAN_SIDANG.slice();
+  }
+
+  function renderKioskPeranPills() {
+    const box = document.getElementById('kiosk-peran-pills');
+    if (!box) return;
+    box.innerHTML = getPeranSidangList().map(function (p) {
+      return '<span class="px-3 py-1.5 rounded-lg bg-surface-container-low text-xs font-medium text-on-surface">' + esc(p.nama) + '</span>';
+    }).join('');
+  }
+
+  function renderSidangPeranGrid() {
+    const grid = document.getElementById('sidang-peran-grid');
+    if (!grid) return;
+    const list = getPeranSidangList();
+    const stillExists = list.some(function (p) { return p.nama === state.sidangPeran; });
+    if (!stillExists && list.length) {
+      state.sidangPeran = list[0].nama;
+    }
+
+    grid.innerHTML = list.map(function (p) {
+      const active = p.nama === state.sidangPeran;
+      return '<button type="button" data-peran="' + esc(p.nama) + '" class="peran-card p-3 rounded-xl border-2 text-left transition-all ' +
+        (active ? 'bg-primary-container text-white border-primary-container shadow-sm' : 'bg-surface-container-low/60 text-on-surface border-transparent hover:border-outline-variant') + '">' +
+        '<span class="block font-display font-bold text-sm">' + esc(p.nama) + '</span>' +
+        '<span class="block text-[11px] ' + (active ? 'opacity-80' : 'text-on-surface-variant') + '">' + esc(p.keterangan || 'Pihak Persidangan') + '</span>' +
+      '</button>';
+    }).join('');
+
+    grid.querySelectorAll('.peran-card').forEach(function (card) {
+      card.onclick = function () {
+        state.sidangPeran = card.getAttribute('data-peran');
+        renderSidangPeranGrid();
+      };
+    });
+  }
 
   function getLoketList() {
     const raw = state.boot && state.boot.pengaturan && state.boot.pengaturan.LOKET_PTSP_JSON;
@@ -324,6 +377,8 @@ window.AppUI = (function () {
 
     renderKioskLoketPills();
     renderPtspLoketGrid();
+    renderKioskPeranPills();
+    renderSidangPeranGrid();
     if (state.view === 'sidang') renderJadwalOptions();
     if (state.view === 'pantau') renderPantau();
   }
@@ -332,22 +387,11 @@ window.AppUI = (function () {
   // FORM REGISTRASI PTSP & SIDANG (TANPA NIK) + KAMERA TERKOMPRESI
   // ==========================================================================
   function initForms() {
-    // Render & pasang klik kartu Loket PTSP dinamis
+    // Render & pasang klik kartu Loket PTSP & Peran Sidang dinamis
     renderKioskLoketPills();
     renderPtspLoketGrid();
-
-    // Pilih Peran Sidang
-    document.querySelectorAll('.peran-card').forEach(function (card) {
-      card.onclick = function () {
-        state.sidangPeran = card.getAttribute('data-peran');
-        document.querySelectorAll('.peran-card').forEach(function (c) {
-          const active = c.getAttribute('data-peran') === state.sidangPeran;
-          c.className = active
-            ? 'peran-card p-3 rounded-xl border-2 text-left transition-all bg-primary-container text-white border-primary-container'
-            : 'peran-card p-3 rounded-xl border-2 text-left transition-all bg-surface-container-low/60 text-on-surface border-transparent hover:border-outline-variant';
-        });
-      };
-    });
+    renderKioskPeranPills();
+    renderSidangPeranGrid();
 
     // Pencarian Jadwal Sidang
     const cariPerkara = document.getElementById('sidang-cari-perkara');
@@ -1316,6 +1360,155 @@ window.AppUI = (function () {
 
     const btnCancelLkt = document.getElementById('btn-lkt-cancel');
     if (btnCancelLkt) btnCancelLkt.onclick = resetLoketForm;
+
+    // Kelola Sebutan Pihak / Peran Persidangan (Tambah / Edit / Batal)
+    const formPeran = document.getElementById('form-peran');
+    if (formPeran) {
+      formPeran.onsubmit = function (e) {
+        e.preventDefault();
+        const editIdx = Number(document.getElementById('prn-edit-idx').value);
+        const nama = document.getElementById('prn-nama').value.trim();
+        const keterangan = document.getElementById('prn-ket').value.trim();
+
+        if (!nama) {
+          toast('Sebutan pihak / peran wajib diisi.', 'warning');
+          return;
+        }
+
+        const list = getPeranSidangList().slice();
+        const dupIdx = list.findIndex(function (p, i) {
+          return i !== editIdx && String(p.nama).toLowerCase() === nama.toLowerCase();
+        });
+        if (dupIdx > -1) {
+          toast('Sebutan pihak "' + nama + '" sudah ada dalam daftar.', 'warning');
+          return;
+        }
+
+        const item = { nama: nama, keterangan: keterangan };
+        if (editIdx > -1 && editIdx < list.length) {
+          list[editIdx] = item;
+        } else {
+          list.push(item);
+        }
+
+        resetPeranForm();
+        savePeranList(list);
+      };
+    }
+
+    const btnCancelPrn = document.getElementById('btn-prn-cancel');
+    if (btnCancelPrn) btnCancelPrn.onclick = resetPeranForm;
+  }
+
+  function resetPeranForm() {
+    const f = document.getElementById('form-peran');
+    if (f) f.reset();
+    const idxEl = document.getElementById('prn-edit-idx');
+    if (idxEl) idxEl.value = '-1';
+    const lbl = document.getElementById('btn-prn-label');
+    if (lbl) lbl.textContent = 'Tambah';
+    const cancel = document.getElementById('btn-prn-cancel');
+    if (cancel) cancel.classList.add('hidden');
+  }
+
+  async function savePeranList(nextList) {
+    if (!nextList.length) {
+      toast('Minimal harus tersisa 1 sebutan pihak persidangan aktif.', 'warning');
+      return;
+    }
+    const prevRaw = state.boot && state.boot.pengaturan ? state.boot.pengaturan.PERAN_SIDANG_JSON : '';
+    if (!state.boot) state.boot = { pengaturan: {} };
+    if (!state.boot.pengaturan) state.boot.pengaturan = {};
+    state.boot.pengaturan.PERAN_SIDANG_JSON = JSON.stringify(nextList);
+    renderAdminPeranList();
+    renderKioskPeranPills();
+    renderSidangPeranGrid();
+
+    const res = await window.ApiClient.call('peran.simpan', { peranList: nextList });
+    if (res && res.success) {
+      toast(res.message || 'Sebutan pihak persidangan diperbarui.', 'success');
+      loadBootPublic(false);
+    } else {
+      state.boot.pengaturan.PERAN_SIDANG_JSON = prevRaw;
+      renderAdminPeranList();
+      renderKioskPeranPills();
+      renderSidangPeranGrid();
+      toast((res && res.message) || 'Gagal menyimpan sebutan pihak.', 'error');
+    }
+  }
+
+  function renderAdminPeranList() {
+    const box = document.getElementById('admin-peran-list');
+    const countEl = document.getElementById('admin-peran-count');
+    if (!box) return;
+    const list = getPeranSidangList();
+    if (countEl) countEl.textContent = list.length + ' Sebutan Aktif';
+
+    box.innerHTML = list.map(function (p, idx) {
+      return '<div class="p-3.5 rounded-xl bg-white border border-outline-variant/50 flex flex-col justify-between gap-2.5 shadow-sm">' +
+        '<div>' +
+          '<div class="font-display font-bold text-sm text-on-surface">' + esc(p.nama) + '</div>' +
+          '<div class="text-xs text-on-surface-variant mt-0.5">' + esc(p.keterangan || '-') + '</div>' +
+        '</div>' +
+        '<div class="pt-2 border-t border-outline-variant/30 flex items-center justify-between gap-2">' +
+          '<div class="flex items-center gap-1">' +
+            '<button type="button" data-prn-up="' + idx + '" ' + (idx === 0 ? 'disabled ' : '') + 'class="px-2 h-8 rounded-lg border border-outline-variant text-xs hover:bg-surface-container-low disabled:opacity-35" title="Geser Naik">↑</button>' +
+            '<button type="button" data-prn-down="' + idx + '" ' + (idx === list.length - 1 ? 'disabled ' : '') + 'class="px-2 h-8 rounded-lg border border-outline-variant text-xs hover:bg-surface-container-low disabled:opacity-35" title="Geser Turun">↓</button>' +
+          '</div>' +
+          '<div class="flex items-center gap-1.5">' +
+            '<button type="button" data-prn-edit="' + idx + '" class="px-3 h-8 rounded-lg border border-outline-variant hover:border-primary-container text-xs font-semibold">Edit</button>' +
+            '<button type="button" data-prn-del="' + idx + '" ' + (list.length <= 1 ? 'disabled ' : '') + 'class="px-3 h-8 rounded-lg text-xs font-semibold text-error hover:bg-error-container/40 disabled:opacity-35">Hapus</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+
+    box.querySelectorAll('[data-prn-edit]').forEach(function (b) {
+      b.onclick = function () {
+        const i = Number(b.getAttribute('data-prn-edit'));
+        const item = list[i];
+        if (!item) return;
+        document.getElementById('prn-edit-idx').value = String(i);
+        document.getElementById('prn-nama').value = item.nama || '';
+        document.getElementById('prn-ket').value = item.keterangan || '';
+        document.getElementById('btn-prn-label').textContent = 'Simpan';
+        document.getElementById('btn-prn-cancel').classList.remove('hidden');
+        document.getElementById('prn-nama').focus();
+      };
+    });
+
+    box.querySelectorAll('[data-prn-del]').forEach(function (b) {
+      b.onclick = function () {
+        const i = Number(b.getAttribute('data-prn-del'));
+        if (list.length <= 1) {
+          toast('Minimal harus tersisa 1 sebutan pihak persidangan.', 'warning');
+          return;
+        }
+        const next = list.filter(function (_, idx) { return idx !== i; });
+        resetPeranForm();
+        savePeranList(next);
+      };
+    });
+
+    box.querySelectorAll('[data-prn-up]').forEach(function (b) {
+      b.onclick = function () {
+        const i = Number(b.getAttribute('data-prn-up'));
+        if (i <= 0) return;
+        const next = list.slice();
+        const tmp = next[i - 1]; next[i - 1] = next[i]; next[i] = tmp;
+        savePeranList(next);
+      };
+    });
+
+    box.querySelectorAll('[data-prn-down]').forEach(function (b) {
+      b.onclick = function () {
+        const i = Number(b.getAttribute('data-prn-down'));
+        if (i >= list.length - 1) return;
+        const next = list.slice();
+        const tmp = next[i + 1]; next[i + 1] = next[i]; next[i] = tmp;
+        savePeranList(next);
+      };
+    });
   }
 
   function resetLoketForm() {
@@ -1490,7 +1683,13 @@ window.AppUI = (function () {
       if (!state.boot.pengaturan) state.boot.pengaturan = {};
       state.boot.pengaturan.LOKET_PTSP_JSON = p.LOKET_PTSP_JSON;
     }
+    if (p.PERAN_SIDANG_JSON) {
+      if (!state.boot) state.boot = { pengaturan: {} };
+      if (!state.boot.pengaturan) state.boot.pengaturan = {};
+      state.boot.pengaturan.PERAN_SIDANG_JSON = p.PERAN_SIDANG_JSON;
+    }
     renderAdminLoketList();
+    renderAdminPeranList();
 
     applyMaskedSecrets(res.data.rahasia || {});
 

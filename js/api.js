@@ -222,6 +222,14 @@ window.ApiClient = (function () {
             { kode: 'Informasi', nama: 'Informasi & Posbakum', badge: 'LOKET 2', deskripsi: 'Informasi publik, PPID & layanan konsultasi hukum.' },
             { kode: 'Hukum', nama: 'Kepaniteraan Hukum', badge: 'LOKET 3', deskripsi: 'Legalisasi surat kuasa, surat keterangan & salinan putusan.' },
             { kode: 'Umum', nama: 'Umum & Kesekretariatan', badge: 'LOKET 4', deskripsi: 'Surat masuk/keluar, kepegawaian & audiensi kedinasan.' }
+          ]),
+          PERAN_SIDANG_JSON: JSON.stringify([
+            { nama: 'Penggugat', keterangan: 'Pihak Utama' },
+            { nama: 'Tergugat', keterangan: 'Instansi / Pejabat' },
+            { nama: 'Turut Tergugat', keterangan: 'Pihak Terkait' },
+            { nama: 'Kuasa Hukum', keterangan: 'Advokat / Jaksa TUN' },
+            { nama: 'Saksi', keterangan: 'Fakta / Kejadian' },
+            { nama: 'Ahli', keterangan: 'Keterangan Khusus' }
           ])
         },
         jadwal: [
@@ -672,6 +680,13 @@ window.ApiClient = (function () {
         db.pengaturan.LOKET_PTSP_JSON = JSON.stringify(list);
         saveDb(db);
         return { success: true, data: list, message: 'Daftar loket layanan PTSP berhasil diperbarui (' + list.length + ' loket).' };
+      }
+      if (action === 'peran.simpan') {
+        const list = Array.isArray(data.peranList) ? data.peranList : [];
+        if (!list.length) return { success: false, message: 'Minimal harus ada 1 sebutan pihak aktif.' };
+        db.pengaturan.PERAN_SIDANG_JSON = JSON.stringify(list);
+        saveDb(db);
+        return { success: true, data: list, message: 'Daftar sebutan pihak berhasil diperbarui (' + list.length + ' peran).' };
       }
       if (action === 'rahasia.simpan') return { success: true, data: { WA_GATEWAY_TOKEN: { ada: true, samar: 'DEMO••••••XYZ' } }, message: 'Rahasia disimpan (Simulasi).' };
       if (action === 'printer.simpan') { db.printer = data; saveDb(db); return { success: true, data: db.printer, message: 'Printer disimpan.' }; }
