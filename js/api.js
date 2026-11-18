@@ -541,6 +541,25 @@ window.ApiClient = (function () {
       }
 
       if (action === 'auth.logout') return { success: true, data: null };
+      if (action === 'auth.gantiSandi') {
+        if (!data.pinLama || !data.pinBaru || String(data.pinBaru).length < 4) {
+          return { success: false, message: 'Password lama wajib diisi dan password baru minimal 4 karakter.' };
+        }
+        const curName = String(token || '').replace('DEMO_TOKEN_', '');
+        const found = db.users.find(function (x) { return x.Username === curName; }) || db.users[0];
+        if (data.namaBaru && found) {
+          found.Nama_Petugas = String(data.namaBaru).trim();
+          saveDb(db);
+        }
+        return {
+          success: true,
+          data: {
+            token: 'DEMO_TOKEN_' + found.Username,
+            user: { username: found.Username, role: found.Role, nama: found.Nama_Petugas, darurat: false }
+          },
+          message: 'Profil & Password berhasil diperbarui (Simulasi)!'
+        };
+      }
       if (action === 'panggilBantuan') return { success: true, data: { timestamp: new Date().toISOString() }, message: 'Petugas dipanggil (Simulasi).' };
 
       if (action === 'verifikasi') {

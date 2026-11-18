@@ -1192,6 +1192,52 @@
     </div>
   </div>
 
+  <!-- MODAL PROFIL & GANTI PASSWORD / PIN -->
+  <div id="modal-profil" class="hidden fixed inset-0 z-[91] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-outline-variant/40">
+      <div class="bg-primary-container text-white px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <span class="material-symbols-outlined text-secondary-fixed">manage_accounts</span>
+          <div>
+            <h3 class="font-display font-bold text-base leading-tight">Profil &amp; Ubah Password</h3>
+            <p id="profil-sub-info" class="text-[11px] text-primary-fixed-dim leading-none mt-0.5">-</p>
+          </div>
+        </div>
+        <button type="button" id="btn-close-profil" class="p-1 rounded-lg hover:bg-white/10"><span class="material-symbols-outlined">close</span></button>
+      </div>
+      <form id="form-profil" class="p-6 flex flex-col gap-3.5">
+        <div id="profil-nama-wrap">
+          <label for="profil-nama" class="block text-xs font-semibold mb-1">Nama Tampilan</label>
+          <input id="profil-nama" type="text" maxlength="80" placeholder="Nama Petugas" class="w-full h-10 px-3.5 rounded-xl border border-outline-variant text-sm" />
+        </div>
+        <div>
+          <label for="profil-pin-lama" class="block text-xs font-semibold mb-1">Password / PIN Saat Ini <span class="text-error">*</span></label>
+          <input id="profil-pin-lama" type="password" required placeholder="Masukkan password/PIN saat ini" class="w-full h-10 px-3.5 rounded-xl border border-outline-variant text-sm" />
+        </div>
+        <div>
+          <label for="profil-pin-baru" class="block text-xs font-semibold mb-1">Password / PIN Baru <span class="text-error">*</span></label>
+          <input id="profil-pin-baru" type="password" required minlength="4" placeholder="Minimal 4 karakter (8 untuk akun darurat)" class="w-full h-10 px-3.5 rounded-xl border border-outline-variant text-sm" />
+        </div>
+        <div>
+          <label for="profil-pin-konf" class="block text-xs font-semibold mb-1">Konfirmasi Password / PIN Baru <span class="text-error">*</span></label>
+          <input id="profil-pin-konf" type="password" required minlength="4" placeholder="Ulangi password/PIN baru" class="w-full h-10 px-3.5 rounded-xl border border-outline-variant text-sm" />
+        </div>
+        <label class="inline-flex items-center gap-2 text-xs text-on-surface-variant cursor-pointer select-none">
+          <input id="profil-show-pw" type="checkbox" class="rounded border-outline-variant" />
+          Tampilkan karakter password
+        </label>
+        <p id="profil-err" class="hidden text-xs text-error font-semibold"></p>
+        <button type="submit" id="btn-profil-save" class="h-11 rounded-xl bg-primary-container hover:bg-primary text-white font-bold text-sm mt-1">Simpan Password Baru</button>
+      </form>
+      <div class="px-6 pb-5 pt-3 border-t border-outline-variant/40 bg-surface-container-low/40 flex items-center justify-between gap-3">
+        <span class="text-xs text-on-surface-variant">Selesai bertugas di perangkat ini?</span>
+        <button type="button" id="btn-profil-logout" class="px-4 h-9 rounded-xl border border-error text-error hover:bg-error-container/50 text-xs font-bold flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[16px]">logout</span> Keluar / Logout
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL KAMERA WEBCAM -->
   <div id="modal-kamera" class="hidden fixed inset-0 z-[95] bg-slate-900/75 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">

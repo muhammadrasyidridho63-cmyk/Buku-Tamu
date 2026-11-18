@@ -348,8 +348,8 @@ window.AppUI = (function () {
       initEl.textContent = (u.nama || u.username || 'P').charAt(0).toUpperCase();
       nameEl.textContent = u.nama || u.username;
       roleEl.textContent = u.role + ' (Aktif)';
-      iconEl.textContent = 'logout';
-      document.getElementById('btn-auth-chip').title = 'Klik untuk Logout';
+      iconEl.textContent = 'manage_accounts';
+      document.getElementById('btn-auth-chip').title = 'Profil, Ubah Password & Logout';
     } else {
       initEl.textContent = 'T';
       nameEl.textContent = 'Mode Kiosk';
@@ -2116,18 +2116,111 @@ window.AppUI = (function () {
     state.pendingRedirectView = null;
   }
 
+  function openProfilModal() {
+    const u = window.ApiClient.getUser();
+    if (!u) return openLoginModal();
+    document.getElementById('form-profil').reset();
+    document.getElementById('profil-err').classList.add('hidden');
+    document.getElementById('profil-sub-info').textContent = '@' + u.username + ' • ' + u.role + (u.darurat ? ' (Akses Darurat)' : '');
+    const namaWrap = document.getElementById('profil-nama-wrap');
+    const namaInp = document.getElementById('profil-nama');
+    if (namaWrap && namaInp) {
+      namaWrap.classList.toggle('hidden', !!u.darurat);
+      namaInp.value = u.nama || '';
+    }
+    ['profil-pin-lama', 'profil-pin-baru', 'profil-pin-konf'].forEach(function (id) {
+      const el = document.getElementById(id);
+      if (el) el.type = 'password';
+    });
+    document.getElementById('modal-profil').classList.remove('hidden');
+    document.getElementById('profil-pin-lama').focus();
+  }
+
+  function closeProfilModal() {
+    document.getElementById('modal-profil').classList.add('hidden');
+  }
+
   function initModals() {
-    document.getElementById('btn-auth-chip').onclick = async function () {
+    document.getElementById('btn-auth-chip').onclick = function () {
       const u = window.ApiClient.getUser();
       if (u) {
-        await window.ApiClient.call('auth.logout', {});
-        window.ApiClient.setSession('', null);
-        updateAuthChip();
-        toast('Berhasil keluar dari sesi petugas.', 'info');
-        if (state.view === 'pantau' || state.view === 'dashboard') goView('kiosk');
+        openProfilModal();
       } else {
         openLoginModal();
       }
+    };
+
+    document.getElementById('btn-close-profil').onclick = closeProfilModal;
+
+    const showPwCb = document.getElementById('profil-show-pw');
+    if (showPwCb) {
+      showPwCb.onchange = function () {
+        const t = showPwCb.checked ? 'text' : 'password';
+        ['profil-pin-lama', 'profil-pin-baru', 'profil-pin-konf'].forEach(function (id) {
+          const el = document.getElementById(id);
+          if (el) el.type = t;
+        });
+      };
+    }
+
+    document.getElementById('btn-profil-logout').onclick = async function () {
+      closeProfilModal();
+      await window.ApiClient.call('auth.logout', {});
+      window.ApiClient.setSession('', null);
+      updateAuthChip();
+      toast('Berhasil keluar dari sesi petugas.', 'info');
+      if (state.view === 'pantau' || state.view === 'dashboard') goView('kiosk');
+    };
+
+    document.getElementById('form-profil').onsubmit = async function (e) {
+      e.preventDefault();
+      const errEl = document.getElementById('profil-err');
+      errEl.classList.add('hidden');
+
+      const namaBaru = document.getElementById('profil-nama').value.trim();
+      const pinLama = document.getElementById('profil-pin-lama').value.trim();
+      const pinBaru = document.getElementById('profil-pin-baru').value.trim();
+      const konf = document.getElementById('profil-pin-konf').value.trim();
+      const u = window.ApiClient.getUser();
+      const minLen = (u && u.darurat) ? 8 : 4;
+
+      if (pinBaru.length < minLen) {
+        errEl.textContent = 'Password / PIN baru minimal ' + minLen + ' karakter.';
+        errEl.classList.remove('hidden');
+        return;
+      }
+      if (pinBaru !== konf) {
+        errEl.textContent = 'Konfirmasi Password / PIN baru tidak cocok.';
+        errEl.classList.remove('hidden');
+        return;
+      }
+
+      const btn = document.getElementById('btn-profil-save');
+      btn.disabled = true;
+      btn.textContent = 'Menyimpan...';
+
+      const res = await window.ApiClient.call('auth.gantiSandi', {
+        namaBaru: namaBaru,
+        pinLama: pinLama,
+        pinBaru: pinBaru,
+        konfirmasiPin: konf
+      });
+
+      btn.disabled = false;
+      btn.textContent = 'Simpan Password Baru';
+
+      if (!res || !res.success) {
+        errEl.textContent = (res && res.message) || 'Gagal memperbarui password.';
+        errEl.classList.remove('hidden');
+        return;
+      }
+
+      if (res.data && res.data.token && res.data.user) {
+        window.ApiClient.setSession(res.data.token, res.data.user);
+        updateAuthChip();
+      }
+      closeProfilModal();
+      toast(res.message || 'Password berhasil diperbarui!', 'success');
     };
 
     document.getElementById('btn-close-login').onclick = closeLoginModal;
