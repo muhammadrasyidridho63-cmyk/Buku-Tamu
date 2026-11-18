@@ -78,7 +78,7 @@
     <div class="h-16 w-full max-w-[1440px] mx-auto px-4 sm:px-6 flex items-center justify-between gap-3">
       <!-- Brand / Emblem -->
       <button type="button" data-nav="kiosk" class="flex items-center gap-3 shrink-0 text-left">
-        <div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center border border-secondary-fixed/40 shadow-inner">
+        <div id="nav-logo-box" class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center border border-secondary-fixed/40 shadow-inner overflow-hidden shrink-0">
           <svg class="w-6 h-6 text-secondary-fixed" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3zm-1 14H8v-2h3v2zm0-4H8V8h3v4zm5 4h-3v-6h3v6z"/>
           </svg>
@@ -632,7 +632,7 @@
         <!-- Perforated Digital Ticket Card -->
         <div class="ticket-perforated bg-white rounded-2xl shadow-xl border border-outline-variant/40 overflow-hidden">
           <div class="p-6 text-center border-b border-dashed border-outline-variant">
-            <div class="w-11 h-11 mx-auto rounded-full bg-primary-container text-secondary-fixed flex items-center justify-center mb-2">
+            <div id="tkt-logo-box" class="w-12 h-12 mx-auto rounded-full bg-primary-container text-secondary-fixed flex items-center justify-center mb-2 overflow-hidden">
               <span class="material-symbols-outlined">account_balance</span>
             </div>
             <h2 id="tkt-satker-nama" class="font-display font-bold text-sm text-on-surface uppercase tracking-wide">PENGADILAN TATA USAHA NEGARA</h2>
@@ -994,6 +994,39 @@
 
         <!-- TAB 4: PENGATURAN, PRINTER & EDITOR TEMPLATE -->
         <div id="atab-pengaturan" class="atab-pane hidden p-5 flex flex-col gap-6">
+          <!-- PENGATURAN LOGO PENGADILAN / INSTANSI -->
+          <form id="form-logo" class="p-5 rounded-xl bg-surface-container-low/60 border border-outline-variant/50 flex flex-col md:flex-row items-start md:items-center gap-5">
+            <div class="flex items-center gap-4 shrink-0">
+              <div id="cfg-logo-preview" class="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center border-2 border-secondary-fixed/50 shadow-inner overflow-hidden shrink-0">
+                <svg class="w-8 h-8 text-secondary-fixed" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3zm-1 14H8v-2h3v2zm0-4H8V8h3v4zm5 4h-3v-6h3v6z"/>
+                </svg>
+              </div>
+              <div>
+                <h3 class="font-display font-bold text-sm text-on-surface">Logo Pengadilan / Instansi</h3>
+                <p class="text-xs text-on-surface-variant mt-0.5">Tampil di bilah atas aplikasi, Tiket Digital, &amp; ikon tab browser. Disarankan PNG transparan.</p>
+              </div>
+            </div>
+            <div class="flex-1 w-full grid grid-cols-1 sm:grid-cols-12 gap-2.5 items-end">
+              <div class="sm:col-span-4">
+                <label class="block text-[11px] font-semibold text-outline uppercase mb-1">Unggah File Logo</label>
+                <label class="h-10 px-3 rounded-lg border border-dashed border-primary-container bg-white hover:bg-surface-container-low text-xs font-semibold text-primary-container flex items-center justify-center gap-1.5 cursor-pointer">
+                  <span class="material-symbols-outlined text-[16px]">upload</span>
+                  <span id="cfg-logo-file-label">Pilih PNG / JPG</span>
+                  <input id="cfg-logo-file" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" class="hidden" />
+                </label>
+              </div>
+              <div class="sm:col-span-5">
+                <label class="block text-[11px] font-semibold text-outline uppercase mb-1">Atau Tempel URL Gambar</label>
+                <input id="cfg-logo-url" type="url" placeholder="https://.../logo-ptun.png" class="w-full h-10 px-3 rounded-lg border border-outline-variant bg-white text-xs" />
+              </div>
+              <div class="sm:col-span-3 flex gap-1.5">
+                <button type="submit" id="btn-logo-save" class="flex-1 h-10 px-3 rounded-lg bg-primary-container hover:bg-primary text-white text-xs font-bold">Simpan Logo</button>
+                <button type="button" id="btn-logo-reset" class="h-10 px-2.5 rounded-lg border border-outline-variant bg-white hover:bg-error-container/40 text-error text-xs font-semibold" title="Kembalikan Logo Bawaan">Reset</button>
+              </div>
+            </div>
+          </form>
+
           <form id="form-pengaturan" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-4 rounded-xl bg-surface-container-low/60 border border-outline-variant/40">
             <div><label class="block text-xs font-semibold mb-1">Nama Pengadilan (Satuan Kerja)</label><input id="cfg-nama" type="text" required placeholder="Contoh: PENGADILAN TATA USAHA NEGARA PALEMBANG" class="w-full h-10 px-3 rounded-lg border border-outline-variant bg-white text-sm" /></div>
             <div><label class="block text-xs font-semibold mb-1">Alamat Satuan Kerja</label><input id="cfg-alamat" type="text" class="w-full h-10 px-3 rounded-lg border border-outline-variant bg-white text-sm" /></div>

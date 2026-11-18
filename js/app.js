@@ -31,7 +31,8 @@ window.AppUI = (function () {
     charts: { tren: null, dist: null },
     pendingRedirectView: null,
     camTarget: null,
-    camStream: null
+    camStream: null,
+    pendingLogoBase64: ''
   };
 
   const BULAN = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
@@ -391,6 +392,53 @@ window.AppUI = (function () {
     document.title = 'SI-BUKU TAMU — ' + clean;
   }
 
+  const DEFAULT_LOGO_SVG = '<svg class="w-6 h-6 text-secondary-fixed" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3zm-1 14H8v-2h3v2zm0-4H8V8h3v4zm5 4h-3v-6h3v6z"/></svg>';
+
+  function applySatkerLogo(url) {
+    const clean = String(url || '').trim();
+    if (state.boot && state.boot.pengaturan) {
+      state.boot.pengaturan.LOGO_URL = clean;
+    }
+
+    const navBox = document.getElementById('nav-logo-box');
+    const tktBox = document.getElementById('tkt-logo-box');
+    const prevBox = document.getElementById('cfg-logo-preview');
+    const urlInp = document.getElementById('cfg-logo-url');
+
+    if (urlInp && document.activeElement !== urlInp) {
+      urlInp.value = clean.indexOf('data:image') === 0 ? '' : clean;
+    }
+
+    if (clean) {
+      const renderImg = function (box, fallbackHtml) {
+        if (!box) return;
+        box.innerHTML = '';
+        const img = document.createElement('img');
+        img.src = clean;
+        img.alt = 'Logo Pengadilan';
+        img.className = 'w-full h-full object-contain p-1';
+        img.onerror = function () { box.innerHTML = fallbackHtml; };
+        box.appendChild(img);
+      };
+      renderImg(navBox, DEFAULT_LOGO_SVG);
+      renderImg(prevBox, DEFAULT_LOGO_SVG);
+      renderImg(tktBox, '<span class="material-symbols-outlined">account_balance</span>');
+
+      // Update favicon
+      let fav = document.querySelector('link[rel="icon"]');
+      if (!fav) {
+        fav = document.createElement('link');
+        fav.rel = 'icon';
+        document.head.appendChild(fav);
+      }
+      fav.href = clean;
+    } else {
+      if (navBox) navBox.innerHTML = DEFAULT_LOGO_SVG;
+      if (prevBox) prevBox.innerHTML = DEFAULT_LOGO_SVG;
+      if (tktBox) tktBox.innerHTML = '<span class="material-symbols-outlined">account_balance</span>';
+    }
+  }
+
   function applyBootData(d) {
     state.boot = d;
     const cfg = d.pengaturan || {};
@@ -400,6 +448,7 @@ window.AppUI = (function () {
     if (cfg.NAMA_SATKER) {
       applySatkerName(cfg.NAMA_SATKER);
     }
+    applySatkerLogo(cfg.LOGO_URL || '');
     if (cfg.JAM_LAYANAN) {
       const jl = document.getElementById('kiosk-jam-layanan');
       if (jl) jl.textContent = cfg.JAM_LAYANAN;
@@ -1505,6 +1554,102 @@ window.AppUI = (function () {
 
     const btnCancelRng = document.getElementById('btn-rng-cancel');
     if (btnCancelRng) btnCancelRng.onclick = resetRuangForm;
+
+    // Pengaturan Logo Pengadilan (Upload file terkompresi / URL / Reset)
+    const fileLogo = document.getElementById('cfg-logo-file');
+    if (fileLogo) {
+      fileLogo.onchange = function () {
+        const f = fileLogo.files && fileLogo.files[0];
+        if (!f) return;
+        const lbl = document.getElementById('cfg-logo-file-label');
+        if (lbl) lbl.textContent = f.name.slice(0, 18);
+
+        const reader = new FileReader();
+        reader.onload = function (ev) {
+          const src = ev.target.result;
+          if (f.type === 'image/svg+xml') {
+            state.pendingLogoBase64 = src;
+            applySatkerLogo(src);
+            return;
+          }
+          const img = new Image();
+          img.onload = function () {
+            const maxDim = 256;
+            const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+            const canvas = document.createElement('canvas');
+            canvas.width = Math.max(1, Math.round(img.width * scale));
+            canvas.height = Math.max(1, Math.round(img.height * scale));
+            canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+            const pngData = canvas.toDataURL('image/png');
+            state.pendingLogoBase64 = pngData;
+            applySatkerLogo(pngData);
+          };
+          img.src = src;
+        };
+        reader.readAsDataURL(f);
+      };
+    }
+
+    const formLogo = document.getElementById('form-logo');
+    if (formLogo) {
+      formLogo.onsubmit = async function (e) {
+        e.preventDefault();
+        const urlVal = document.getElementById('cfg-logo-url').value.trim();
+        const b64Val = state.pendingLogoBase64 || '';
+        if (!b64Val && !urlVal) {
+          toast('Pilih file gambar logo atau masukkan URL gambar terlebih dahulu.', 'warning');
+          return;
+        }
+        const btn = document.getElementById('btn-logo-save');
+        btn.disabled = true;
+        btn.textContent = 'Menyimpan...';
+
+        const prevUrl = (state.boot && state.boot.pengaturan && state.boot.pengaturan.LOGO_URL) || '';
+        applySatkerLogo(b64Val || urlVal);
+
+        const res = await window.ApiClient.call('logo.simpan', {
+          logoBase64: b64Val,
+          logoUrl: urlVal
+        });
+
+        btn.disabled = false;
+        btn.textContent = 'Simpan Logo';
+
+        if (res && res.success && res.data) {
+          state.pendingLogoBase64 = '';
+          if (fileLogo) fileLogo.value = '';
+          const lbl = document.getElementById('cfg-logo-file-label');
+          if (lbl) lbl.textContent = 'Pilih PNG / JPG';
+          applySatkerLogo(res.data.LOGO_URL || '');
+          toast(res.message || 'Logo berhasil diperbarui!', 'success');
+          loadBootPublic(false);
+        } else {
+          applySatkerLogo(prevUrl);
+          toast((res && res.message) || 'Gagal menyimpan logo.', 'error');
+        }
+      };
+    }
+
+    const btnResetLogo = document.getElementById('btn-logo-reset');
+    if (btnResetLogo) {
+      btnResetLogo.onclick = async function () {
+        const prevUrl = (state.boot && state.boot.pengaturan && state.boot.pengaturan.LOGO_URL) || '';
+        state.pendingLogoBase64 = '';
+        if (fileLogo) fileLogo.value = '';
+        const lbl = document.getElementById('cfg-logo-file-label');
+        if (lbl) lbl.textContent = 'Pilih PNG / JPG';
+        applySatkerLogo('');
+
+        const res = await window.ApiClient.call('logo.simpan', { reset: true });
+        if (res && res.success) {
+          toast(res.message || 'Logo dikembalikan ke bawaan.', 'success');
+          loadBootPublic(false);
+        } else {
+          applySatkerLogo(prevUrl);
+          toast((res && res.message) || 'Gagal mereset logo.', 'error');
+        }
+      };
+    }
   }
 
   function resetRuangForm() {
@@ -1895,6 +2040,7 @@ window.AppUI = (function () {
     document.getElementById('cfg-jam').value = p.JAM_LAYANAN || '';
     document.getElementById('cfg-kaki').value = p.CATATAN_KAKI_STRUK || '';
     if (p.NAMA_SATKER) applySatkerName(p.NAMA_SATKER);
+    applySatkerLogo(p.LOGO_URL || '');
     if (p.LOKET_PTSP_JSON) {
       if (!state.boot) state.boot = { pengaturan: {} };
       if (!state.boot.pengaturan) state.boot.pengaturan = {};

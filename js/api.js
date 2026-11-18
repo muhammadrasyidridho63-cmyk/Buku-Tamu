@@ -236,7 +236,8 @@ window.ApiClient = (function () {
             { nama: 'Ruang Sidang II (Tirta)', keterangan: 'Lantai 1' },
             { nama: 'Ruang Sidang III (Candra)', keterangan: 'Lantai 2' },
             { nama: 'Ruang Pemeriksaan Persiapan / Mediasi', keterangan: 'Lantai 1' }
-          ])
+          ]),
+          LOGO_URL: ''
         },
         jadwal: [
           { ID_Jadwal: 'JDW-01', Tanggal: ymd, Nomor_Perkara: '24/G/2026/PTUN.PLG', Ruang_Sidang: 'Ruang Sidang Utama (Kartika)', Agenda: 'Pembuktian Surat & Saksi Penggugat', Status_Jadwal: 'Aktif' },
@@ -701,6 +702,18 @@ window.ApiClient = (function () {
         db.pengaturan.RUANG_SIDANG_JSON = JSON.stringify(list);
         saveDb(db);
         return { success: true, data: list, message: 'Daftar ruang sidang berhasil diperbarui (' + list.length + ' ruang).' };
+      }
+      if (action === 'logo.simpan') {
+        if (data.reset) {
+          db.pengaturan.LOGO_URL = '';
+          saveDb(db);
+          return { success: true, data: { LOGO_URL: '' }, message: 'Logo dikembalikan ke lambang bawaan.' };
+        }
+        const val = data.logoBase64 || data.logoUrl || '';
+        if (!val) return { success: false, message: 'Unggah file gambar atau masukkan URL logo.' };
+        db.pengaturan.LOGO_URL = val;
+        saveDb(db);
+        return { success: true, data: { LOGO_URL: val }, message: 'Logo pengadilan berhasil diperbarui!' };
       }
       if (action === 'rahasia.simpan') return { success: true, data: { WA_GATEWAY_TOKEN: { ada: true, samar: 'DEMO••••••XYZ' } }, message: 'Rahasia disimpan (Simulasi).' };
       if (action === 'printer.simpan') { db.printer = data; saveDb(db); return { success: true, data: db.printer, message: 'Printer disimpan.' }; }
