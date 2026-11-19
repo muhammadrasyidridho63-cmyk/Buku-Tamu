@@ -311,6 +311,39 @@ window.AppUI = (function () {
         : 'nav-pill-mob shrink-0 px-3 py-1 rounded-lg text-xs font-semibold text-primary-fixed-dim';
     });
 
+    // Update active state nav side buttons (Sidebar / Menu ke samping)
+    document.querySelectorAll('.nav-side-btn').forEach(function (b) {
+      const active = b.getAttribute('data-nav') === target;
+      b.className = active
+        ? 'nav-side-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-secondary-container text-on-secondary-fixed shadow-md transition-all text-left'
+        : 'nav-side-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-primary-fixed-dim hover:text-white hover:bg-white/10 transition-all text-left group';
+
+      const icon = b.querySelector('.material-symbols-outlined');
+      if (icon) {
+        icon.className = active
+          ? 'material-symbols-outlined text-[20px] text-on-secondary-fixed'
+          : 'material-symbols-outlined text-[20px] text-secondary-fixed group-hover:scale-110 transition-transform';
+      }
+    });
+
+    // Update topbar title
+    const titleMap = {
+      kiosk: 'Beranda',
+      ptsp: 'Registrasi PTSP',
+      sidang: 'Registrasi Sidang',
+      tiket: 'Tiket Digital',
+      pantau: 'Layar Pantau Petugas',
+      dashboard: 'Dashboard & Laporan'
+    };
+    const topTitle = document.getElementById('topbar-view-title');
+    if (topTitle) {
+      topTitle.innerHTML = '<span>' + (titleMap[target] || 'Beranda') + '</span>';
+    }
+
+    if (window.innerWidth < 1024) {
+      closeSidebarMobile();
+    }
+
     if (target === 'sidang') renderJadwalOptions();
     if (target === 'tiket') renderTiketView();
     if (target === 'pantau') loadPantauData(true);
@@ -386,7 +419,7 @@ window.AppUI = (function () {
     if (state.boot && state.boot.pengaturan) {
       state.boot.pengaturan.NAMA_SATKER = clean;
     }
-    ['hero-satker-name', 'nav-satker-subtitle', 'dash-satker-name', 'footer-satker-name', 'tkt-satker-nama'].forEach(function (id) {
+    ['hero-satker-name', 'nav-satker-subtitle', 'sidebar-satker-subtitle', 'dash-satker-name', 'footer-satker-name', 'tkt-satker-nama'].forEach(function (id) {
       const el = document.getElementById(id);
       if (el) el.textContent = clean;
     });
@@ -406,6 +439,7 @@ window.AppUI = (function () {
     }
 
     const navBox = document.getElementById('nav-logo-box');
+    const sideBox = document.getElementById('sidebar-logo-box');
     const tktBox = document.getElementById('tkt-logo-box');
     const prevBox = document.getElementById('cfg-logo-preview');
     const urlInp = document.getElementById('cfg-logo-url');
@@ -426,6 +460,7 @@ window.AppUI = (function () {
         box.appendChild(img);
       };
       renderImg(navBox, DEFAULT_LOGO_SVG);
+      renderImg(sideBox, DEFAULT_LOGO_SVG);
       renderImg(prevBox, DEFAULT_LOGO_SVG);
       renderImg(tktBox, '<span class="material-symbols-outlined">account_balance</span>');
 
@@ -439,6 +474,7 @@ window.AppUI = (function () {
       fav.href = clean;
     } else {
       if (navBox) navBox.innerHTML = DEFAULT_LOGO_SVG;
+      if (sideBox) sideBox.innerHTML = DEFAULT_LOGO_SVG;
       if (prevBox) prevBox.innerHTML = DEFAULT_LOGO_SVG;
       if (tktBox) tktBox.innerHTML = '<span class="material-symbols-outlined">account_balance</span>';
     }
@@ -3086,6 +3122,42 @@ window.AppUI = (function () {
     schedule();
   }
 
+  function initSidebar() {
+    const btnToggle = document.getElementById('btn-toggle-sidebar');
+    const btnClose = document.getElementById('btn-close-sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    const sidebar = document.getElementById('app-sidebar');
+
+    if (btnToggle) {
+      btnToggle.onclick = function () {
+        if (window.innerWidth >= 1024) {
+          document.body.classList.toggle('sidebar-collapsed');
+        } else {
+          if (sidebar) sidebar.classList.remove('-translate-x-full');
+          if (overlay) overlay.classList.remove('hidden');
+        }
+      };
+    }
+
+    if (btnClose) {
+      btnClose.onclick = closeSidebarMobile;
+    }
+    if (overlay) {
+      overlay.onclick = closeSidebarMobile;
+    }
+  }
+
+  function closeSidebarMobile() {
+    const sidebar = document.getElementById('app-sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    if (sidebar && window.innerWidth < 1024) {
+      sidebar.classList.add('-translate-x-full');
+    }
+    if (overlay) {
+      overlay.classList.add('hidden');
+    }
+  }
+
   // ==========================================================================
   // INIT
   // ==========================================================================
@@ -3097,6 +3169,7 @@ window.AppUI = (function () {
 
     startClock();
     updateAuthChip();
+    initSidebar();
     initForms();
     initAdminTabs();
     initModals();

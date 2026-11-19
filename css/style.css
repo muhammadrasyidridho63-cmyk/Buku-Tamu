@@ -95,6 +95,30 @@ textarea:focus-visible {
 }
 
 /* ==========================================================================
+   SIDEBAR NAVIGATION (MENU KE SAMPING) & RESPONSIVE LAYOUT
+   ========================================================================== */
+#app-sidebar {
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (min-width: 1024px) {
+  body:not(.sidebar-collapsed) #app-sidebar {
+    transform: translateX(0) !important;
+  }
+  body.sidebar-collapsed #app-sidebar {
+    transform: translateX(-100%) !important;
+  }
+  body:not(.sidebar-collapsed) header,
+  body:not(.sidebar-collapsed) #main-content {
+    padding-left: 16rem !important; /* 64 = 16rem */
+  }
+  body.sidebar-collapsed header,
+  body.sidebar-collapsed #main-content {
+    padding-left: 0 !important;
+  }
+}
+
+/* ==========================================================================
    PRINT MEDIA: Cetak Struk Thermal (58mm/80mm) vs Cetak Laporan Rekap PDF
    ========================================================================== */
 @media print {
