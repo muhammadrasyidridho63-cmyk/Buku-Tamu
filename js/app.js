@@ -250,6 +250,23 @@ window.AppUI = (function () {
   }
 
   // ==========================================================================
+  // HELPER PERAN PETURGAS & MODE TATA LETAK (DUAL-MODE)
+  // - Admin, Petugas PTSP, Petugas Sidang (Panitera), Satpam => Menu Samping (Sidebar) di SEMUA halaman
+  // - Pengunjung Publik (Belum Login / Kiosk) => Menu Atas (Horizontal Navbar)
+  // ==========================================================================
+  function isStaffLoggedIn() {
+    const u = window.ApiClient.getUser();
+    if (!u) return false;
+    const staffRoles = ['Admin', 'PTSP', 'Panitera', 'Satpam'];
+    return staffRoles.indexOf(u.role) > -1 || u.username === 'admin' || !!u.role;
+  }
+
+  function updateLayoutMode() {
+    const isStaff = isStaffLoggedIn();
+    document.body.classList.toggle('is-staff-view', isStaff);
+  }
+
+  // ==========================================================================
   // NAVIGASI SPA INSTAN (0ms) & KONTROL HAK AKSES
   // ==========================================================================
   function goView(target) {
@@ -297,10 +314,11 @@ window.AppUI = (function () {
       if (el) el.classList.toggle('hidden', v !== target);
     });
 
-    // Mode Tampilan: Sidebar (Menu Kesamping) hanya untuk Admin & Petugas PTSP (pantau / dashboard)
-    // Menu Publik (kiosk, ptsp, sidang, tiket) tetap seperti semula (Navbar horizontal)
-    const isStaffView = (target === 'pantau' || target === 'dashboard');
-    document.body.classList.toggle('is-staff-view', isStaffView);
+    // Mode Tampilan Dual-Mode:
+    // 1. Sidebar (Menu Kesamping) untuk Admin, Petugas PTSP, Petugas Sidang (Panitera), dan Satpam di SEMUA menu
+    // 2. Navbar horizontal atas tetap untuk Pengunjung Publik (belum login)
+    updateLayoutMode();
+    closeSidebarMobile();
 
     // Update active state nav pills
     document.querySelectorAll('.nav-pill').forEach(function (b) {
@@ -400,6 +418,25 @@ window.AppUI = (function () {
       document.getElementById('btn-auth-chip').title = 'Login Petugas / Pimpinan';
       closeUserDropdown();
     }
+
+    // Update badge identitas pengguna di Footer Sidebar (Menu Samping)
+    const sbBadge = document.getElementById('sidebar-user-badge');
+    const sbAvatar = document.getElementById('sidebar-user-avatar');
+    const sbName = document.getElementById('sidebar-user-name');
+    const sbRole = document.getElementById('sidebar-user-role');
+    if (sbBadge) {
+      if (u) {
+        sbBadge.classList.remove('hidden');
+        if (sbAvatar) sbAvatar.textContent = (u.nama || u.username || 'P').charAt(0).toUpperCase();
+        if (sbName) sbName.textContent = u.nama || u.username;
+        if (sbRole) sbRole.textContent = u.role + ' (Aktif)';
+      } else {
+        sbBadge.classList.add('hidden');
+      }
+    }
+
+    // Terapkan layout mode: Samping untuk Petugas/Admin, Atas untuk Pengunjung Publik
+    updateLayoutMode();
 
     const btnAturRuang = document.getElementById('btn-shortcut-atur-ruang');
     if (btnAturRuang) {

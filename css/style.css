@@ -95,14 +95,20 @@ textarea:focus-visible {
 }
 
 /* ==========================================================================
-   SIDEBAR (MENU KE SAMPING) HANYA UNTUK ADMIN & PETUGAS PTSP
-   MENU PUBLIK (BERANDA, FORM PTSP, FORM SIDANG, TIKET) TETAP SEPERTI SEMULA
+   SIDEBAR (MENU KE SAMPING) UNTUK ADMIN, PETUGAS PTSP, PETUGAS SIDANG, SATPAM
+   MENU PUBLIK / PENGUNJUNG TETAP SEPERTI SEMULA (NAVBAR HORIZONTAL DI ATAS)
    ========================================================================== */
 #app-sidebar {
   transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* 1. KONDISI DEFAULT: MENU PUBLIK (Beranda, Registrasi PTSP, Sidang, Tiket) */
+header,
+#main-content,
+footer {
+  transition: padding-left 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 1. KONDISI DEFAULT: PENGUNJUNG PUBLIK (Menu Tetap di Atas) */
 body:not(.is-staff-view) #app-sidebar {
   display: none !important;
 }
@@ -127,13 +133,17 @@ body:not(.is-staff-view) #top-main-nav {
   body:not(.is-staff-view) #top-mobile-nav {
     display: flex !important;
   }
+  body:not(.is-staff-view) #main-content {
+    padding-top: 6.25rem !important;
+  }
 }
 body:not(.is-staff-view) header,
-body:not(.is-staff-view) #main-content {
+body:not(.is-staff-view) #main-content,
+body:not(.is-staff-view) footer {
   padding-left: 0 !important;
 }
 
-/* 2. KONDISI STAFF: ADMIN & PETUGAS PTSP (Layar Pantau & Dashboard) */
+/* 2. KONDISI STAFF: ADMIN, PETUGAS PTSP, PETUGAS SIDANG (PANITERA), SATPAM (Menu di Samping) */
 body.is-staff-view #public-brand-wrap {
   display: none !important;
 }
@@ -156,18 +166,21 @@ body.is-staff-view #top-mobile-nav {
     transform: translateX(-100%) !important;
   }
   body.is-staff-view:not(.sidebar-collapsed) header,
-  body.is-staff-view:not(.sidebar-collapsed) #main-content {
+  body.is-staff-view:not(.sidebar-collapsed) #main-content,
+  body.is-staff-view:not(.sidebar-collapsed) footer {
     padding-left: 16rem !important; /* 64 = 16rem */
   }
   body.is-staff-view.sidebar-collapsed header,
-  body.is-staff-view.sidebar-collapsed #main-content {
+  body.is-staff-view.sidebar-collapsed #main-content,
+  body.is-staff-view.sidebar-collapsed footer {
     padding-left: 0 !important;
   }
 }
 
 @media (max-width: 1023px) {
   body.is-staff-view header,
-  body.is-staff-view #main-content {
+  body.is-staff-view #main-content,
+  body.is-staff-view footer {
     padding-left: 0 !important;
   }
 }
