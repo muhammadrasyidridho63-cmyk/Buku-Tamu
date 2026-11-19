@@ -739,21 +739,22 @@ window.ApiClient = (function () {
       }
       if (action === 'rahasia.simpan') return { success: true, data: { WA_GATEWAY_TOKEN: { ada: true, samar: 'DEMO••••••XYZ' } }, message: 'Rahasia disimpan (Simulasi).' };
       if (action === 'wa.cekStatus') {
+        const hasToken = !!(db.pengaturan && (db.pengaturan.WA_GATEWAY_TOKEN || localStorage.getItem('WA_GATEWAY_TOKEN_DEMO')));
         return {
           success: true,
           data: {
-            configured: true,
-            status: true,
-            connected: true,
-            device: '0812-3456-7890 (PTUN Palembang)',
-            device_status: 'connect',
-            expired: '2026-12-31',
-            messages: 450,
-            quota: 1000,
-            package: 'Pro Business',
-            message: 'WhatsApp Gateway Fonnte aktif & terhubung (Mode Simulasi).'
+            configured: hasToken,
+            status: hasToken,
+            connected: hasToken,
+            device: hasToken ? '0812-3456-7890 (PTUN Palembang)' : '-',
+            device_status: hasToken ? 'connect' : 'unconfigured',
+            expired: hasToken ? '2026-12-31' : '-',
+            messages: hasToken ? 450 : 0,
+            quota: hasToken ? 1000 : 0,
+            package: hasToken ? 'Pro Business' : '-',
+            message: hasToken ? 'WhatsApp Gateway Fonnte aktif & terhubung.' : 'Token Fonnte belum diatur di Script Properties.'
           },
-          message: 'Status Fonnte Gateway aktif (Simulasi).'
+          message: 'Status Fonnte Gateway diperbarui.'
         };
       }
       if (action === 'wa.testKirim') {
@@ -767,6 +768,68 @@ window.ApiClient = (function () {
             detail: 'Pesan uji coba terkirim (Simulasi Demo)'
           },
           message: 'Pesan uji coba WhatsApp berhasil dikirim ke ' + noHp + ' (Mode Simulasi)!'
+        };
+      }
+      if (action === 'notif.config.get') {
+        return {
+          success: true,
+          data: {
+            waAktif: db.pengaturan.NOTIF_WA_AKTIF !== 'TIDAK',
+            hasToken: true,
+            events: [
+              { key: 'PENDAFTARAN_PTSP', aktif: true, label: 'Tiket Pendaftaran Tamu PTSP', pesan: '🎫 *TIKET ANTREAN PTSP*\n*{institusi}*\n\nHalo Bapak/Ibu *{nama}*,\nTiket antrean PTSP Anda telah terbit:\n\n📌 *Nomor Antrean:* *{nomor}*\n🏢 *Layanan/Loket:* {loket}\n📝 *Keperluan:* {keperluan}\n⏰ *Waktu Masuk:* {waktu} WIB\n👥 *Antrean di Depan:* {antreanDepan} orang\n\nMohon menunggu dengan tertib di ruang tunggu PTSP.\n\nSalam hormat,\n*{institusi}*' },
+              { key: 'PENDAFTARAN_SIDANG', aktif: true, label: 'Konfirmasi Kehadiran Sidang', pesan: '⚖️ *BUKTI KEHADIRAN PERSIDANGAN*\n*{institusi}*\n\nHalo Bapak/Ibu *{nama}*,\nKehadiran sidang Anda telah berhasil tercatat:\n\n📌 *Nomor Antrean:* *{nomor}*\n⚖️ *Nomor Perkara:* *{perkara}*\n👤 *Peran Sidang:* {peran}\n📋 *Agenda:* {agenda}\n🏛️ *Ruang:* Menunggu Panggilan\n\nSalam hormat,\n*{institusi}*' },
+              { key: 'PANGGILAN_PTSP', aktif: true, label: 'Panggilan Menuju Loket PTSP', pesan: '🔔 *PANGGILAN ANTREAN PTSP*\n*{institusi}*\n\nKepada Yth. *{nama}*,\nNomor antrean: *{nomor}*\n🏢 *Dipersilakan menuju:* *{loket}*\n\nTerima kasih.' },
+              { key: 'PANGGILAN_SIDANG', aktif: true, label: 'Panggilan Masuk Ruang Sidang', pesan: '⚖️ *PANGGILAN RUANG SIDANG*\n*{institusi}*\n\nPerkara: *{perkara}*\n👤 *Pihak:* {nama} ({peran})\n🏛️ *Ruangan:* *{ruang}*\n📋 *Agenda:* {agenda}\n\nSilakan segera memasuki ruangan sidang.' }
+            ]
+          }
+        };
+      }
+      if (action === 'notif.config.simpan') {
+        db.pengaturan.NOTIF_WA_AKTIF = data.NOTIF_WA_AKTIF || 'YA';
+        saveDb(db);
+        return { success: true, message: 'Pengaturan notifikasi berhasil disimpan.' };
+      }
+      if (action === 'notif.antrian.list') {
+        if (!db.antrianNotif) {
+          db.antrianNotif = [
+            { AntrianID: 'ANT-20261119-001', Kanal: 'WA', Tujuan: '081234567890', NamaPenerima: 'M. Rasyid Ridho', Subjek: 'Tiket PTSP', Pesan: 'Tiket P-001 Loket e-Court', Event: 'PENDAFTARAN_PTSP', Status: 'Terkirim', Percobaan: 1, Respon: 'OK', DibuatPada: new Date().toISOString() },
+            { AntrianID: 'ANT-20261119-002', Kanal: 'WA', Tujuan: '081122334455', NamaPenerima: 'Dr. Hendra Wijaya', Subjek: 'Panggilan Sidang', Pesan: 'Panggilan Perkara 24/G/2026 ke Ruang Sidang Utama', Event: 'PANGGILAN_SIDANG', Status: 'Terkirim', Percobaan: 1, Respon: 'OK', DibuatPada: new Date().toISOString() }
+          ];
+          saveDb(db);
+        }
+        return { success: true, data: db.antrianNotif };
+      }
+      if (action === 'notif.antrian.proses') {
+        return { success: true, data: { proses: 0, sukses: 0 }, message: 'Seluruh antrean notifikasi telah berhasil diproses.' };
+      }
+      if (action === 'crm.list') {
+        if (!db.crmKontak) {
+          db.crmKontak = [
+            { KontakID: 'KTK-20261119-01', Nama: 'M. Rasyid Ridho, S.Kom.', NoWA: '081234567890', Segmen: 'PTSP', StatusWA: 'Terdaftar', JumlahPesan: 4, TerakhirDihubungi: new Date().toISOString(), Catatan: 'Kuasa Hukum e-Court' },
+            { KontakID: 'KTK-20261119-02', Nama: 'Dr. Hendra Wijaya, S.H.', NoWA: '081122334455', Segmen: 'Sidang', StatusWA: 'Terdaftar', JumlahPesan: 6, TerakhirDihubungi: new Date().toISOString(), Catatan: 'Advokat TUN' },
+            { KontakID: 'KTK-20261119-03', Nama: 'Nurul Hidayati', NoWA: '085266778899', Segmen: 'PTSP', StatusWA: 'Terdaftar', JumlahPesan: 2, TerakhirDihubungi: new Date().toISOString(), Catatan: 'Masyarakat Umum' },
+            { KontakID: 'KTK-20261119-04', Nama: 'Budi Santoso, S.Sos.', NoWA: '081377889900', Segmen: 'Sidang', StatusWA: 'Terdaftar', JumlahPesan: 3, TerakhirDihubungi: new Date().toISOString(), Catatan: 'Tergugat BPN' }
+          ];
+          saveDb(db);
+        }
+        return { success: true, data: db.crmKontak };
+      }
+      if (action === 'crm.sync') {
+        return { success: true, data: { inserted: 2, updated: 3, totalKontak: 5 }, message: 'Sinkronisasi kontak dari Buku Tamu berhasil!' };
+      }
+      if (action === 'crm.validate') {
+        return { success: true, data: { registered: ['081234567890', '081122334455', '085266778899'], notRegistered: [] }, message: 'Validasi nomor WhatsApp berhasil: 3 nomor terdaftar aktif di WhatsApp.' };
+      }
+      if (action === 'blast.kirim') {
+        return { success: true, data: { blastId: 'BLW-20261119-01', total: 4, terkirim: 4, gagal: 0 }, message: 'Siaran broadcast berhasil dikirim ke 4 kontak sasaran!' };
+      }
+      if (action === 'blast.list') {
+        return {
+          success: true,
+          data: [
+            { BlastID: 'BLW-20261119-01', Judul: 'Sosialisasi e-Court & Jadwal Pelayanan', Sasaran: 'SEMUA', Total: 4, Terkirim: 4, Gagal: 0, Status: 'Selesai', Tanggal: todayYmd() }
+          ]
         };
       }
       if (action === 'printer.simpan') { db.printer = data; saveDb(db); return { success: true, data: db.printer, message: 'Printer disimpan.' }; }

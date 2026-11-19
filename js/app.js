@@ -1447,9 +1447,11 @@ window.AppUI = (function () {
     if (t === 'ruang') { renderAdminRuangList(); loadAdminPengaturan(); }
     if (t === 'users') loadAdminUsers();
     if (t === 'pengaturan' || t === 'migrasi') loadAdminPengaturan();
+    if (t === 'crm') loadNotifCrmTab();
   }
 
   function initAdminTabs() {
+    initCrmEvents();
     document.querySelectorAll('.atab-btn').forEach(function (btn) {
       btn.onclick = function () {
         openAdminTab(btn.getAttribute('data-atab'));
@@ -2399,10 +2401,12 @@ window.AppUI = (function () {
     const deviceEl = document.getElementById('wa-device-num');
     const quotaEl = document.getElementById('wa-quota-info');
     const expEl = document.getElementById('wa-expired-info');
+    const diagEl = document.getElementById('wa-diag-info');
     if (!badge) return;
 
     badge.className = 'px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600 border border-slate-200 animate-pulse cursor-pointer';
     badge.textContent = 'Memeriksa...';
+    if (diagEl) diagEl.textContent = 'Menghubungi Fonnte Gateway...';
 
     const res = await window.ApiClient.call('wa.cekStatus', {});
     badge.classList.remove('animate-pulse');
@@ -2414,23 +2418,362 @@ window.AppUI = (function () {
         if (deviceEl) deviceEl.textContent = 'Belum diisi di Script Properties';
         if (quotaEl) quotaEl.textContent = '-';
         if (expEl) expEl.textContent = '-';
+        if (diagEl) diagEl.textContent = 'Silakan klik tombol "Atur Token Fonnte" untuk memasukkan token.';
       } else if (d.connected || d.device_status === 'connect') {
         badge.className = 'px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 cursor-pointer hover:bg-emerald-100';
         badge.textContent = 'Terhubung';
         if (deviceEl) deviceEl.textContent = d.device || '-';
         if (quotaEl) quotaEl.textContent = (d.messages !== undefined ? d.messages : '-') + ' pesan' + (d.quota ? ' / kuota ' + d.quota : '');
         if (expEl) expEl.textContent = d.expired || '-';
+        if (diagEl) diagEl.textContent = 'Perangkat aktif & siap mengirim notifikasi/siaran.';
       } else {
         badge.className = 'px-2.5 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200 cursor-pointer hover:bg-rose-100';
         badge.textContent = d.device_status === 'disconnect' ? 'Terputus (QR Expired)' : 'Koneksi Gagal';
         if (deviceEl) deviceEl.textContent = d.device || '-';
         if (quotaEl) quotaEl.textContent = d.messages !== undefined ? String(d.messages) : '-';
         if (expEl) expEl.textContent = d.expired || '-';
+        if (diagEl) diagEl.textContent = d.message || d.reason || 'Koneksi Fonnte ditolak. Cek token atau scan QR di fonnte.com.';
       }
     } else {
-      badge.className = 'px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-500 border border-slate-200 cursor-pointer';
-      badge.textContent = 'Tidak Aktif';
+      badge.className = 'px-2.5 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200 cursor-pointer';
+      badge.textContent = 'Koneksi Gagal';
+      const errMsg = (res && res.message) || 'Tidak dapat terhubung';
+      if (diagEl) diagEl.textContent = errMsg.indexOf('tidak dikenali') > -1
+        ? 'Backend GAS belum di-deploy versi baru. Buka Google Apps Script > Deploy > New version.'
+        : errMsg;
     }
+  }
+
+  // ==========================================================================
+  // MODUL GAS-NOTIFIKASI-WA-CRM (WhatsApp Gateway, CRM Kontak & Blast WA)
+  // ==========================================================================
+  async function loadNotifCrmTab() {
+    await loadWaStatus();
+    await loadNotifConfig();
+    loadCrmKontakList();
+  }
+
+  async function loadNotifConfig() {
+    const res = await window.ApiClient.call('notif.config.get', {});
+    if (!res || !res.success || !res.data) return;
+    const d = res.data;
+    const chkGlobal = document.getElementById('notif-global-toggle');
+    if (chkGlobal) chkGlobal.checked = d.waAktif !== false;
+
+    if (Array.isArray(d.events)) {
+      d.events.forEach(function (ev) {
+        const chk = document.getElementById('m-aktif-' + ev.key);
+        if (chk) chk.checked = ev.aktif !== false;
+        const txt = document.getElementById('m-pesan-' + ev.key);
+        if (txt) txt.value = ev.pesan || '';
+      });
+    }
+  }
+
+  async function simpanNotifConfig() {
+    const btn = document.getElementById('btn-simpan-matriks');
+    const chkGlobal = document.getElementById('notif-global-toggle');
+    const events = [];
+    const eventKeys = ['PENDAFTARAN_PTSP', 'PENDAFTARAN_SIDANG', 'PANGGILAN_PTSP', 'PANGGILAN_SIDANG'];
+
+    eventKeys.forEach(function (k) {
+      const chk = document.getElementById('m-aktif-' + k);
+      const txt = document.getElementById('m-pesan-' + k);
+      events.push({
+        key: k,
+        aktif: chk ? chk.checked : true,
+        pesan: txt ? txt.value.trim() : ''
+      });
+    });
+
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">refresh</span><span>Menyimpan...</span>';
+    }
+
+    const res = await window.ApiClient.call('notif.config.simpan', {
+      NOTIF_WA_AKTIF: (chkGlobal && chkGlobal.checked) ? 'YA' : 'TIDAK',
+      events: events
+    });
+
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<span class="material-symbols-outlined text-sm">save</span><span>Simpan Perubahan Matriks &amp; Template</span>';
+    }
+
+    if (res && res.success) {
+      toast(res.message || 'Konfigurasi matriks notifikasi berhasil disimpan!', 'success');
+    } else {
+      toast((res && res.message) || 'Gagal menyimpan konfigurasi notifikasi.', 'error');
+    }
+  }
+
+  async function loadCrmKontakList() {
+    const tbody = document.getElementById('crm-kontak-tbody');
+    if (tbody && (!state.crmKontakList || !state.crmKontakList.length)) {
+      tbody.innerHTML = '<tr><td colspan="8" class="p-6 text-center text-on-surface-variant">Memuat data kontak...</td></tr>';
+    }
+    const res = await window.ApiClient.call('crm.list', {});
+    if (res && res.success && Array.isArray(res.data)) {
+      state.crmKontakList = res.data;
+      renderCrmKontakTable();
+    } else {
+      if (tbody) {
+        tbody.innerHTML = '<tr><td colspan="8" class="p-6 text-center text-rose-600">Gagal memuat kontak: ' + esc((res && res.message) || 'Koneksi error') + '</td></tr>';
+      }
+    }
+  }
+
+  function renderCrmKontakTable() {
+    const tbody = document.getElementById('crm-kontak-tbody');
+    if (!tbody) return;
+    const list = state.crmKontakList || [];
+    const q = (document.getElementById('crm-search-kontak')?.value || '').trim().toLowerCase();
+    const seg = document.getElementById('crm-filter-segmen')?.value || '';
+
+    const filtered = list.filter(function (c) {
+      const matchQ = !q || (String(c.Nama || '').toLowerCase().includes(q) || String(c.NoWA || '').includes(q) || String(c.Catatan || '').toLowerCase().includes(q));
+      const matchSeg = !seg || String(c.Segmen || '').toUpperCase() === seg.toUpperCase();
+      return matchQ && matchSeg;
+    });
+
+    if (!filtered.length) {
+      tbody.innerHTML = '<tr><td colspan="8" class="p-6 text-center text-on-surface-variant">Tidak ada kontak yang cocok dengan filter.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(function (c) {
+      const segBadge = c.Segmen === 'Sidang'
+        ? '<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-purple-50 text-purple-700 border border-purple-200">Sidang</span>'
+        : '<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200">PTSP</span>';
+
+      const isRegistered = c.StatusWA === 'Terdaftar' || c.StatusWA === 'Aktif';
+      const isUnregistered = c.StatusWA === 'Tidak Terdaftar';
+      const waStatusBadge = isRegistered
+        ? '<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">Terdaftar</span>'
+        : (isUnregistered
+            ? '<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200">Bukan WA</span>'
+            : '<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-600 border border-slate-200">Belum Validasi</span>');
+
+      const hpClean = String(c.NoWA || '').replace(/[^\d]/g, '');
+      const waHp = hpClean.indexOf('0') === 0 ? '62' + hpClean.slice(1) : hpClean;
+      const tglHadir = c.TerakhirDihubungi ? c.TerakhirDihubungi.split('T')[0] : '-';
+
+      return '<tr class="border-b border-outline-variant/30 hover:bg-surface-container-low/40">' +
+        '<td class="p-3 font-mono font-bold text-slate-600">' + esc(c.KontakID || '-') + '</td>' +
+        '<td class="p-3"><div class="font-bold text-on-surface">' + esc(c.Nama || '-') + '</div><div class="text-[11px] text-on-surface-variant">' + esc(c.Catatan || '-') + '</div></td>' +
+        '<td class="p-3 font-mono">' + esc(c.NoWA || '-') + '</td>' +
+        '<td class="p-3">' + segBadge + '</td>' +
+        '<td class="p-3">' + waStatusBadge + '</td>' +
+        '<td class="p-3 font-mono text-center">' + esc(c.JumlahPesan || 1) + 'x</td>' +
+        '<td class="p-3 text-on-surface-variant">' + esc(tglHadir) + '</td>' +
+        '<td class="p-3 text-right">' +
+          '<a href="https://wa.me/' + waHp + '?text=' + encodeURIComponent('Halo Bapak/Ibu ' + (c.Nama || '') + ', ') + '" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-xs">' +
+            '<span class="material-symbols-outlined text-xs">chat</span><span>Chat</span>' +
+          '</a>' +
+        '</td>' +
+      '</tr>';
+    }).join('');
+  }
+
+  async function loadBlastList() {
+    const tbody = document.getElementById('blast-riwayat-tbody');
+    const res = await window.ApiClient.call('blast.list', {});
+    if (!tbody) return;
+    if (res && res.success && Array.isArray(res.data) && res.data.length) {
+      tbody.innerHTML = res.data.map(function (b) {
+        const statusBadge = b.Status === 'Selesai'
+          ? '<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">Selesai</span>'
+          : '<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200">Proses</span>';
+
+        return '<tr class="border-b border-outline-variant/30 hover:bg-surface-container-low/40">' +
+          '<td class="p-3 font-mono font-bold text-slate-600">' + esc(b.BlastID || '-') + '</td>' +
+          '<td class="p-3 font-semibold text-on-surface">' + esc(b.Judul || '-') + '</td>' +
+          '<td class="p-3"><span class="px-2 py-0.5 rounded text-[11px] bg-slate-100 font-mono">' + esc(b.Sasaran || 'SEMUA') + '</span></td>' +
+          '<td class="p-3 font-mono">' + esc(b.Terkirim || 0) + ' / ' + esc(b.Total || 0) + (b.Gagal ? ' <span class="text-rose-600">(' + b.Gagal + ' gagal)</span>' : '') + '</td>' +
+          '<td class="p-3">' + statusBadge + '</td>' +
+          '<td class="p-3 text-on-surface-variant font-mono">' + esc(b.Tanggal || '-') + '</td>' +
+        '</tr>';
+      }).join('');
+    } else {
+      tbody.innerHTML = '<tr><td colspan="6" class="p-6 text-center text-on-surface-variant">Belum ada riwayat siaran broadcast.</td></tr>';
+    }
+  }
+
+  async function kirimBlastWa() {
+    const btn = document.getElementById('btn-blast-kirim');
+    const sasaran = document.getElementById('blast-sasaran').value;
+    const judul = (document.getElementById('blast-judul').value || '').trim();
+    const pesan = (document.getElementById('blast-pesan').value || '').trim();
+    const batch = Number(document.getElementById('blast-batch').value) || 10;
+    const jeda = Number(document.getElementById('blast-jeda').value) || 2;
+
+    if (!judul || !pesan) {
+      toast('Judul dan isi pesan siaran wajib diisi.', 'warning');
+      return;
+    }
+
+    if (!confirm('Kirim siaran WhatsApp massal ini ke target "' + sasaran + '"?')) return;
+
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">refresh</span><span>Mengirim Siaran...</span>';
+    }
+
+    const res = await window.ApiClient.call('blast.kirim', {
+      sasaran: sasaran,
+      judul: judul,
+      pesan: pesan,
+      batchSize: batch,
+      delaySec: jeda
+    });
+
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<span class="material-symbols-outlined text-sm">send</span><span>Kirim Siaran WhatsApp</span>';
+    }
+
+    if (res && res.success) {
+      toast(res.message || 'Siaran broadcast berhasil dikirim!', 'success');
+      document.getElementById('blast-judul').value = '';
+      document.getElementById('blast-pesan').value = '';
+      loadBlastList();
+    } else {
+      toast((res && res.message) || 'Gagal mengirim siaran broadcast.', 'error');
+    }
+  }
+
+  async function loadAntrianList() {
+    const tbody = document.getElementById('notif-antrian-tbody');
+    const res = await window.ApiClient.call('notif.antrian.list', {});
+    if (!tbody) return;
+    if (res && res.success && Array.isArray(res.data) && res.data.length) {
+      tbody.innerHTML = res.data.map(function (a) {
+        const isSukses = a.Status === 'Terkirim';
+        const isGagal = a.Status === 'Gagal';
+        const statusBadge = isSukses
+          ? '<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">Terkirim</span>'
+          : (isGagal
+              ? '<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200">Gagal</span>'
+              : '<span class="px-2 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200">Antre</span>');
+
+        const waktu = a.DibuatPada ? a.DibuatPada.replace('T', ' ').slice(0, 19) : '-';
+
+        return '<tr class="border-b border-outline-variant/30 hover:bg-surface-container-low/40">' +
+          '<td class="p-3 font-mono font-bold text-slate-600">' + esc(a.AntrianID || '-') + '</td>' +
+          '<td class="p-3 font-mono text-[11px] text-on-surface-variant">' + esc(waktu) + '</td>' +
+          '<td class="p-3 font-semibold text-on-surface">' + esc(a.NamaPenerima || '-') + '</td>' +
+          '<td class="p-3 font-mono text-xs">' + esc(a.Tujuan || '-') + '</td>' +
+          '<td class="p-3"><span class="px-2 py-0.5 rounded text-[10px] font-mono bg-slate-100">' + esc(a.Event || '-') + '</span></td>' +
+          '<td class="p-3">' + statusBadge + '</td>' +
+          '<td class="p-3 font-mono text-[11px] text-on-surface-variant max-w-xs truncate" title="' + esc(a.Respon || '-') + '">' + esc(a.Respon || '-') + '</td>' +
+        '</tr>';
+      }).join('');
+    } else {
+      tbody.innerHTML = '<tr><td colspan="7" class="p-6 text-center text-on-surface-variant">Belum ada antrean notifikasi tersimpan.</td></tr>';
+    }
+  }
+
+  async function prosesAntrianSekarang() {
+    const btn = document.getElementById('btn-antrian-proses');
+    if (btn) {
+      btn.disabled = true;
+      btn.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">refresh</span><span>Memproses...</span>';
+    }
+    const res = await window.ApiClient.call('notif.antrian.proses', {});
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = '<span class="material-symbols-outlined text-sm">forward_to_inbox</span><span>Proses / Kuras Antrean Sekarang</span>';
+    }
+    if (res && res.success) {
+      toast(res.message || 'Antrean notifikasi diproses.', 'success');
+      loadAntrianList();
+    } else {
+      toast((res && res.message) || 'Gagal memproses antrean.', 'error');
+    }
+  }
+
+  function initCrmEvents() {
+    // Sub-nav tab switcher
+    document.querySelectorAll('.crm-sub-btn').forEach(function (btn) {
+      btn.onclick = function () {
+        const sub = btn.getAttribute('data-csub');
+        document.querySelectorAll('.crm-sub-btn').forEach(function (b) {
+          const act = b.getAttribute('data-csub') === sub;
+          b.className = act
+            ? 'crm-sub-btn px-3.5 py-1.5 rounded-lg text-xs font-bold bg-primary-container text-white flex items-center gap-1.5 whitespace-nowrap shadow-sm'
+            : 'crm-sub-btn px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-surface-container-low text-on-surface-variant hover:text-on-surface flex items-center gap-1.5 whitespace-nowrap';
+        });
+        document.querySelectorAll('.crm-sub-pane').forEach(function (p) {
+          p.classList.toggle('hidden', p.id !== 'csub-' + sub);
+        });
+
+        if (sub === 'kontak') loadCrmKontakList();
+        if (sub === 'blast') loadBlastList();
+        if (sub === 'antrian') loadAntrianList();
+        if (sub === 'gateway') { loadWaStatus(); loadNotifConfig(); }
+      };
+    });
+
+    // Simpan Matriks Notifikasi & Template
+    const btnSimpanMatriks = document.getElementById('btn-simpan-matriks');
+    if (btnSimpanMatriks) btnSimpanMatriks.onclick = simpanNotifConfig;
+
+    // Filter & Cari Kontak CRM
+    const inpSearchKontak = document.getElementById('crm-search-kontak');
+    if (inpSearchKontak) inpSearchKontak.oninput = renderCrmKontakTable;
+    const selFilterSegmen = document.getElementById('crm-filter-segmen');
+    if (selFilterSegmen) selFilterSegmen.onchange = renderCrmKontakTable;
+
+    // Sinkronisasi Kontak dari Buku Tamu
+    const btnSyncCrm = document.getElementById('btn-crm-sync');
+    if (btnSyncCrm) {
+      btnSyncCrm.onclick = async function () {
+        btnSyncCrm.disabled = true;
+        btnSyncCrm.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">refresh</span><span>Menyinkronkan...</span>';
+        const res = await window.ApiClient.call('crm.sync', {});
+        btnSyncCrm.disabled = false;
+        btnSyncCrm.innerHTML = '<span class="material-symbols-outlined text-sm">sync</span><span>Sinkronisasi dari Buku Tamu</span>';
+        if (res && res.success) {
+          toast(res.message || 'Sinkronisasi kontak berhasil!', 'success');
+          loadCrmKontakList();
+        } else {
+          toast((res && res.message) || 'Gagal sinkronisasi kontak.', 'error');
+        }
+      };
+    }
+
+    // Validasi Nomor WA Fonnte
+    const btnValidateCrm = document.getElementById('btn-crm-validate');
+    if (btnValidateCrm) {
+      btnValidateCrm.onclick = async function () {
+        const list = state.crmKontakList || [];
+        const phones = list.map(function (c) { return c.NoWA; }).filter(Boolean);
+        if (!phones.length) {
+          toast('Belum ada nomor telepon kontak untuk divalidasi.', 'warning');
+          return;
+        }
+        btnValidateCrm.disabled = true;
+        btnValidateCrm.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">refresh</span><span>Memvalidasi...</span>';
+        const res = await window.ApiClient.call('crm.validate', { nomorList: phones.slice(0, 50) });
+        btnValidateCrm.disabled = false;
+        btnValidateCrm.innerHTML = '<span class="material-symbols-outlined text-sm">verified</span><span>Validasi Nomor WA (Fonnte)</span>';
+        if (res && res.success) {
+          toast(res.message || 'Validasi nomor WhatsApp berhasil!', 'success');
+          loadCrmKontakList();
+        } else {
+          toast((res && res.message) || 'Gagal memvalidasi nomor WhatsApp.', 'error');
+        }
+      };
+    }
+
+    // Kirim Blast WA
+    const btnBlastKirim = document.getElementById('btn-blast-kirim');
+    if (btnBlastKirim) btnBlastKirim.onclick = kirimBlastWa;
+
+    // Kuras Antrean Notifikasi
+    const btnAntrianProses = document.getElementById('btn-antrian-proses');
+    if (btnAntrianProses) btnAntrianProses.onclick = prosesAntrianSekarang;
   }
 
   async function runMigrasi(dryRun) {
