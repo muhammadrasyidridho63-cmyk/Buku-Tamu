@@ -157,6 +157,42 @@ body.is-staff-view #top-mobile-nav {
   display: none !important;
 }
 
+/* Jeda Konten Pas & Presisi di Sebelah Sidebar (Menghilangkan gap berlebih mx-auto di layar lebar) */
+body.is-staff-view header > div {
+  max-width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: 1.5rem !important; /* Jeda presisi 24px dari sidebar */
+  padding-right: 1.5rem !important;
+}
+
+body.is-staff-view #view-dashboard,
+body.is-staff-view #view-pantau,
+body.is-staff-view #view-kiosk {
+  max-width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: 1.5rem !important; /* Jeda presisi 24px dari sidebar */
+  padding-right: 1.5rem !important;
+}
+
+body.is-staff-view #view-form-ptsp,
+body.is-staff-view #view-form-sidang,
+body.is-staff-view #view-tiket {
+  margin-left: 0 !important;
+  margin-right: auto !important;
+  padding-left: 1.5rem !important;
+  padding-right: 1.5rem !important;
+}
+
+body.is-staff-view footer > div {
+  max-width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  padding-left: 1.5rem !important;
+  padding-right: 1.5rem !important;
+}
+
 @media (min-width: 1024px) {
   body.is-staff-view:not(.sidebar-collapsed) #app-sidebar {
     display: flex !important;
