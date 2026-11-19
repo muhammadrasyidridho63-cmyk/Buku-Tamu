@@ -615,8 +615,10 @@ window.AppUI = (function () {
 
       const errNama = document.getElementById('err-sidang-nama');
       const errPerkara = document.getElementById('err-sidang-perkara');
+      const errAgenda = document.getElementById('err-sidang-agenda');
       errNama.classList.add('hidden');
       errPerkara.classList.add('hidden');
+      if (errAgenda) errAgenda.classList.add('hidden');
 
       let valid = true;
       if (!nama) {
@@ -625,8 +627,15 @@ window.AppUI = (function () {
         valid = false;
       }
       if (!nomorPerkara) {
-        errPerkara.textContent = 'Pilih dari jadwal atau ketik Nomor Perkara.';
+        errPerkara.textContent = 'Nomor perkara persidangan wajib diisi.';
         errPerkara.classList.remove('hidden');
+        valid = false;
+      }
+      if (!agendaSidang) {
+        if (errAgenda) {
+          errAgenda.textContent = 'Agenda sidang wajib diisi.';
+          errAgenda.classList.remove('hidden');
+        }
         valid = false;
       }
       if (!valid) return;
@@ -676,17 +685,18 @@ window.AppUI = (function () {
 
   function renderJadwalOptions() {
     const listEl = document.getElementById('sidang-jadwal-list');
+    if (!listEl) return;
     const badgeEl = document.getElementById('sidang-jadwal-badge');
+    if (badgeEl) badgeEl.textContent = '';
     const jadwal = (state.boot && state.boot.jadwalHariIni) ? state.boot.jadwalHariIni : [];
     const q = String(document.getElementById('sidang-cari-perkara').value || '').toLowerCase().trim();
 
-    badgeEl.textContent = jadwal.length + ' Sidang Terjadwal';
     const filtered = jadwal.filter(function (j) {
       return !q || String(j.Nomor_Perkara).toLowerCase().indexOf(q) > -1 || String(j.Agenda).toLowerCase().indexOf(q) > -1;
     });
 
     if (!filtered.length) {
-      listEl.innerHTML = '<div class="p-3 rounded-xl bg-surface-container-low text-xs text-on-surface-variant">Tidak ada jadwal cocok pada daftar hari ini. Anda dapat langsung mengetik Nomor Perkara secara manual di kotak pencarian di atas.</div>';
+      listEl.innerHTML = '<div class="p-3 rounded-xl bg-surface-container-low text-xs text-on-surface-variant flex items-center gap-2"><span class="material-symbols-outlined text-outline text-[18px]">edit_note</span>Silakan isi nomor perkara persidangan secara manual pada kolom di atas (contoh: 24/G/2026/PTUN.PLG).</div>';
       return;
     }
 

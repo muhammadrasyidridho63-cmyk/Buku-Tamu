@@ -557,27 +557,28 @@
               </div>
             </div>
 
-            <!-- Nomor Perkara Jadwal Hari Ini + Manual Fallback -->
+            <!-- Nomor Perkara Persidangan (Manual Input) -->
             <div>
               <div class="flex justify-between items-center mb-1.5">
-                <label for="sidang-cari-perkara" class="text-sm font-semibold text-on-surface">Nomor Perkara Sidang Hari Ini <span class="text-error">*</span></label>
-                <span id="sidang-jadwal-badge" class="text-xs font-semibold text-secondary">0 Sidang Terjadwal</span>
+                <label for="sidang-cari-perkara" class="text-sm font-semibold text-on-surface">Nomor Perkara Persidangan <span class="text-error">*</span></label>
+                <span class="text-xs text-outline">Wajib</span>
               </div>
               <div class="relative mb-2">
-                <span class="material-symbols-outlined text-outline text-[18px] absolute left-3.5 top-3.5">search</span>
-                <input id="sidang-cari-perkara" type="text" placeholder="Ketik atau pilih nomor perkara (misal: 24/G/2026/PTUN.PLG)..." class="w-full h-12 pl-10 pr-4 rounded-xl border border-outline-variant bg-white focus:border-primary-container text-sm" />
+                <span class="material-symbols-outlined text-outline text-[18px] absolute left-3.5 top-3.5">gavel</span>
+                <input id="sidang-cari-perkara" type="text" required placeholder="Isi nomor perkara (contoh: 24/G/2026/PTUN.PLG)..." class="w-full h-12 pl-10 pr-4 rounded-xl border border-outline-variant bg-surface-container-low/40 focus:bg-white focus:border-primary-container text-sm" />
               </div>
               <div id="sidang-jadwal-list" class="flex flex-col gap-2 max-h-56 overflow-y-auto"></div>
               <p id="err-sidang-perkara" class="hidden text-xs text-error mt-1"></p>
             </div>
 
-            <!-- Agenda Sidang (Opsional) -->
+            <!-- Agenda Sidang (Wajib) -->
             <div>
               <div class="flex justify-between mb-1.5">
-                <label for="sidang-agenda" class="text-sm font-semibold text-on-surface">Agenda Sidang <span class="text-xs font-normal text-outline">(Opsional)</span></label>
-                <span class="text-xs text-outline">Maks. 200 karakter</span>
+                <label for="sidang-agenda" class="text-sm font-semibold text-on-surface">Agenda Sidang <span class="text-error">*</span></label>
+                <span class="text-xs text-outline">Wajib</span>
               </div>
-              <input id="sidang-agenda" type="text" maxlength="200" placeholder="Ketik agenda sidang jika ada (mis. Pembuktian / Putusan)..." class="w-full h-12 px-4 rounded-xl border border-outline-variant bg-surface-container-low/40 focus:bg-white focus:border-primary-container text-sm" />
+              <input id="sidang-agenda" type="text" required maxlength="200" placeholder="Isi agenda sidang (mis. Pembuktian Surat &amp; Saksi / Putusan)..." class="w-full h-12 px-4 rounded-xl border border-outline-variant bg-surface-container-low/40 focus:bg-white focus:border-primary-container text-sm" />
+              <p id="err-sidang-agenda" class="hidden text-xs text-error mt-1"></p>
             </div>
 
             <!-- Opsional Foto Kamera -->

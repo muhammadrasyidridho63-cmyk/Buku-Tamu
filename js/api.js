@@ -497,7 +497,7 @@ window.ApiClient = (function () {
       }
 
       if (action === 'daftarSidang' || action === 'sidang.daftarPetugas') {
-        if (!data.nama || !data.nomorPerkara) return { success: false, message: 'Nama dan Nomor Perkara wajib diisi.' };
+        if (!data.nama || !data.nomorPerkara || !data.agenda) return { success: false, message: 'Nama, Nomor Perkara, dan Agenda Sidang wajib diisi.' };
         const todayCount = db.sidang.filter(function (r) { return r.Waktu_Masuk.slice(0, 10) === ymd; }).length;
         const seq = todayCount + 1;
         const pad = String(seq).padStart(3, '0');
