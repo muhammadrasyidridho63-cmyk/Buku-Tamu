@@ -95,25 +95,79 @@ textarea:focus-visible {
 }
 
 /* ==========================================================================
-   SIDEBAR NAVIGATION (MENU KE SAMPING) & RESPONSIVE LAYOUT
+   SIDEBAR (MENU KE SAMPING) HANYA UNTUK ADMIN & PETUGAS PTSP
+   MENU PUBLIK (BERANDA, FORM PTSP, FORM SIDANG, TIKET) TETAP SEPERTI SEMULA
    ========================================================================== */
 #app-sidebar {
   transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* 1. KONDISI DEFAULT: MENU PUBLIK (Beranda, Registrasi PTSP, Sidang, Tiket) */
+body:not(.is-staff-view) #app-sidebar {
+  display: none !important;
+}
+body:not(.is-staff-view) #sidebar-overlay {
+  display: none !important;
+}
+body:not(.is-staff-view) #staff-brand-wrap {
+  display: none !important;
+}
+body:not(.is-staff-view) #public-brand-wrap {
+  display: flex !important;
+}
+body:not(.is-staff-view) #top-main-nav {
+  display: none;
+}
+@media (min-width: 1280px) {
+  body:not(.is-staff-view) #top-main-nav {
+    display: flex !important;
+  }
+}
+@media (max-width: 1279px) {
+  body:not(.is-staff-view) #top-mobile-nav {
+    display: flex !important;
+  }
+}
+body:not(.is-staff-view) header,
+body:not(.is-staff-view) #main-content {
+  padding-left: 0 !important;
+}
+
+/* 2. KONDISI STAFF: ADMIN & PETUGAS PTSP (Layar Pantau & Dashboard) */
+body.is-staff-view #public-brand-wrap {
+  display: none !important;
+}
+body.is-staff-view #staff-brand-wrap {
+  display: flex !important;
+}
+body.is-staff-view #top-main-nav {
+  display: none !important;
+}
+body.is-staff-view #top-mobile-nav {
+  display: none !important;
+}
+
 @media (min-width: 1024px) {
-  body:not(.sidebar-collapsed) #app-sidebar {
+  body.is-staff-view:not(.sidebar-collapsed) #app-sidebar {
+    display: flex !important;
     transform: translateX(0) !important;
   }
-  body.sidebar-collapsed #app-sidebar {
+  body.is-staff-view.sidebar-collapsed #app-sidebar {
     transform: translateX(-100%) !important;
   }
-  body:not(.sidebar-collapsed) header,
-  body:not(.sidebar-collapsed) #main-content {
+  body.is-staff-view:not(.sidebar-collapsed) header,
+  body.is-staff-view:not(.sidebar-collapsed) #main-content {
     padding-left: 16rem !important; /* 64 = 16rem */
   }
-  body.sidebar-collapsed header,
-  body.sidebar-collapsed #main-content {
+  body.is-staff-view.sidebar-collapsed header,
+  body.is-staff-view.sidebar-collapsed #main-content {
+    padding-left: 0 !important;
+  }
+}
+
+@media (max-width: 1023px) {
+  body.is-staff-view header,
+  body.is-staff-view #main-content {
     padding-left: 0 !important;
   }
 }

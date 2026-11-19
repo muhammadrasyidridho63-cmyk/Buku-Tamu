@@ -297,6 +297,11 @@ window.AppUI = (function () {
       if (el) el.classList.toggle('hidden', v !== target);
     });
 
+    // Mode Tampilan: Sidebar (Menu Kesamping) hanya untuk Admin & Petugas PTSP (pantau / dashboard)
+    // Menu Publik (kiosk, ptsp, sidang, tiket) tetap seperti semula (Navbar horizontal)
+    const isStaffView = (target === 'pantau' || target === 'dashboard');
+    document.body.classList.toggle('is-staff-view', isStaffView);
+
     // Update active state nav pills
     document.querySelectorAll('.nav-pill').forEach(function (b) {
       const active = b.getAttribute('data-nav') === target;
@@ -419,7 +424,7 @@ window.AppUI = (function () {
     if (state.boot && state.boot.pengaturan) {
       state.boot.pengaturan.NAMA_SATKER = clean;
     }
-    ['hero-satker-name', 'nav-satker-subtitle', 'sidebar-satker-subtitle', 'dash-satker-name', 'footer-satker-name', 'tkt-satker-nama'].forEach(function (id) {
+    ['hero-satker-name', 'nav-satker-subtitle', 'staff-satker-subtitle', 'sidebar-satker-subtitle', 'dash-satker-name', 'footer-satker-name', 'tkt-satker-nama'].forEach(function (id) {
       const el = document.getElementById(id);
       if (el) el.textContent = clean;
     });
