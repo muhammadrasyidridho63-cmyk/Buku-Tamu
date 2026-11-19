@@ -48,7 +48,7 @@ window.StrukEngine = (function () {
       KEPERLUAN: tiket.Keperluan || '',
       PERAN: !isPtsp ? String(tiket.Peran_Sidang || 'PIHAK').toUpperCase() : '',
       NOMOR_PERKARA: tiket.Nomor_Perkara || '-',
-      RUANG_SIDANG: tiket.Ruang_Sidang || '-',
+      RUANG_SIDANG: (tiket.Ruang_Sidang && tiket.Ruang_Sidang !== 'Belum Ditentukan') ? tiket.Ruang_Sidang : 'Menunggu Panggilan',
       TANGGAL: formatTglId(tiket.Waktu_Masuk),
       JAM: formatJamWib(tiket.Waktu_Masuk),
       STATUS: isPtsp ? (tiket.Status_Layanan || 'Menunggu') : (tiket.Status_Kehadiran || 'Hadir'),

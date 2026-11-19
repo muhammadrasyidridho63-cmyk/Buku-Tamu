@@ -571,21 +571,13 @@
               <p id="err-sidang-perkara" class="hidden text-xs text-error mt-1"></p>
             </div>
 
-            <!-- Dropdown Ruang Sidang & Input Agenda Sidang -->
-            <div class="p-4 rounded-xl bg-surface-container-low border border-outline-variant/40 grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <div class="flex items-center justify-between mb-1">
-                  <label for="sidang-ruang" class="block text-xs font-semibold text-outline uppercase">Ruang Sidang</label>
-                  <button type="button" id="btn-shortcut-atur-ruang" class="hidden text-[11px] font-bold text-primary-container hover:underline inline-flex items-center gap-0.5">
-                    <span class="material-symbols-outlined text-[14px]">settings</span> Atur Ruang
-                  </button>
-                </div>
-                <select id="sidang-ruang" class="w-full h-11 px-3 rounded-lg border border-outline-variant bg-white text-sm font-semibold focus:border-primary-container"></select>
+            <!-- Agenda Sidang (Opsional) -->
+            <div>
+              <div class="flex justify-between mb-1.5">
+                <label for="sidang-agenda" class="text-sm font-semibold text-on-surface">Agenda Sidang <span class="text-xs font-normal text-outline">(Opsional)</span></label>
+                <span class="text-xs text-outline">Maks. 200 karakter</span>
               </div>
-              <div>
-                <label for="sidang-agenda" class="block text-xs font-semibold text-outline uppercase mb-1">Agenda Sidang</label>
-                <input id="sidang-agenda" type="text" maxlength="200" placeholder="Ketik agenda sidang (mis. Pembuktian / Putusan)..." class="w-full h-11 px-3 rounded-lg border border-outline-variant bg-white text-sm focus:border-primary-container" />
-              </div>
+              <input id="sidang-agenda" type="text" maxlength="200" placeholder="Ketik agenda sidang jika ada (mis. Pembuktian / Putusan)..." class="w-full h-12 px-4 rounded-xl border border-outline-variant bg-surface-container-low/40 focus:bg-white focus:border-primary-container text-sm" />
             </div>
 
             <!-- Opsional Foto Kamera -->
@@ -607,7 +599,7 @@
 
             <div class="p-3.5 rounded-xl bg-secondary-fixed/40 border border-secondary-fixed-dim/60 flex items-start gap-2.5 text-xs text-on-secondary-fixed">
               <span class="material-symbols-outlined text-secondary text-[18px] shrink-0">info</span>
-              <span><strong>Tata Tertib Sidang:</strong> Para pihak dimohon mengenakan pakaian rapi, menonaktifkan nada dering ponsel, dan menunggu panggilan di ruang tunggu sidang.</span>
+              <span><strong>Tata Tertib Sidang:</strong> Para pihak dimohon mengenakan pakaian rapi, menonaktifkan nada dering ponsel, dan menunggu panggilan di ruang tunggu sidang. Ruang sidang akan ditentukan dan dipanggil oleh petugas saat persidangan dimulai.</span>
             </div>
 
             <div class="pt-2 flex flex-col sm:flex-row gap-3">
@@ -1273,6 +1265,55 @@
         <button type="button" id="btn-jepret" class="w-full h-12 rounded-xl bg-primary-container text-white font-bold text-sm flex items-center justify-center gap-2">
           <span class="material-symbols-outlined">photo_camera</span> Ambil Gambar
         </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL PANGGIL SIDANG & PENETAPAN RUANG SIDANG OLEH PETUGAS/ADMIN -->
+  <div id="modal-panggil-sidang" class="hidden fixed inset-0 z-[94] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-outline-variant/40">
+      <div class="bg-secondary-container text-on-secondary-fixed px-5 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-[22px]">gavel</span>
+          <h3 class="font-display font-bold text-base">Panggil ke Ruang Sidang</h3>
+        </div>
+        <button type="button" id="btn-close-modal-panggil-sidang" class="p-1 rounded-lg hover:bg-black/10 transition-colors">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <div class="p-5 flex flex-col gap-4">
+        <!-- Info Tamu / Perkara -->
+        <div class="p-3.5 rounded-xl bg-surface-container-low border border-outline-variant/50">
+          <div class="flex items-center justify-between gap-2 mb-1">
+            <span id="mps-antrean" class="font-display font-extrabold text-lg text-secondary">S-001</span>
+            <span id="mps-peran" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-secondary-fixed text-on-secondary-fixed-variant">Penggugat</span>
+          </div>
+          <div id="mps-nama" class="font-bold text-sm text-on-surface">Nama Lengkap Tamu</div>
+          <div id="mps-perkara" class="text-xs text-on-surface-variant font-medium mt-0.5">Perkara: -</div>
+        </div>
+
+        <!-- Pilihan Ruang Sidang -->
+        <div>
+          <label for="mps-select-ruang" class="block text-xs font-bold text-outline uppercase mb-1.5">Tentukan Ruang Sidang <span class="text-error">*</span></label>
+          <select id="mps-select-ruang" class="w-full h-11 px-3 rounded-xl border border-outline-variant bg-white text-sm font-semibold focus:border-primary-container focus:ring-1 focus:ring-primary-container"></select>
+          <p class="text-[11px] text-on-surface-variant mt-1.5">Dipilih langsung oleh Petugas PTSP / Panitera / Admin saat perkara siap disidangkan.</p>
+        </div>
+
+        <!-- Checkbox Pengumuman Suara Otomatis -->
+        <label class="flex items-center gap-2.5 cursor-pointer text-xs font-medium text-on-surface select-none pt-1">
+          <input type="checkbox" id="mps-check-suara" checked class="w-4 h-4 rounded text-secondary focus:ring-secondary" />
+          <span>Bunyikan panggilan suara otomatis (Speaker / Sound)</span>
+        </label>
+
+        <!-- Tombol Aksi -->
+        <div class="pt-2 flex items-center justify-end gap-2.5">
+          <button type="button" id="btn-batal-panggil-sidang" class="px-4 h-11 rounded-xl border border-outline-variant hover:bg-surface-container-low text-xs font-semibold">Batal</button>
+          <button type="button" id="btn-submit-panggil-sidang" class="flex-1 px-4 h-11 rounded-xl bg-secondary-container hover:bg-secondary-fixed-dim text-on-secondary-fixed font-display font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm transition-all">
+            <span class="material-symbols-outlined text-[18px]">campaign</span>
+            <span>Panggil &amp; Masuk Sidang</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>

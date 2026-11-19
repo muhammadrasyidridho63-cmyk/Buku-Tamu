@@ -83,7 +83,7 @@ window.AppUI = (function () {
 
   function renderRuangSidangSelects() {
     const list = getRuangSidangList();
-    ['sidang-ruang', 'jdw-ruang'].forEach(function (id) {
+    ['jdw-ruang', 'mps-select-ruang'].forEach(function (id) {
       const sel = document.getElementById(id);
       if (!sel) return;
       const prev = sel.value;
@@ -611,8 +611,7 @@ window.AppUI = (function () {
       const nama = document.getElementById('sidang-nama').value.trim();
       const noHp = document.getElementById('sidang-hp').value.trim();
       const nomorPerkara = document.getElementById('sidang-cari-perkara').value.trim();
-      const ruangSidang = document.getElementById('sidang-ruang').value.trim();
-      const agendaSidang = document.getElementById('sidang-agenda').value.trim();
+      const agendaSidang = document.getElementById('sidang-agenda') ? document.getElementById('sidang-agenda').value.trim() : '';
 
       const errNama = document.getElementById('err-sidang-nama');
       const errPerkara = document.getElementById('err-sidang-perkara');
@@ -643,7 +642,7 @@ window.AppUI = (function () {
         noHp: normalisasiNoHpSubmit(noHp),
         peran: state.sidangPeran,
         nomorPerkara: nomorPerkara,
-        ruangSidang: ruangSidang || (getRuangSidangList()[0] && getRuangSidangList()[0].nama) || 'Ruang Sidang Utama',
+        ruangSidang: 'Belum Ditentukan',
         agenda: agendaSidang,
         fotoBase64: state.sidangFoto
       });
@@ -709,7 +708,8 @@ window.AppUI = (function () {
         const ag = b.getAttribute('data-agenda');
         state.sidangPerkara = np;
         document.getElementById('sidang-cari-perkara').value = np;
-        setSelectValueSafe(document.getElementById('sidang-ruang'), rs);
+        const sr = document.getElementById('sidang-ruang');
+        if (sr) setSelectValueSafe(sr, rs);
         const agInp = document.getElementById('sidang-agenda');
         if (agInp) agInp.value = ag || '';
         renderJadwalOptions();
@@ -792,12 +792,13 @@ window.AppUI = (function () {
     const cfg = (state.boot && state.boot.pengaturan) ? state.boot.pengaturan : {};
     const isPtsp = t.jalur === 'PTSP' || String(t.ID_Tiket).indexOf('PTSP-') === 0;
 
+    const ruangText = (t.Ruang_Sidang && t.Ruang_Sidang !== 'Belum Ditentukan' && t.Ruang_Sidang !== '-') ? (' (' + t.Ruang_Sidang + ')') : ' (Menunggu Panggilan Ruang)';
     document.getElementById('tkt-satker-nama').textContent = cfg.NAMA_SATKER || 'PENGADILAN TATA USAHA NEGARA';
     document.getElementById('tkt-satker-alamat').textContent = cfg.ALAMAT_SATKER || 'PTSP & Persidangan Terpadu';
     document.getElementById('tkt-nomor-antrean').textContent = t.Nomor_Antrean;
     document.getElementById('tkt-badge-tujuan').textContent = isPtsp
       ? ('LOKET PELAYANAN PTSP — ' + t.Loket_Tujuan)
-      : ('PERSIDANGAN — ' + t.Peran_Sidang + ' (' + t.Ruang_Sidang + ')');
+      : ('PERSIDANGAN — ' + t.Peran_Sidang + ruangText);
     document.getElementById('tkt-nama').textContent = t.Nama_Lengkap;
     document.getElementById('tkt-label-meta').textContent = isPtsp ? 'Asal Instansi' : 'Nomor Perkara';
     document.getElementById('tkt-val-meta').textContent = isPtsp ? t.Asal_Instansi : t.Nomor_Perkara;
@@ -1001,9 +1002,14 @@ window.AppUI = (function () {
         const isPtsp = r.jalur === 'PTSP';
         const status = isPtsp ? r.Status_Layanan : r.Status_Kehadiran;
         const subMeta = isPtsp ? esc(r.Asal_Instansi) : (esc(r.Peran_Sidang) + ' • ' + esc(r.No_HP || '-'));
+        const hasRuang = r.Ruang_Sidang && r.Ruang_Sidang !== 'Belum Ditentukan' && r.Ruang_Sidang !== '-';
         const tujuan = isPtsp
           ? ('<div class="font-semibold text-on-surface">Loket ' + esc(r.Loket_Tujuan) + '</div><div class="text-xs text-on-surface-variant">' + esc(r.Keperluan || '-') + '</div>')
-          : ('<div class="font-semibold text-on-surface">' + esc(r.Nomor_Perkara) + '</div><div class="text-xs text-on-surface-variant">' + esc(r.Ruang_Sidang) + '</div>');
+          : ('<div class="font-semibold text-on-surface">' + esc(r.Nomor_Perkara) + '</div>' +
+             (hasRuang
+               ? ('<div class="text-xs font-semibold text-primary-container flex items-center gap-1 mt-0.5"><span class="material-symbols-outlined text-[14px]">meeting_room</span>' + esc(r.Ruang_Sidang) + '</div>')
+               : '<div class="mt-0.5"><span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200"><span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>Ruang Belum Ditentukan</span></div>')
+            );
 
         let aksiHtml = '';
         if (isPtsp) {
@@ -1015,8 +1021,9 @@ window.AppUI = (function () {
           }
         } else {
           if (status === 'Hadir di Ruang Tunggu') {
-            aksiHtml += '<button type="button" data-act="masukSidang" data-id="' + esc(r.ID_Tiket) + '" data-jalur="SIDANG" class="act-btn px-3 h-9 rounded-lg bg-secondary-container hover:bg-secondary-fixed-dim text-on-secondary-fixed text-xs font-bold">Panggil Sidang</button>';
+            aksiHtml += '<button type="button" data-act="masukSidang" data-id="' + esc(r.ID_Tiket) + '" data-jalur="SIDANG" class="act-btn px-3 h-9 rounded-lg bg-secondary-container hover:bg-secondary-fixed-dim text-on-secondary-fixed text-xs font-bold inline-flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px]">campaign</span>Panggil Sidang</button>';
           } else if (status === 'Masuk Ruang Sidang') {
+            aksiHtml += '<button type="button" data-act="masukSidang" data-id="' + esc(r.ID_Tiket) + '" data-jalur="SIDANG" class="act-btn px-2.5 h-9 rounded-lg border border-outline-variant bg-white hover:bg-surface-container-low text-xs font-semibold mr-1 inline-flex items-center gap-1" title="Panggil Ulang atau Ubah Ruang Sidang"><span class="material-symbols-outlined text-[15px]">campaign</span>Panggil / Ganti Ruang</button>';
             aksiHtml += '<button type="button" data-act="selesai" data-id="' + esc(r.ID_Tiket) + '" data-jalur="SIDANG" class="act-btn px-3 h-9 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold">Selesaikan</button>';
           }
         }
@@ -1085,6 +1092,11 @@ window.AppUI = (function () {
       return;
     }
 
+    if (act === 'masukSidang') {
+      openModalPanggilSidang(item);
+      return;
+    }
+
     const prevSnapshot = Object.assign({}, item);
 
     if (act === 'checkout') {
@@ -1105,7 +1117,6 @@ window.AppUI = (function () {
 
     let nextStatus = '';
     if (act === 'layani') nextStatus = 'Dilayani';
-    else if (act === 'masukSidang') nextStatus = 'Masuk Ruang Sidang';
     else if (act === 'selesai') nextStatus = 'Selesai';
 
     if (jalur === 'PTSP') item.Status_Layanan = nextStatus;
@@ -1114,8 +1125,6 @@ window.AppUI = (function () {
 
     if (act === 'layani') {
       panggilSuara('Nomor antrean ' + item.Nomor_Antrean + ', silakan menuju Loket ' + item.Loket_Tujuan);
-    } else if (act === 'masukSidang') {
-      panggilSuara('Para pihak nomor perkara ' + item.Nomor_Perkara + ', ' + item.Nama_Lengkap + ', dipersilakan memasuki ' + item.Ruang_Sidang);
     }
 
     const res = await window.ApiClient.call('tamu.ubahStatus', {
@@ -1128,6 +1137,102 @@ window.AppUI = (function () {
       renderPantau();
       toast((res && res.message) || 'Gagal memperbarui status.', 'error');
     } else {
+      loadBootPublic(false);
+    }
+  }
+
+  function openModalPanggilSidang(item) {
+    state.activePanggilSidang = item;
+    const modal = document.getElementById('modal-panggil-sidang');
+    if (!modal) return;
+
+    document.getElementById('mps-antrean').textContent = item.Nomor_Antrean || '-';
+    document.getElementById('mps-peran').textContent = item.Peran_Sidang || 'Pihak Sidang';
+    document.getElementById('mps-nama').textContent = item.Nama_Lengkap || '-';
+    document.getElementById('mps-perkara').textContent = 'Perkara: ' + (item.Nomor_Perkara || '-');
+
+    renderRuangSidangSelects();
+    const sel = document.getElementById('mps-select-ruang');
+    const list = getRuangSidangList();
+
+    // Prioritas Ruang Sidang:
+    // 1. Ruang sidang yang saat ini tersimpan (jika sudah ada & bukan 'Belum Ditentukan')
+    // 2. Ruang sidang pihak lain dalam nomor perkara yang sama (sinkronisasi satu ruang perkara)
+    // 3. Ruang sidang dari jadwal hari ini untuk nomor perkara tersebut
+    // 4. Ruang pertama dari daftar master ruang
+    let defaultRuang = '';
+    if (item.Ruang_Sidang && item.Ruang_Sidang !== 'Belum Ditentukan' && item.Ruang_Sidang !== '-') {
+      defaultRuang = item.Ruang_Sidang;
+    } else {
+      const matchPihakLain = (state.pantau && state.pantau.sidang) ? state.pantau.sidang.find(function (s) {
+        return s.ID_Tiket !== item.ID_Tiket &&
+          String(s.Nomor_Perkara).trim() === String(item.Nomor_Perkara).trim() &&
+          s.Ruang_Sidang && s.Ruang_Sidang !== 'Belum Ditentukan' && s.Ruang_Sidang !== '-';
+      }) : null;
+      if (matchPihakLain) {
+        defaultRuang = matchPihakLain.Ruang_Sidang;
+      } else {
+        const jdw = (state.boot && state.boot.jadwalHariIni) ? state.boot.jadwalHariIni.find(function (j) {
+          return String(j.Nomor_Perkara).trim() === String(item.Nomor_Perkara).trim();
+        }) : null;
+        if (jdw && jdw.Ruang_Sidang) {
+          defaultRuang = jdw.Ruang_Sidang;
+        } else if (list.length) {
+          defaultRuang = list[0].nama;
+        }
+      }
+    }
+
+    if (sel && defaultRuang) {
+      setSelectValueSafe(sel, defaultRuang);
+    }
+
+    modal.classList.remove('hidden');
+    if (sel) sel.focus();
+  }
+
+  function closeModalPanggilSidang() {
+    const modal = document.getElementById('modal-panggil-sidang');
+    if (modal) modal.classList.add('hidden');
+    state.activePanggilSidang = null;
+  }
+
+  async function submitPanggilSidangModal() {
+    const item = state.activePanggilSidang;
+    if (!item) return;
+
+    const sel = document.getElementById('mps-select-ruang');
+    const ruang = sel ? sel.value.trim() : '';
+    if (!ruang) {
+      toast('Silakan pilih ruang sidang terlebih dahulu.', 'warning');
+      return;
+    }
+
+    const withSuara = document.getElementById('mps-check-suara') ? document.getElementById('mps-check-suara').checked : true;
+    closeModalPanggilSidang();
+
+    const prevSnapshot = Object.assign({}, item);
+    item.Ruang_Sidang = ruang;
+    item.Status_Kehadiran = 'Masuk Ruang Sidang';
+    renderPantau();
+
+    if (withSuara) {
+      panggilSuara('Para pihak nomor perkara ' + item.Nomor_Perkara + ', ' + item.Nama_Lengkap + ', dipersilakan memasuki ' + item.Ruang_Sidang);
+    }
+
+    const res = await window.ApiClient.call('tamu.ubahStatus', {
+      idTiket: item.ID_Tiket,
+      jalur: 'SIDANG',
+      status: 'Masuk Ruang Sidang',
+      ruangSidang: ruang
+    });
+
+    if (!res || !res.success) {
+      Object.assign(item, prevSnapshot);
+      renderPantau();
+      toast((res && res.message) || 'Gagal memanggil tamu ke ruang sidang.', 'error');
+    } else {
+      toast('Tamu ' + item.Nama_Lengkap + ' (' + item.Nomor_Antrean + ') dipanggil ke ' + ruang + '.', 'success');
       loadBootPublic(false);
     }
   }
@@ -2320,6 +2425,30 @@ window.AppUI = (function () {
     document.getElementById('btn-close-info').onclick = function () {
       document.getElementById('modal-info').classList.add('hidden');
     };
+
+    // Modal Panggil Sidang & Penetapan Ruang Sidang
+    const btnClosePanggil = document.getElementById('btn-close-modal-panggil-sidang');
+    if (btnClosePanggil) btnClosePanggil.onclick = closeModalPanggilSidang;
+    const btnBatalPanggil = document.getElementById('btn-batal-panggil-sidang');
+    if (btnBatalPanggil) btnBatalPanggil.onclick = closeModalPanggilSidang;
+    const btnSubmitPanggil = document.getElementById('btn-submit-panggil-sidang');
+    if (btnSubmitPanggil) btnSubmitPanggil.onclick = submitPanggilSidangModal;
+
+    const modalPanggil = document.getElementById('modal-panggil-sidang');
+    if (modalPanggil) {
+      modalPanggil.onclick = function (e) {
+        if (e.target === modalPanggil) closeModalPanggilSidang();
+      };
+    }
+    const mpsSel = document.getElementById('mps-select-ruang');
+    if (mpsSel) {
+      mpsSel.onkeydown = function (e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          submitPanggilSidangModal();
+        }
+      };
+    }
 
     document.getElementById('btn-panduan').onclick = function () {
       document.getElementById('modal-info-title').textContent = 'Panduan Penggunaan Kiosk SI-BUKU TAMU';

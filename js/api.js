@@ -513,7 +513,7 @@ window.ApiClient = (function () {
           No_HP: data.noHp || '',
           Peran_Sidang: data.peran || 'Penggugat',
           Nomor_Perkara: data.nomorPerkara.trim(),
-          Ruang_Sidang: data.ruangSidang || 'Ruang Sidang Utama (Kartika)',
+          Ruang_Sidang: data.ruangSidang || 'Belum Ditentukan',
           Agenda: data.agenda || '',
           Status_Kehadiran: 'Hadir di Ruang Tunggu',
           Link_Foto: data.fotoBase64 || '',
@@ -601,7 +601,10 @@ window.ApiClient = (function () {
         const item = list.find(function (r) { return r.ID_Tiket === data.idTiket; });
         if (!item) return { success: false, message: 'Tiket tidak ditemukan.' };
         if (data.jalur === 'PTSP') item.Status_Layanan = data.status;
-        else item.Status_Kehadiran = data.status;
+        else {
+          item.Status_Kehadiran = data.status;
+          if (data.ruangSidang) item.Ruang_Sidang = data.ruangSidang;
+        }
         if (data.status === 'Selesai' && data.autoCheckout) item.Waktu_Keluar = new Date().toISOString();
         saveDb(db);
         return { success: true, data: item, message: 'Status diperbarui.' };
