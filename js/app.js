@@ -1140,7 +1140,11 @@ window.AppUI = (function () {
     const res = await window.ApiClient.call('tamu.ubahStatus', {
       idTiket: idTiket,
       jalur: jalur,
-      status: nextStatus
+      status: nextStatus,
+      noHp: item.No_HP,
+      nama: item.Nama_Lengkap,
+      nomorAntrean: item.Nomor_Antrean,
+      loket: item.Loket_Tujuan
     });
     if (!res || !res.success) {
       Object.assign(item, prevSnapshot);
@@ -1234,7 +1238,13 @@ window.AppUI = (function () {
       idTiket: item.ID_Tiket,
       jalur: 'SIDANG',
       status: 'Masuk Ruang Sidang',
-      ruangSidang: ruang
+      ruangSidang: ruang,
+      noHp: item.No_HP,
+      nama: item.Nama_Lengkap,
+      nomorAntrean: item.Nomor_Antrean,
+      nomorPerkara: item.Nomor_Perkara,
+      peranSidang: item.Peran_Sidang,
+      agenda: item.Agenda
     });
 
     if (!res || !res.success) {
@@ -1576,10 +1586,62 @@ window.AppUI = (function () {
         toast(res.message, 'success');
         document.getElementById('form-rahasia').reset();
         applyMaskedSecrets(res.data || {});
+        loadWaStatus();
       } else {
         toast((res && res.message) || 'Gagal menyimpan rahasia.', 'error');
       }
     };
+
+    // WhatsApp Gateway: Cek Status & Tes Kirim
+    const btnCekWa = document.getElementById('btn-wa-cek-status');
+    if (btnCekWa) {
+      btnCekWa.onclick = async function () {
+        btnCekWa.disabled = true;
+        btnCekWa.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">sync</span><span>Memeriksa...</span>';
+        await loadWaStatus();
+        btnCekWa.disabled = false;
+        btnCekWa.innerHTML = '<span class="material-symbols-outlined text-sm">sync</span><span>Cek Status Koneksi Fonnte</span>';
+        toast('Status WhatsApp Gateway diperbarui.', 'info');
+      };
+    }
+
+    const btnTestWa = document.getElementById('btn-wa-test-kirim');
+    if (btnTestWa) {
+      btnTestWa.onclick = async function () {
+        const phone = (document.getElementById('wa-test-phone').value || '').trim();
+        const resultBox = document.getElementById('wa-test-result');
+        if (!phone) {
+          toast('Masukkan nomor WhatsApp tujuan uji coba terlebih dahulu.', 'warning');
+          return;
+        }
+        btnTestWa.disabled = true;
+        btnTestWa.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">refresh</span><span>Mengirim...</span>';
+        if (resultBox) {
+          resultBox.className = 'p-2.5 rounded-lg text-xs font-mono bg-slate-50 text-slate-600 border border-slate-200';
+          resultBox.textContent = 'Menghubungi Fonnte Gateway...';
+          resultBox.classList.remove('hidden');
+        }
+        const res = await window.ApiClient.call('wa.testKirim', { noHp: phone });
+        btnTestWa.disabled = false;
+        btnTestWa.innerHTML = '<span class="material-symbols-outlined text-sm">send</span><span>Kirim Tes</span>';
+
+        if (res && res.success) {
+          toast(res.message || 'Pesan uji coba terkirim!', 'success');
+          if (resultBox) {
+            resultBox.className = 'p-2.5 rounded-lg text-xs font-mono bg-emerald-50 text-emerald-800 border border-emerald-200';
+            resultBox.textContent = '✅ ' + (res.message || 'Pesan berhasil dikirim via Fonnte.');
+          }
+          loadWaStatus();
+        } else {
+          const msg = (res && res.message) || 'Gagal mengirim pesan uji coba.';
+          toast(msg, 'error');
+          if (resultBox) {
+            resultBox.className = 'p-2.5 rounded-lg text-xs font-mono bg-rose-50 text-rose-800 border border-rose-200';
+            resultBox.textContent = '❌ ' + msg;
+          }
+        }
+      };
+    }
 
     // Migrasi Dry-Run & Delta-Sync
     document.getElementById('btn-mig-pindai').onclick = function () { runMigrasi(true); };
@@ -2214,6 +2276,7 @@ window.AppUI = (function () {
     renderRuangSidangSelects();
 
     applyMaskedSecrets(res.data.rahasia || {});
+    loadWaStatus();
 
     window.StrukUI.renderEditor(
       document.getElementById('admin-template-editor'),
@@ -2233,6 +2296,45 @@ window.AppUI = (function () {
       const el = document.getElementById('mask-' + k);
       if (el) el.textContent = rah[k].ada ? ('[' + rah[k].samar + ']') : '[Belum diatur]';
     });
+  }
+
+  async function loadWaStatus() {
+    const badge = document.getElementById('wa-status-badge');
+    const deviceEl = document.getElementById('wa-device-num');
+    const quotaEl = document.getElementById('wa-quota-info');
+    const expEl = document.getElementById('wa-expired-info');
+    if (!badge) return;
+
+    badge.className = 'px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600 border border-slate-200 animate-pulse';
+    badge.textContent = 'Memeriksa...';
+
+    const res = await window.ApiClient.call('wa.cekStatus', {});
+    badge.classList.remove('animate-pulse');
+    if (res && res.success && res.data) {
+      const d = res.data;
+      if (!d.configured) {
+        badge.className = 'px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200';
+        badge.textContent = 'Token Belum Diatur';
+        if (deviceEl) deviceEl.textContent = 'Belum diisi di Script Properties';
+        if (quotaEl) quotaEl.textContent = '-';
+        if (expEl) expEl.textContent = '-';
+      } else if (d.connected || d.device_status === 'connect') {
+        badge.className = 'px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200';
+        badge.textContent = 'Terhubung';
+        if (deviceEl) deviceEl.textContent = d.device || '-';
+        if (quotaEl) quotaEl.textContent = (d.messages !== undefined ? d.messages : '-') + ' pesan' + (d.quota ? ' / kuota ' + d.quota : '');
+        if (expEl) expEl.textContent = d.expired || '-';
+      } else {
+        badge.className = 'px-2.5 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200';
+        badge.textContent = d.device_status === 'disconnect' ? 'Terputus (QR Expired)' : 'Koneksi Gagal';
+        if (deviceEl) deviceEl.textContent = d.device || '-';
+        if (quotaEl) quotaEl.textContent = d.messages !== undefined ? String(d.messages) : '-';
+        if (expEl) expEl.textContent = d.expired || '-';
+      }
+    } else {
+      badge.className = 'px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-500 border border-slate-200';
+      badge.textContent = 'Tidak Aktif';
+    }
   }
 
   async function runMigrasi(dryRun) {

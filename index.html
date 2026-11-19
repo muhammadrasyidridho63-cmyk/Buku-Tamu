@@ -912,7 +912,7 @@
           <button type="button" data-atab="ruang" class="atab-btn px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-on-surface-variant hover:text-on-surface whitespace-nowrap">Kelola Ruang Sidang</button>
           <button type="button" data-atab="users" class="atab-btn px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-on-surface-variant hover:text-on-surface whitespace-nowrap">Manajemen Pengguna (RBAC)</button>
           <button type="button" data-atab="pengaturan" class="atab-btn px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-on-surface-variant hover:text-on-surface whitespace-nowrap">Pengaturan, Printer &amp; Template</button>
-          <button type="button" data-atab="migrasi" class="atab-btn px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-on-surface-variant hover:text-on-surface whitespace-nowrap">Rahasia &amp; Migrasi Database</button>
+          <button type="button" data-atab="migrasi" class="atab-btn px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-on-surface-variant hover:text-on-surface whitespace-nowrap">WhatsApp Gateway, Rahasia &amp; Migrasi</button>
         </div>
 
         <!-- TAB 1: RIWAYAT -->
@@ -1133,9 +1133,58 @@
           </div>
         </div>
 
-        <!-- TAB 5: RAHASIA SCRIPT PROPERTIES & MIGRASI DATABASE -->
+        <!-- TAB 5: RAHASIA SCRIPT PROPERTIES, WHATSAPP GATEWAY & MIGRASI DATABASE -->
         <div id="atab-migrasi" class="atab-pane hidden p-5 grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <!-- Rahasia Kelas A -->
+          <!-- KARTU 1: WHATSAPP GATEWAY (FONNTE API) -->
+          <div class="p-5 rounded-xl border border-outline-variant/50 bg-surface-container-low/30 flex flex-col gap-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-emerald-600">chat</span>
+                <h3 class="font-display font-bold text-base">WhatsApp Gateway (Fonnte API)</h3>
+              </div>
+              <span id="wa-status-badge" class="px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600 border border-slate-200">
+                Memeriksa...
+              </span>
+            </div>
+            
+            <p class="text-xs text-on-surface-variant">Tiket antrean digital dan notifikasi pemanggilan (Loket PTSP &amp; Ruang Sidang) otomatis dikirimkan ke WhatsApp pengunjung.</p>
+
+            <!-- Box Status Device & Kuota -->
+            <div class="p-3.5 rounded-xl bg-white border border-outline-variant/60 flex flex-col gap-2 text-xs">
+              <div class="flex items-center justify-between pb-2 border-b border-outline-variant/30">
+                <span class="text-on-surface-variant font-medium">Perangkat Terhubung:</span>
+                <span id="wa-device-num" class="font-semibold text-on-surface font-mono">-</span>
+              </div>
+              <div class="flex items-center justify-between pb-2 border-b border-outline-variant/30">
+                <span class="text-on-surface-variant font-medium">Sisa Kuota Pesan:</span>
+                <span id="wa-quota-info" class="font-bold text-primary-container font-mono">-</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="text-on-surface-variant font-medium">Masa Aktif Paket:</span>
+                <span id="wa-expired-info" class="text-on-surface font-mono">-</span>
+              </div>
+            </div>
+
+            <button type="button" id="btn-wa-cek-status" class="h-9 px-3 rounded-lg border border-primary-container text-primary-container hover:bg-white text-xs font-bold flex items-center justify-center gap-1.5 self-start">
+              <span class="material-symbols-outlined text-sm">sync</span>
+              <span>Cek Status Koneksi Fonnte</span>
+            </button>
+
+            <!-- Uji Coba Kirim Pesan -->
+            <div class="pt-3 border-t border-outline-variant/40 flex flex-col gap-2.5">
+              <h4 class="font-display font-semibold text-xs text-on-surface">Uji Coba Kirim Pesan WhatsApp</h4>
+              <div class="flex gap-2">
+                <input id="wa-test-phone" type="text" placeholder="081234567890" class="flex-1 h-9 px-3 rounded-lg border border-outline-variant bg-white text-xs font-mono" />
+                <button type="button" id="btn-wa-test-kirim" class="h-9 px-3 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold flex items-center gap-1 whitespace-nowrap">
+                  <span class="material-symbols-outlined text-sm">send</span>
+                  <span>Kirim Tes</span>
+                </button>
+              </div>
+              <div id="wa-test-result" class="hidden p-2.5 rounded-lg text-xs font-mono"></div>
+            </div>
+          </div>
+
+          <!-- KARTU 2: RAHASIA KELAS A (SCRIPT PROPERTIES) -->
           <div class="p-5 rounded-xl border border-outline-variant/50 bg-surface-container-low/30 flex flex-col gap-3">
             <div class="flex items-center gap-2">
               <span class="material-symbols-outlined text-primary-container">key</span>
@@ -1144,8 +1193,9 @@
             <p class="text-xs text-on-surface-variant">Token tersimpan terisolasi di server GAS dan tidak pernah dikirim mentah ke browser. Kosongkan jika tidak ingin mengubah; isi <code>__HAPUS__</code> untuk menghapus.</p>
             <form id="form-rahasia" class="flex flex-col gap-3">
               <div>
-                <label class="block text-xs font-semibold mb-1">WA Gateway Token <span id="mask-WA_GATEWAY_TOKEN" class="text-outline font-mono"></span></label>
-                <input id="sec-wa-token" type="password" placeholder="Masukkan token baru atau biarkan kosong" class="w-full h-10 px-3 rounded-lg border border-outline-variant bg-white text-sm" />
+                <label class="block text-xs font-semibold mb-1">WA Gateway Token (Fonnte) <span id="mask-WA_GATEWAY_TOKEN" class="text-outline font-mono"></span></label>
+                <input id="sec-wa-token" type="password" placeholder="Masukkan token Fonnte Anda" class="w-full h-10 px-3 rounded-lg border border-outline-variant bg-white text-sm" />
+                <p class="text-[11px] text-on-surface-variant mt-1">Dapatkan token dari dashboard <a href="https://fonnte.com" target="_blank" rel="noopener noreferrer" class="text-primary-container underline font-semibold">fonnte.com</a></p>
               </div>
               <div>
                 <label class="block text-xs font-semibold mb-1">WA Gateway URL <span id="mask-WA_GATEWAY_URL" class="text-outline font-mono"></span></label>
@@ -1159,8 +1209,8 @@
             </form>
           </div>
 
-          <!-- Migrasi Database -->
-          <div class="p-5 rounded-xl border border-outline-variant/50 bg-surface-container-low/30 flex flex-col gap-3">
+          <!-- KARTU 3: MIGRASI DATABASE (LEBAR 2 KOLOM) -->
+          <div class="lg:col-span-2 p-5 rounded-xl border border-outline-variant/50 bg-surface-container-low/30 flex flex-col gap-3">
             <div class="flex items-center gap-2">
               <span class="material-symbols-outlined text-secondary">sync_alt</span>
               <h3 class="font-display font-bold text-base">Migrasi &amp; Delta-Sync Spreadsheet Lama</h3>

@@ -738,6 +738,37 @@ window.ApiClient = (function () {
         return { success: true, data: { LOGO_URL: val }, message: 'Logo pengadilan berhasil diperbarui!' };
       }
       if (action === 'rahasia.simpan') return { success: true, data: { WA_GATEWAY_TOKEN: { ada: true, samar: 'DEMO••••••XYZ' } }, message: 'Rahasia disimpan (Simulasi).' };
+      if (action === 'wa.cekStatus') {
+        return {
+          success: true,
+          data: {
+            configured: true,
+            status: true,
+            connected: true,
+            device: '0812-3456-7890 (PTUN Palembang)',
+            device_status: 'connect',
+            expired: '2026-12-31',
+            messages: 450,
+            quota: 1000,
+            package: 'Pro Business',
+            message: 'WhatsApp Gateway Fonnte aktif & terhubung (Mode Simulasi).'
+          },
+          message: 'Status Fonnte Gateway aktif (Simulasi).'
+        };
+      }
+      if (action === 'wa.testKirim') {
+        const noHp = (data && data.noHp) ? String(data.noHp).trim() : '';
+        if (!noHp) return { success: false, message: 'Nomor WhatsApp tujuan wajib diisi.' };
+        return {
+          success: true,
+          data: {
+            target: [noHp],
+            status: true,
+            detail: 'Pesan uji coba terkirim (Simulasi Demo)'
+          },
+          message: 'Pesan uji coba WhatsApp berhasil dikirim ke ' + noHp + ' (Mode Simulasi)!'
+        };
+      }
       if (action === 'printer.simpan') { db.printer = data; saveDb(db); return { success: true, data: db.printer, message: 'Printer disimpan.' }; }
       if (action === 'struk.simpan') {
         const t = db.templates.find(function (x) { return x.ID_Template === data.ID_Template; });
