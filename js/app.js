@@ -1592,7 +1592,96 @@ window.AppUI = (function () {
       }
     };
 
-    // WhatsApp Gateway: Cek Status & Tes Kirim
+    // WhatsApp Gateway: Panel Pengaturan Token, Cek Status & Tes Kirim
+    function toggleWaSettingsPanel(forceOpen) {
+      const panel = document.getElementById('wa-panel-pengaturan');
+      if (!panel) return;
+      if (forceOpen === true) panel.classList.remove('hidden');
+      else if (forceOpen === false) panel.classList.add('hidden');
+      else panel.classList.toggle('hidden');
+
+      if (!panel.classList.contains('hidden')) {
+        const inp = document.getElementById('wa-card-token-input');
+        if (inp) inp.focus();
+      }
+    }
+
+    const btnBukaPengaturanWa = document.getElementById('btn-wa-buka-pengaturan');
+    if (btnBukaPengaturanWa) {
+      btnBukaPengaturanWa.onclick = function () { toggleWaSettingsPanel(); };
+    }
+
+    const btnBukaPengaturanHeaderWa = document.getElementById('btn-wa-buka-pengaturan-header');
+    if (btnBukaPengaturanHeaderWa) {
+      btnBukaPengaturanHeaderWa.onclick = function () { toggleWaSettingsPanel(); };
+    }
+
+    const badgeWaStatus = document.getElementById('wa-status-badge');
+    if (badgeWaStatus) {
+      badgeWaStatus.onclick = function () { toggleWaSettingsPanel(); };
+    }
+
+    const btnTutupPanelWa = document.getElementById('btn-wa-panel-tutup');
+    if (btnTutupPanelWa) {
+      btnTutupPanelWa.onclick = function () { toggleWaSettingsPanel(false); };
+    }
+
+    const btnBatalPanelWa = document.getElementById('btn-wa-panel-batal');
+    if (btnBatalPanelWa) {
+      btnBatalPanelWa.onclick = function () { toggleWaSettingsPanel(false); };
+    }
+
+    // Toggle Visibility Password Token Fonnte
+    const btnToggleVis = document.getElementById('btn-toggle-wa-token-visibility');
+    if (btnToggleVis) {
+      btnToggleVis.onclick = function () {
+        const inp = document.getElementById('wa-card-token-input');
+        const icon = document.getElementById('icon-toggle-wa-token');
+        if (!inp) return;
+        if (inp.type === 'password') {
+          inp.type = 'text';
+          if (icon) icon.textContent = 'visibility_off';
+        } else {
+          inp.type = 'password';
+          if (icon) icon.textContent = 'visibility';
+        }
+      };
+    }
+
+    // Simpan Token dari Panel WhatsApp
+    const btnSimpanWaPanel = document.getElementById('btn-wa-panel-simpan');
+    if (btnSimpanWaPanel) {
+      btnSimpanWaPanel.onclick = async function () {
+        const tokenVal = (document.getElementById('wa-card-token-input').value || '').trim();
+        const urlVal = (document.getElementById('wa-card-url-input').value || '').trim();
+        if (!tokenVal) {
+          toast('Masukkan token Fonnte terlebih dahulu.', 'warning');
+          return;
+        }
+
+        btnSimpanWaPanel.disabled = true;
+        btnSimpanWaPanel.innerHTML = '<span class="material-symbols-outlined text-sm animate-spin">refresh</span><span>Menyimpan...</span>';
+
+        const res = await window.ApiClient.call('rahasia.simpan', {
+          WA_GATEWAY_TOKEN: tokenVal,
+          WA_GATEWAY_URL: urlVal || 'https://api.fonnte.com/send'
+        });
+
+        btnSimpanWaPanel.disabled = false;
+        btnSimpanWaPanel.innerHTML = '<span class="material-symbols-outlined text-sm">save</span><span>Simpan Token</span>';
+
+        if (res && res.success) {
+          toast('Token WhatsApp Gateway berhasil disimpan ke Script Properties!', 'success');
+          document.getElementById('wa-card-token-input').value = '';
+          toggleWaSettingsPanel(false);
+          applyMaskedSecrets(res.data || {});
+          await loadWaStatus();
+        } else {
+          toast((res && res.message) || 'Gagal menyimpan token.', 'error');
+        }
+      };
+    }
+
     const btnCekWa = document.getElementById('btn-wa-cek-status');
     if (btnCekWa) {
       btnCekWa.onclick = async function () {
@@ -2296,6 +2385,13 @@ window.AppUI = (function () {
       const el = document.getElementById('mask-' + k);
       if (el) el.textContent = rah[k].ada ? ('[' + rah[k].samar + ']') : '[Belum diatur]';
     });
+    if (rah && rah.WA_GATEWAY_TOKEN) {
+      const cardMask = document.getElementById('wa-card-mask-status');
+      if (cardMask) {
+        cardMask.textContent = rah.WA_GATEWAY_TOKEN.ada ? ('[' + rah.WA_GATEWAY_TOKEN.samar + ']') : '[Belum diatur]';
+        cardMask.className = rah.WA_GATEWAY_TOKEN.ada ? 'text-[11px] font-mono text-emerald-700 font-semibold' : 'text-[11px] font-mono text-amber-700';
+      }
+    }
   }
 
   async function loadWaStatus() {
@@ -2305,7 +2401,7 @@ window.AppUI = (function () {
     const expEl = document.getElementById('wa-expired-info');
     if (!badge) return;
 
-    badge.className = 'px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600 border border-slate-200 animate-pulse';
+    badge.className = 'px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-600 border border-slate-200 animate-pulse cursor-pointer';
     badge.textContent = 'Memeriksa...';
 
     const res = await window.ApiClient.call('wa.cekStatus', {});
@@ -2313,26 +2409,26 @@ window.AppUI = (function () {
     if (res && res.success && res.data) {
       const d = res.data;
       if (!d.configured) {
-        badge.className = 'px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200';
+        badge.className = 'px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 cursor-pointer hover:bg-amber-100';
         badge.textContent = 'Token Belum Diatur';
         if (deviceEl) deviceEl.textContent = 'Belum diisi di Script Properties';
         if (quotaEl) quotaEl.textContent = '-';
         if (expEl) expEl.textContent = '-';
       } else if (d.connected || d.device_status === 'connect') {
-        badge.className = 'px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200';
+        badge.className = 'px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 cursor-pointer hover:bg-emerald-100';
         badge.textContent = 'Terhubung';
         if (deviceEl) deviceEl.textContent = d.device || '-';
         if (quotaEl) quotaEl.textContent = (d.messages !== undefined ? d.messages : '-') + ' pesan' + (d.quota ? ' / kuota ' + d.quota : '');
         if (expEl) expEl.textContent = d.expired || '-';
       } else {
-        badge.className = 'px-2.5 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200';
+        badge.className = 'px-2.5 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200 cursor-pointer hover:bg-rose-100';
         badge.textContent = d.device_status === 'disconnect' ? 'Terputus (QR Expired)' : 'Koneksi Gagal';
         if (deviceEl) deviceEl.textContent = d.device || '-';
         if (quotaEl) quotaEl.textContent = d.messages !== undefined ? String(d.messages) : '-';
         if (expEl) expEl.textContent = d.expired || '-';
       }
     } else {
-      badge.className = 'px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-500 border border-slate-200';
+      badge.className = 'px-2.5 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-500 border border-slate-200 cursor-pointer';
       badge.textContent = 'Tidak Aktif';
     }
   }
