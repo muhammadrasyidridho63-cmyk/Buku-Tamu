@@ -360,7 +360,7 @@ window.AppUI = (function () {
     };
     const topTitle = document.getElementById('topbar-view-title');
     if (topTitle) {
-      topTitle.innerHTML = '<span>' + (titleMap[target] || 'Beranda') + '</span>';
+      topTitle.textContent = titleMap[target] || 'Beranda';
     }
 
     if (window.innerWidth < 1024) {
@@ -445,7 +445,7 @@ window.AppUI = (function () {
     if (state.boot && state.boot.pengaturan) {
       state.boot.pengaturan.NAMA_SATKER = clean;
     }
-    ['hero-satker-name', 'nav-satker-subtitle', 'staff-satker-subtitle', 'sidebar-satker-subtitle', 'dash-satker-name', 'footer-satker-name', 'tkt-satker-nama'].forEach(function (id) {
+    ['hero-satker-name', 'nav-satker-subtitle', 'sidebar-satker-subtitle', 'dash-satker-name', 'footer-satker-name', 'tkt-satker-nama'].forEach(function (id) {
       const el = document.getElementById(id);
       if (el) el.textContent = clean;
     });
