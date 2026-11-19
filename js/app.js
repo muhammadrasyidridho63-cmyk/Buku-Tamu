@@ -412,7 +412,7 @@ window.AppUI = (function () {
       if (ddRole) ddRole.textContent = '@' + u.username + ' • ' + u.role;
     } else {
       initEl.textContent = 'T';
-      nameEl.textContent = 'Mode Kiosk';
+      nameEl.textContent = 'Mode Login';
       roleEl.textContent = 'Publik / Tamu';
       iconEl.textContent = 'lock';
       document.getElementById('btn-auth-chip').title = 'Login Petugas / Pimpinan';
