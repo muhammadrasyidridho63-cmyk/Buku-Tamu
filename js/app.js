@@ -319,7 +319,6 @@ window.AppUI = (function () {
     // 2. Navbar horizontal atas tetap untuk Pengunjung Publik (belum login)
     updateLayoutMode();
     closeSidebarMobile();
-    closeSidebarUserDropdown();
 
     // Update active state nav pills
     document.querySelectorAll('.nav-pill').forEach(function (b) {
@@ -418,32 +417,6 @@ window.AppUI = (function () {
       iconEl.textContent = 'lock';
       document.getElementById('btn-auth-chip').title = 'Login Petugas / Pimpinan';
       closeUserDropdown();
-    }
-
-    // Update badge identitas pengguna & tombol mode akun di Footer Sidebar (Menu Samping)
-    const sbAvatar = document.getElementById('sidebar-user-avatar');
-    const sbName = document.getElementById('sidebar-user-name');
-    const sbRole = document.getElementById('sidebar-user-role');
-    const sbIcon = document.getElementById('sidebar-user-icon');
-    const sbBadge = document.getElementById('sidebar-user-badge');
-    const sbDdName = document.getElementById('sb-dd-user-name');
-    const sbDdRole = document.getElementById('sb-dd-user-role');
-
-    if (u) {
-      if (sbAvatar) sbAvatar.textContent = (u.nama || u.username || 'P').charAt(0).toUpperCase();
-      if (sbName) sbName.textContent = u.nama || u.username;
-      if (sbRole) sbRole.textContent = u.role + ' (Aktif)';
-      if (sbIcon) sbIcon.textContent = 'unfold_more';
-      if (sbBadge) sbBadge.title = 'Menu Akun: Edit Password / Keluar';
-      if (sbDdName) sbDdName.textContent = u.nama || u.username;
-      if (sbDdRole) sbDdRole.textContent = '@' + u.username + ' • ' + u.role;
-    } else {
-      if (sbAvatar) sbAvatar.textContent = 'T';
-      if (sbName) sbName.textContent = 'Mode Kiosk';
-      if (sbRole) sbRole.textContent = 'Publik / Tamu (Login)';
-      if (sbIcon) sbIcon.textContent = 'lock';
-      if (sbBadge) sbBadge.title = 'Login Petugas / Administrator';
-      closeSidebarUserDropdown();
     }
 
     // Terapkan layout mode: Samping untuk Petugas/Admin, Atas untuk Pengunjung Publik
@@ -2928,23 +2901,12 @@ window.AppUI = (function () {
     if (dd) dd.classList.toggle('hidden');
   }
 
-  function closeSidebarUserDropdown() {
-    const dd = document.getElementById('sidebar-user-dropdown');
-    if (dd) dd.classList.add('hidden');
-  }
-
-  function toggleSidebarUserDropdown() {
-    const dd = document.getElementById('sidebar-user-dropdown');
-    if (dd) dd.classList.toggle('hidden');
-  }
-
   function closeProfilModal() {
     document.getElementById('modal-profil').classList.add('hidden');
   }
 
   async function performLogout() {
     closeUserDropdown();
-    closeSidebarUserDropdown();
     closeProfilModal();
     await window.ApiClient.call('auth.logout', {});
     window.ApiClient.setSession('', null);
@@ -2954,7 +2916,6 @@ window.AppUI = (function () {
   }
 
   function initModals() {
-    // 1. Menu Profil & Login di Topbar
     document.getElementById('btn-auth-chip').onclick = function (e) {
       e.stopPropagation();
       const u = window.ApiClient.getUser();
@@ -2972,51 +2933,15 @@ window.AppUI = (function () {
 
     document.getElementById('btn-menu-logout').onclick = performLogout;
 
-    // 2. Menu Profil & Login di Sidebar Bawah (Aktif & Interaktif seperti di Atas)
-    const sbUserBtn = document.getElementById('sidebar-user-badge');
-    if (sbUserBtn) {
-      sbUserBtn.onclick = function (e) {
-        e.stopPropagation();
-        const u = window.ApiClient.getUser();
-        if (u) {
-          toggleSidebarUserDropdown();
-        } else {
-          openLoginModal();
-        }
-      };
-    }
-
-    const btnSbEditPw = document.getElementById('btn-sb-menu-edit-pw');
-    if (btnSbEditPw) {
-      btnSbEditPw.onclick = function () {
-        closeSidebarUserDropdown();
-        openProfilModal();
-      };
-    }
-
-    const btnSbLogout = document.getElementById('btn-sb-menu-logout');
-    if (btnSbLogout) {
-      btnSbLogout.onclick = function () {
-        closeSidebarUserDropdown();
-        performLogout();
-      };
-    }
-
     // Tutup dropdown saat klik di luar
     document.addEventListener('click', function (e) {
       const wrap = document.getElementById('user-menu-wrap');
       if (wrap && !wrap.contains(e.target)) closeUserDropdown();
-      const sbWrap = document.getElementById('sidebar-user-dropdown');
-      const sbBtn = document.getElementById('sidebar-user-badge');
-      if (sbWrap && sbBtn && !sbWrap.contains(e.target) && !sbBtn.contains(e.target)) {
-        closeSidebarUserDropdown();
-      }
     });
 
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape') {
         closeUserDropdown();
-        closeSidebarUserDropdown();
       }
     });
 
