@@ -1575,6 +1575,37 @@ window.AppUI = (function () {
   }
 
   function openAdminTab(t) {
+    const isSettings = (t !== 'riwayat');
+    const analyticsSec = document.getElementById('dash-analytics-section');
+    const settingsHeader = document.getElementById('dash-settings-header');
+    if (analyticsSec) analyticsSec.classList.toggle('hidden', isSettings);
+    if (settingsHeader) settingsHeader.classList.toggle('hidden', !isSettings);
+
+    const tabConfig = {
+      riwayat: { title: 'Dashboard Analitik & Rekapitulasi Tamu', icon: 'analytics', desc: 'Laporan analitik terpadu kunjungan PTSP dan persidangan.' },
+      display: { title: 'Pengaturan Display Antrean TV', icon: 'smart_display', desc: 'Atur siaran video YouTube, running text pengumuman, dan kontrol audio TV antrean.' },
+      pengaturan: { title: 'Pengaturan Sistem, Printer & Footer', icon: 'tune', desc: 'Konfigurasi nama satker, logo, alamat kantor, template struk thermal, dan footer resmi.' },
+      ruang: { title: 'Pengaturan Kelola Ruang Sidang', icon: 'meeting_room', desc: 'Manajemen daftar ruang sidang aktif untuk pemanggilan pihak dan rol persidangan.' },
+      jadwal: { title: 'Pengaturan Kelola Jadwal Sidang', icon: 'calendar_month', desc: 'Kelola agenda sidang harian, sinkronisasi perkara, dan data jadwal persidangan.' },
+      users: { title: 'Pengaturan Manajemen Pengguna (RBAC)', icon: 'group', desc: 'Manajemen akun petugas, peran hak akses (Admin/PTSP/Panitera/Satpam), dan PIN keamanan.' },
+      crm: { title: 'Pengaturan WhatsApp CRM & Blast', icon: 'forum', desc: 'Integrasi WhatsApp gateway Fonnte, template notifikasi otomatis, dan siaran massal.' },
+      migrasi: { title: 'Pengaturan Rahasia & Migrasi Database', icon: 'database', desc: 'Script Properties aman, token gateway, dan backup/migrasi struktur spreadsheet.' }
+    };
+
+    const cfg = tabConfig[t] || { title: 'Pengaturan Sistem & Layanan', icon: 'settings', desc: 'Konfigurasi operasional aplikasi.' };
+
+    const headerTitle = document.getElementById('dash-settings-header-title');
+    const headerDesc = document.getElementById('dash-settings-header-desc');
+    const headerIcon = document.getElementById('dash-settings-header-icon');
+    if (headerTitle) headerTitle.textContent = cfg.title;
+    if (headerDesc) headerDesc.textContent = cfg.desc;
+    if (headerIcon) headerIcon.textContent = cfg.icon;
+
+    const topTitle = document.getElementById('topbar-view-title');
+    if (topTitle && state.view === 'dashboard') {
+      topTitle.textContent = cfg.title;
+    }
+
     document.querySelectorAll('.atab-btn').forEach(function (b) {
       const active = b.getAttribute('data-atab') === t;
       b.className = active
@@ -1592,6 +1623,9 @@ window.AppUI = (function () {
     if (t === 'crm') loadNotifCrmTab();
 
     updateSidebarSubmenu(t);
+
+    // Langsung bawa tampilan ke paling atas agar formulir menu yang diklik langsung berada di layar
+    window.scrollTo({ top: 0, behavior: 'instant' });
   }
 
   function updateSidebarSubmenu(activeAtab) {
@@ -1744,37 +1778,30 @@ window.AppUI = (function () {
         const subContainer = document.getElementById('nav-sub-pengaturan');
         const chevron = document.getElementById('nav-pengaturan-chevron');
         if (subContainer) {
-          const isCurrentlyHidden = subContainer.classList.contains('hidden');
-          if (isCurrentlyHidden) {
-            subContainer.classList.remove('hidden');
-            if (chevron) chevron.classList.add('rotate-180');
-            if (state.view !== 'dashboard') {
-              goView('dashboard');
-              openAdminTab('pengaturan');
-            }
-          } else {
-            subContainer.classList.add('hidden');
-            if (chevron) chevron.classList.remove('rotate-180');
-          }
-        } else {
-          closeSidebarMobile();
-          goView('dashboard');
-          openAdminTab('pengaturan');
+          subContainer.classList.remove('hidden');
+          if (chevron) chevron.classList.add('rotate-180');
         }
+        closeSidebarMobile();
+        goView('dashboard');
+        openAdminTab('pengaturan');
       };
     }
 
-    // Sub-menu Pengaturan Lengkap listener
+    // Tombol kembali ke Dashboard & Laporan dari header pengaturan
+    const btnBackToAnalytics = document.getElementById('btn-back-to-analytics');
+    if (btnBackToAnalytics) {
+      btnBackToAnalytics.onclick = function () {
+        openAdminTab('riwayat');
+      };
+    }
+
+    // Sub-menu Pengaturan Lengkap listener: langsung tertuju ke menu yang dipilih
     document.querySelectorAll('.nav-sub-btn').forEach(function (btn) {
       btn.onclick = function () {
         const targetTab = btn.getAttribute('data-atab-nav');
         closeSidebarMobile();
         goView('dashboard');
         openAdminTab(targetTab);
-        const subTabsWrap = document.getElementById('admin-subtabs');
-        if (subTabsWrap) {
-          subTabsWrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        }
       };
     });
 
@@ -4161,7 +4188,13 @@ window.AppUI = (function () {
 
     // Navigation click listeners
     document.querySelectorAll('[data-nav]').forEach(function (el) {
-      el.onclick = function () { goView(el.getAttribute('data-nav')); };
+      el.onclick = function () {
+        const v = el.getAttribute('data-nav');
+        goView(v);
+        if (v === 'dashboard') {
+          openAdminTab('riwayat');
+        }
+      };
     });
 
     // Pantau mode tabs & search

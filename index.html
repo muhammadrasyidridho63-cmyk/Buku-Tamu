@@ -1154,85 +1154,106 @@
     <!-- VIEW 6: DASHBOARD ANALITIK & LAPORAN PIMPINAN (ADMIN)              -->
     <!-- ================================================================== -->
     <section id="view-dashboard" class="view-panel hidden max-w-[1440px] mx-auto px-4 sm:px-6 py-6 flex flex-col gap-6">
-      <!-- Header + Export -->
-      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-        <div>
-          <div class="flex items-center gap-2.5">
-            <h1 class="font-display text-2xl sm:text-3xl font-extrabold text-on-surface">Dashboard Analitik &amp; Rekapitulasi Buku Tamu</h1>
-            <span class="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-secondary-fixed text-on-secondary-fixed-variant">Eksekutif Pimpinan</span>
+      
+      <!-- Header Khusus Pengaturan Lengkap (Tampil saat membuka salah satu menu pengaturan) -->
+      <div id="dash-settings-header" class="hidden flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-outline-variant/40 no-print">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center shadow-sm shrink-0">
+            <span id="dash-settings-header-icon" class="material-symbols-outlined text-[22px]">settings</span>
           </div>
-          <p class="text-sm text-on-surface-variant mt-1">Laporan terpadu kunjungan PTSP dan kehadiran persidangan <span id="dash-satker-name">Pengadilan Tata Usaha Negara</span>.</p>
+          <div>
+            <h1 id="dash-settings-header-title" class="font-display text-xl sm:text-2xl font-extrabold text-on-surface">Pengaturan Sistem &amp; Layanan</h1>
+            <p id="dash-settings-header-desc" class="text-xs text-on-surface-variant">Konfigurasi operasional aplikasi, display antrean, printer struk, ruang sidang, dan hak akses.</p>
+          </div>
         </div>
-        <div class="flex flex-wrap items-center gap-2.5 no-print">
-          <input id="dash-start" type="date" class="h-10 px-3 rounded-xl border border-outline-variant bg-white text-xs font-semibold" />
-          <span class="text-xs text-outline">s/d</span>
-          <input id="dash-end" type="date" class="h-10 px-3 rounded-xl border border-outline-variant bg-white text-xs font-semibold" />
-          <select id="dash-jalur" class="h-10 px-3 rounded-xl border border-outline-variant bg-white text-xs font-semibold">
-            <option value="ALL">Semua Jalur Layanan</option>
-            <option value="PTSP">Khusus PTSP</option>
-            <option value="SIDANG">Khusus Persidangan</option>
-          </select>
-          <button type="button" id="btn-dash-filter" class="h-10 px-4 rounded-xl bg-surface-container hover:bg-surface-container-high text-xs font-bold">Terapkan</button>
-          <button type="button" id="btn-export-csv" class="h-10 px-4 rounded-xl border border-outline-variant bg-white hover:bg-surface-container-low text-xs font-bold flex items-center gap-1.5">
-            <span class="material-symbols-outlined text-[16px]">table_view</span> Unduh Excel (.csv)
-          </button>
-          <button type="button" id="btn-export-pdf" class="h-10 px-4 rounded-xl bg-primary-container hover:bg-primary text-white text-xs font-bold flex items-center gap-1.5 shadow-sm">
-            <span class="material-symbols-outlined text-[16px]">picture_as_pdf</span> Cetak Rekap PDF
-          </button>
-        </div>
+        <button type="button" id="btn-back-to-analytics" class="h-9 px-3.5 rounded-xl border border-outline-variant bg-white hover:bg-surface-container-high text-xs font-semibold text-on-surface flex items-center gap-1.5 self-start sm:self-auto shadow-xs transition-colors">
+          <span class="material-symbols-outlined text-[17px] text-primary">analytics</span>
+          <span>Buka Dashboard &amp; Laporan</span>
+        </button>
       </div>
 
-      <!-- Pengaturan Cepat Nama Pengadilan -->
-      <form id="form-dash-nama-pengadilan" class="bg-white rounded-2xl p-4 sm:p-5 border border-outline-variant/40 shadow-sm flex flex-col md:flex-row md:items-end justify-between gap-3 no-print">
-        <div class="flex-1">
-          <div class="flex items-center gap-2 mb-1.5">
-            <span class="material-symbols-outlined text-primary-container text-[18px]">account_balance</span>
-            <label for="dash-nama-pengadilan" class="text-xs font-bold uppercase tracking-wider text-outline">Nama Pengadilan (Tampil di Kiosk, Header, Tiket &amp; Struk)</label>
+      <!-- SECTION DASHBOARD ANALITIK & KPI (Hanya tampil saat tab Riwayat Tamu / Dashboard aktif) -->
+      <div id="dash-analytics-section" class="flex flex-col gap-6">
+        <!-- Header + Export -->
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-2.5">
+              <h1 class="font-display text-2xl sm:text-3xl font-extrabold text-on-surface">Dashboard Analitik &amp; Rekapitulasi Buku Tamu</h1>
+              <span class="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-secondary-fixed text-on-secondary-fixed-variant">Eksekutif Pimpinan</span>
+            </div>
+            <p class="text-sm text-on-surface-variant mt-1">Laporan terpadu kunjungan PTSP dan kehadiran persidangan <span id="dash-satker-name">Pengadilan Tata Usaha Negara</span>.</p>
           </div>
-          <input id="dash-nama-pengadilan" type="text" required placeholder="Contoh: PENGADILAN TATA USAHA NEGARA PALEMBANG" class="w-full h-10 px-3.5 rounded-xl border border-outline-variant bg-surface-container-low/40 focus:bg-white text-sm font-semibold text-on-surface" />
+          <div class="flex flex-wrap items-center gap-2.5 no-print">
+            <input id="dash-start" type="date" class="h-10 px-3 rounded-xl border border-outline-variant bg-white text-xs font-semibold" />
+            <span class="text-xs text-outline">s/d</span>
+            <input id="dash-end" type="date" class="h-10 px-3 rounded-xl border border-outline-variant bg-white text-xs font-semibold" />
+            <select id="dash-jalur" class="h-10 px-3 rounded-xl border border-outline-variant bg-white text-xs font-semibold">
+              <option value="ALL">Semua Jalur Layanan</option>
+              <option value="PTSP">Khusus PTSP</option>
+              <option value="SIDANG">Khusus Persidangan</option>
+            </select>
+            <button type="button" id="btn-dash-filter" class="h-10 px-4 rounded-xl bg-surface-container hover:bg-surface-container-high text-xs font-bold">Terapkan</button>
+            <button type="button" id="btn-export-csv" class="h-10 px-4 rounded-xl border border-outline-variant bg-white hover:bg-surface-container-low text-xs font-bold flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[16px]">table_view</span> Unduh Excel (.csv)
+            </button>
+            <button type="button" id="btn-export-pdf" class="h-10 px-4 rounded-xl bg-primary-container hover:bg-primary text-white text-xs font-bold flex items-center gap-1.5 shadow-sm">
+              <span class="material-symbols-outlined text-[16px]">picture_as_pdf</span> Cetak Rekap PDF
+            </button>
+          </div>
         </div>
-        <div class="flex items-center gap-2 shrink-0">
-          <button type="submit" id="btn-simpan-nama-pengadilan" class="h-10 px-4 rounded-xl bg-primary-container hover:bg-primary text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-colors">
-            <span class="material-symbols-outlined text-[16px]">save</span> Simpan Nama Pengadilan
-          </button>
-        </div>
-      </form>
 
-      <!-- 4 KPI Cards -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="bg-white rounded-2xl p-5 border border-outline-variant/40 shadow-sm">
-          <span class="text-xs font-bold uppercase tracking-wider text-outline">Total Pengunjung</span>
-          <div id="d-kpi-total" class="font-display text-3xl font-extrabold text-on-surface mt-2">0</div>
-          <span class="text-xs text-emerald-700 font-medium">Akumulasi rentang terpilih</span>
-        </div>
-        <div class="bg-white rounded-2xl p-5 border border-outline-variant/40 shadow-sm">
-          <span class="text-xs font-bold uppercase tracking-wider text-outline">Tamu Pelayanan PTSP</span>
-          <div id="d-kpi-ptsp" class="font-display text-3xl font-extrabold text-primary-container mt-2">0</div>
-          <span id="d-kpi-ptsp-pct" class="text-xs text-on-surface-variant">0% dari total kunjungan</span>
-        </div>
-        <div class="bg-white rounded-2xl p-5 border border-outline-variant/40 shadow-sm">
-          <span class="text-xs font-bold uppercase tracking-wider text-outline">Tamu Persidangan</span>
-          <div id="d-kpi-sidang" class="font-display text-3xl font-extrabold text-secondary mt-2">0</div>
-          <span id="d-kpi-sidang-pct" class="text-xs text-on-surface-variant">0% dari total kunjungan</span>
-        </div>
-        <div class="bg-white rounded-2xl p-5 border border-outline-variant/40 shadow-sm">
-          <span class="text-xs font-bold uppercase tracking-wider text-outline">Rata-rata Durasi Layanan</span>
-          <div id="d-kpi-durasi" class="font-display text-3xl font-extrabold text-on-surface mt-2">0 m</div>
-          <span class="text-xs text-emerald-700 font-medium">Check-in s/d Check-out</span>
-        </div>
-      </div>
+        <!-- Pengaturan Cepat Nama Pengadilan -->
+        <form id="form-dash-nama-pengadilan" class="bg-white rounded-2xl p-4 sm:p-5 border border-outline-variant/40 shadow-sm flex flex-col md:flex-row md:items-end justify-between gap-3 no-print">
+          <div class="flex-1">
+            <div class="flex items-center gap-2 mb-1.5">
+              <span class="material-symbols-outlined text-primary-container text-[18px]">account_balance</span>
+              <label for="dash-nama-pengadilan" class="text-xs font-bold uppercase tracking-wider text-outline">Nama Pengadilan (Tampil di Kiosk, Header, Tiket &amp; Struk)</label>
+            </div>
+            <input id="dash-nama-pengadilan" type="text" required placeholder="Contoh: PENGADILAN TATA USAHA NEGARA PALEMBANG" class="w-full h-10 px-3.5 rounded-xl border border-outline-variant bg-surface-container-low/40 focus:bg-white text-sm font-semibold text-on-surface" />
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <button type="submit" id="btn-simpan-nama-pengadilan" class="h-10 px-4 rounded-xl bg-primary-container hover:bg-primary text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-colors">
+              <span class="material-symbols-outlined text-[16px]">save</span> Simpan Nama Pengadilan
+            </button>
+          </div>
+        </form>
 
-      <!-- Charts Grid -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        <div class="lg:col-span-8 bg-white rounded-2xl p-5 border border-outline-variant/40 shadow-sm">
-          <h2 class="font-display font-bold text-base text-on-surface mb-1">Tren Kunjungan Harian</h2>
-          <p class="text-xs text-on-surface-variant mb-4">Perbandingan volume kunjungan PTSP vs Kehadiran Sidang</p>
-          <div class="h-64"><canvas id="chart-tren"></canvas></div>
+        <!-- 4 KPI Cards -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div class="bg-white rounded-2xl p-5 border border-outline-variant/40 shadow-sm">
+            <span class="text-xs font-bold uppercase tracking-wider text-outline">Total Pengunjung</span>
+            <div id="d-kpi-total" class="font-display text-3xl font-extrabold text-on-surface mt-2">0</div>
+            <span class="text-xs text-emerald-700 font-medium">Akumulasi rentang terpilih</span>
+          </div>
+          <div class="bg-white rounded-2xl p-5 border border-outline-variant/40 shadow-sm">
+            <span class="text-xs font-bold uppercase tracking-wider text-outline">Tamu Pelayanan PTSP</span>
+            <div id="d-kpi-ptsp" class="font-display text-3xl font-extrabold text-primary-container mt-2">0</div>
+            <span id="d-kpi-ptsp-pct" class="text-xs text-on-surface-variant">0% dari total kunjungan</span>
+          </div>
+          <div class="bg-white rounded-2xl p-5 border border-outline-variant/40 shadow-sm">
+            <span class="text-xs font-bold uppercase tracking-wider text-outline">Tamu Persidangan</span>
+            <div id="d-kpi-sidang" class="font-display text-3xl font-extrabold text-secondary mt-2">0</div>
+            <span id="d-kpi-sidang-pct" class="text-xs text-on-surface-variant">0% dari total kunjungan</span>
+          </div>
+          <div class="bg-white rounded-2xl p-5 border border-outline-variant/40 shadow-sm">
+            <span class="text-xs font-bold uppercase tracking-wider text-outline">Rata-rata Durasi Layanan</span>
+            <div id="d-kpi-durasi" class="font-display text-3xl font-extrabold text-on-surface mt-2">0 m</div>
+            <span class="text-xs text-emerald-700 font-medium">Check-in s/d Check-out</span>
+          </div>
         </div>
-        <div class="lg:col-span-4 bg-white rounded-2xl p-5 border border-outline-variant/40 shadow-sm">
-          <h2 class="font-display font-bold text-base text-on-surface mb-1">Distribusi Layanan PTSP</h2>
-          <p class="text-xs text-on-surface-variant mb-4">Proporsi permohonan per loket tujuan</p>
-          <div class="h-64 flex items-center justify-center"><canvas id="chart-distribusi"></canvas></div>
+
+        <!-- Charts Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-5">
+          <div class="lg:col-span-8 bg-white rounded-2xl p-5 border border-outline-variant/40 shadow-sm">
+            <h2 class="font-display font-bold text-base text-on-surface mb-1">Tren Kunjungan Harian</h2>
+            <p class="text-xs text-on-surface-variant mb-4">Perbandingan volume kunjungan PTSP vs Kehadiran Sidang</p>
+            <div class="h-64"><canvas id="chart-tren"></canvas></div>
+          </div>
+          <div class="lg:col-span-4 bg-white rounded-2xl p-5 border border-outline-variant/40 shadow-sm">
+            <h2 class="font-display font-bold text-base text-on-surface mb-1">Distribusi Layanan PTSP</h2>
+            <p class="text-xs text-on-surface-variant mb-4">Proporsi permohonan per loket tujuan</p>
+            <div class="h-64 flex items-center justify-center"><canvas id="chart-distribusi"></canvas></div>
+          </div>
         </div>
       </div>
 
