@@ -131,6 +131,13 @@
         <span class="flex-1 font-medium text-xs sm:text-sm">Tiket Digital</span>
       </button>
 
+      <!-- 5. Display Ruang Tunggu (TV Antrean) -->
+      <button type="button" data-nav="display" class="nav-side-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-primary-fixed-dim hover:text-white hover:bg-white/10 transition-all text-left group">
+        <span class="material-symbols-outlined text-[20px] text-secondary-fixed group-hover:scale-110 transition-transform">desktop_windows</span>
+        <span class="flex-1 font-medium text-xs sm:text-sm">Display Antrean TV</span>
+        <span class="text-[9px] px-1.5 py-0.5 rounded bg-secondary-container text-on-secondary-fixed font-bold">TV</span>
+      </button>
+
       <div class="my-2 border-t border-white/10"></div>
       <div class="px-3 pt-1 pb-1 text-[10px] font-bold uppercase tracking-wider text-primary-fixed-dim/60">
         Petugas &amp; Admin
@@ -197,6 +204,10 @@
         <button type="button" data-nav="ptsp" class="nav-pill px-3 py-1.5 rounded-lg text-xs font-semibold transition-all">Registrasi PTSP</button>
         <button type="button" data-nav="sidang" class="nav-pill px-3 py-1.5 rounded-lg text-xs font-semibold transition-all">Registrasi Sidang</button>
         <button type="button" data-nav="tiket" class="nav-pill px-3 py-1.5 rounded-lg text-xs font-semibold transition-all">Tiket Digital</button>
+        <button type="button" data-nav="display" class="nav-pill px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[15px]">desktop_windows</span>
+          <span>Display Antrean</span>
+        </button>
       </nav>
 
       <!-- 3. Right: Live Sync + User Profile Session -->
@@ -249,6 +260,9 @@
       <button type="button" data-nav="ptsp" class="nav-pill-mob shrink-0 px-3 py-1 rounded-lg text-xs font-semibold">PTSP</button>
       <button type="button" data-nav="sidang" class="nav-pill-mob shrink-0 px-3 py-1 rounded-lg text-xs font-semibold">Sidang</button>
       <button type="button" data-nav="tiket" class="nav-pill-mob shrink-0 px-3 py-1 rounded-lg text-xs font-semibold">Tiket</button>
+      <button type="button" data-nav="display" class="nav-pill-mob shrink-0 px-3 py-1 rounded-lg text-xs font-semibold flex items-center gap-1">
+        <span class="material-symbols-outlined text-[14px]">desktop_windows</span> Display
+      </button>
     </div>
   </header>
 
@@ -456,6 +470,26 @@
             <div id="kiosk-stat-selesai" class="font-display text-lg font-bold text-emerald-700 mt-0.5">0 Orang</div>
           </div>
         </div>
+      </div>
+
+      <!-- Banner Shortcut ke Display Ruang Tunggu & Antrean TV -->
+      <div class="bg-gradient-to-r from-primary-container via-primary to-primary-container text-white rounded-2xl p-4 sm:p-5 shadow-lg border border-secondary-fixed/20 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-4 text-left w-full sm:w-auto">
+          <div class="w-12 h-12 rounded-xl bg-secondary-container text-on-secondary-fixed flex items-center justify-center shrink-0 shadow-inner">
+            <span class="material-symbols-outlined text-2xl">desktop_windows</span>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 class="font-display font-bold text-base sm:text-lg">Display Ruang Tunggu &amp; Monitor Antrean TV</h3>
+              <span class="px-2 py-0.5 rounded-full text-[10px] bg-secondary-container text-on-secondary-fixed font-bold uppercase tracking-wider">Publik</span>
+            </div>
+            <p class="text-xs sm:text-sm text-primary-fixed-dim mt-0.5">Video edukasi 16:9, nomor antrean berjalan live, dan marquee pengumuman resmi untuk layar monitor publik.</p>
+          </div>
+        </div>
+        <button type="button" data-nav="display" class="shrink-0 w-full sm:w-auto px-5 h-11 rounded-xl bg-secondary-container hover:bg-secondary-fixed-dim text-on-secondary-fixed text-xs font-bold flex items-center justify-center gap-2 shadow-md transition-all">
+          <span class="material-symbols-outlined text-[18px]">play_circle</span>
+          <span>Buka Layar Monitor TV</span>
+        </button>
       </div>
     </section>
 
@@ -1634,6 +1668,250 @@
         </div>
       </div>
     </section>
+
+    <!-- ================================================================== -->
+    <!-- VIEW 7: DISPLAY RUANG TUNGGU PUBLIK / DASHBOARD ANTREAN TV         -->
+    <!-- ================================================================== -->
+    <section id="view-display" class="view-panel hidden max-w-[1600px] mx-auto px-3 sm:px-6 py-4 sm:py-6 flex flex-col gap-4">
+      
+      <!-- Header TV Bar (Satker, Live Clock, TV Controls) -->
+      <div class="bg-gradient-to-r from-primary-container via-primary to-primary-container text-white rounded-2xl p-4 sm:p-5 shadow-lg border border-secondary-fixed/20 flex flex-wrap items-center justify-between gap-4">
+        <div class="flex items-center gap-3.5">
+          <div id="display-satker-logo" class="w-12 h-12 rounded-xl bg-primary flex items-center justify-center border border-secondary-fixed/40 shadow-inner overflow-hidden shrink-0">
+            <svg class="w-7 h-7 text-secondary-fixed" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3zm-1 14H8v-2h3v2zm0-4H8V8h3v4zm5 4h-3v-6h3v6z"/>
+            </svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-display text-base sm:text-lg font-bold tracking-tight leading-tight">DISPLAY RUANG TUNGGU &amp; MONITOR ANTREAN</span>
+              <span class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/40 flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span> LIVE WIB
+              </span>
+            </div>
+            <h2 id="display-satker-name" class="text-xs sm:text-sm text-secondary-fixed font-medium mt-0.5">Pengadilan Tata Usaha Negara Palembang</h2>
+          </div>
+        </div>
+
+        <!-- Controls: Date, Big Clock, TV Fullscreen, Settings, Audio Toggle -->
+        <div class="flex items-center gap-2 sm:gap-3 ml-auto">
+          <div class="hidden md:flex flex-col items-end pr-3 border-r border-white/15">
+            <span id="display-date-label" class="text-xs text-white/80 font-medium">--</span>
+            <span id="display-clock-jumbo" class="text-lg sm:text-xl font-bold font-mono text-secondary-fixed leading-tight">--:--:-- WIB</span>
+          </div>
+
+          <!-- Toggle Audio Bell Display -->
+          <button type="button" id="btn-display-toggle-audio" class="h-10 px-3 sm:px-3.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold flex items-center gap-1.5 border border-white/15 transition-all" title="Nyalakan / Matikan Suara TV Panggilan">
+            <span class="material-symbols-outlined text-[18px]" id="display-audio-icon">volume_up</span>
+            <span class="hidden sm:inline" id="display-audio-label">Suara TV: Aktif</span>
+          </button>
+
+          <!-- Pengaturan Video & Marquee -->
+          <button type="button" id="btn-display-settings" class="h-10 px-3 sm:px-3.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold flex items-center gap-1.5 border border-white/15 transition-all" title="Pengaturan Video YouTube &amp; Marquee Teks">
+            <span class="material-symbols-outlined text-[18px]">settings</span>
+            <span class="hidden sm:inline">Atur Layar</span>
+          </button>
+
+          <!-- Layar Penuh TV (Fullscreen) -->
+          <button type="button" id="btn-display-fullscreen" class="h-10 px-3.5 sm:px-4 rounded-xl bg-secondary-container hover:bg-secondary-fixed-dim text-on-secondary-fixed text-xs font-bold flex items-center gap-1.5 shadow-md transition-all" title="Layar Penuh TV (Mode TV Monitor)">
+            <span class="material-symbols-outlined text-[18px]" id="display-fs-icon">fullscreen</span>
+            <span class="hidden sm:inline" id="display-fs-label">Layar Penuh TV</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 2 Komponen Utama: Video Area (Kiri) + Queue Display (Kanan) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+        
+        <!-- KOMPONEN 1: VIDEO AREA (YOUTUBE PLAYER 16:9 + RUNNING TEXT / MARQUEE) -->
+        <div class="lg:col-span-7 xl:col-span-7 flex flex-col gap-3">
+          
+          <!-- Video Frame Container (Clean 16:9 responsive frame) -->
+          <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-slate-950 shadow-xl border border-outline-variant/30 group">
+            <!-- YouTube Iframe -->
+            <iframe
+              id="display-yt-iframe"
+              class="w-full h-full border-0 rounded-2xl"
+              src="https://www.youtube-nocookie.com/embed/r72fG0644_k?autoplay=1&mute=1&loop=1&playlist=r72fG0644_k&controls=1&rel=0&modestbranding=1&playsinline=1&enablejsapi=1"
+              title="Informasi &amp; Edukasi Publik"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen
+            ></iframe>
+
+            <!-- Floating Video Action Pill (Clean visual controls) -->
+            <div class="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <span class="pointer-events-auto inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/75 backdrop-blur-md text-white text-[11px] font-semibold border border-white/10 shadow-lg">
+                <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> SIARAN INFORMASI &amp; EDUKASI HUKUM
+              </span>
+              <div class="pointer-events-auto flex items-center gap-1.5">
+                <button type="button" id="btn-video-quick-change" class="px-2.5 py-1 rounded-lg bg-black/75 hover:bg-black text-white text-xs font-semibold backdrop-blur-md border border-white/15 transition-colors flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[15px]">smart_display</span> Ganti Video
+                </button>
+                <button type="button" id="btn-video-quick-reload" class="p-1 rounded-lg bg-black/75 hover:bg-black text-white backdrop-blur-md border border-white/15 transition-colors" title="Muat Ulang Video">
+                  <span class="material-symbols-outlined text-[16px]">refresh</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Running Text / Marquee Pengumuman di Bawah Video -->
+          <div class="w-full bg-primary-container text-white rounded-xl shadow-md border border-secondary-fixed/30 overflow-hidden flex items-stretch">
+            <!-- Label Statis Pengumuman -->
+            <div class="bg-secondary-container text-on-secondary-fixed px-3.5 sm:px-4 py-2.5 flex items-center gap-2 font-display font-bold text-xs uppercase tracking-wider shrink-0 shadow-inner z-10">
+              <span class="material-symbols-outlined text-[18px] text-on-secondary-fixed animate-bounce">campaign</span>
+              <span class="hidden sm:inline">PENGUMUMAN</span>
+            </div>
+            
+            <!-- Ticker Jalur Teks Berjalan -->
+            <div class="flex-1 marquee-wrap flex items-center py-2.5 px-4 overflow-hidden bg-primary/70">
+              <span id="display-marquee-content" class="marquee-content font-medium text-xs sm:text-sm text-white/95 tracking-wide">
+                Selamat Datang di Pengadilan Tata Usaha Negara Palembang • Jam Pelayanan PTSP: Senin - Kamis 08.00 - 15.00 WIB, Jumat 08.00 - 15.30 WIB • Wujudkan Peradilan Bersih, Transparan, Bebas dari Pungli &amp; Korupsi • Perhatikan nomor antrean yang dipanggil pada layar monitor • Terima kasih atas kunjungan Anda.
+              </span>
+            </div>
+
+            <!-- Quick Edit Icon -->
+            <button type="button" id="btn-quick-edit-marquee" class="px-2.5 text-white/60 hover:text-white hover:bg-white/10 flex items-center justify-center shrink-0 transition-colors" title="Edit Teks Pengumuman">
+              <span class="material-symbols-outlined text-[16px]">edit_note</span>
+            </button>
+          </div>
+
+          <!-- Ringkasan Info Layanan Tambahan di Bawah Video -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center">
+            <div class="bg-white rounded-xl p-2.5 border border-outline-variant/40 shadow-xs">
+              <span class="text-[11px] text-on-surface-variant block">Total Tamu Hari Ini</span>
+              <span id="display-stat-total" class="font-display font-bold text-sm text-on-surface">0 Tamu</span>
+            </div>
+            <div class="bg-white rounded-xl p-2.5 border border-outline-variant/40 shadow-xs">
+              <span class="text-[11px] text-on-surface-variant block">Layanan PTSP</span>
+              <span id="display-stat-ptsp" class="font-display font-bold text-sm text-primary-container">0 Orang</span>
+            </div>
+            <div class="bg-white rounded-xl p-2.5 border border-outline-variant/40 shadow-xs">
+              <span class="text-[11px] text-on-surface-variant block">Sidang Perkara</span>
+              <span id="display-stat-sidang" class="font-display font-bold text-sm text-secondary">0 Perkara</span>
+            </div>
+            <div class="bg-white rounded-xl p-2.5 border border-outline-variant/40 shadow-xs">
+              <span class="text-[11px] text-on-surface-variant block">Selesai Dilayani</span>
+              <span id="display-stat-selesai" class="font-display font-bold text-sm text-emerald-700">0 Selesai</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- KOMPONEN 2: QUEUE DISPLAY (MONITOR ANTRIAN BERJALAN) -->
+        <div class="lg:col-span-5 xl:col-span-5 flex flex-col gap-4">
+          
+          <!-- KARTU BESAR: NOMOR ANTREAN YANG SEDANG DIPANGGIL SAAT INI (CURRENT QUEUE) -->
+          <div id="display-current-card" class="relative bg-gradient-to-b from-white via-surface-container-lowest to-surface-container-low rounded-2xl p-6 sm:p-7 border-2 border-primary/25 shadow-xl flex flex-col justify-between overflow-hidden transition-all duration-300">
+            
+            <!-- Subtle decorative watermark icon -->
+            <div class="absolute -right-6 -bottom-6 text-primary-container/[0.04] pointer-events-none">
+              <span class="material-symbols-outlined text-[180px]">confirmation_number</span>
+            </div>
+
+            <!-- Header Kartu: Status Panggilan -->
+            <div class="flex items-center justify-between pb-3 border-b border-outline-variant/40">
+              <div class="flex items-center gap-2">
+                <span class="relative flex h-3 w-3">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-600"></span>
+                </span>
+                <span class="text-xs uppercase font-extrabold tracking-wider text-emerald-800" id="display-curr-status-badge">SEDANG DIPANGGIL</span>
+              </div>
+              <span id="display-curr-time" class="text-xs font-semibold text-on-surface-variant">Pukul --:-- WIB</span>
+            </div>
+
+            <!-- Main Section: Big Number & Destination -->
+            <div class="my-4 text-center">
+              <span class="text-xs font-bold text-outline uppercase tracking-widest block">NOMOR ANTREAN</span>
+              <!-- Jumbo Number with smooth pulse animation -->
+              <div id="display-curr-nomor" class="font-display text-6xl sm:text-7xl font-extrabold text-primary-container tracking-wider my-2 drop-shadow-sm transition-transform duration-300">
+                P-001
+              </div>
+
+              <!-- Loket / Ruang Tujuan -->
+              <div class="mt-3">
+                <div id="display-curr-loket" class="inline-block px-5 py-2.5 rounded-xl bg-secondary-container text-on-secondary-fixed font-display font-extrabold text-base sm:text-lg shadow-sm border border-secondary-fixed/30 tracking-wide">
+                  LOKET 1 - KEPANITERAAN PERKARA
+                </div>
+              </div>
+
+              <!-- Info Tamu / Nama / Perkara -->
+              <div class="mt-3 text-xs sm:text-sm text-on-surface-variant font-medium flex items-center justify-center gap-1.5">
+                <span class="material-symbols-outlined text-[18px] text-primary-container">person</span>
+                <span id="display-curr-tamu">Pengunjung PTSP</span>
+              </div>
+            </div>
+
+            <!-- Footer Kartu: Action / Sound Chime Test -->
+            <div class="pt-3 border-t border-outline-variant/40 flex items-center justify-between">
+              <span class="text-[11px] text-outline font-medium flex items-center gap-1">
+                <span class="material-symbols-outlined text-[15px]">hearing</span> Panggilan Suara Otomatis
+              </span>
+              <button type="button" id="btn-display-replay-call" class="px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs" title="Panggil Ulang Nomor Ini">
+                <span class="material-symbols-outlined text-[16px] text-primary-container">volume_up</span>
+                <span>Ulangi Panggil</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- PANEL RINGKAS DI BAWAHNYA: NEXT QUEUE & RECENT QUEUE -->
+          <div class="bg-white rounded-2xl p-4 sm:p-5 border border-outline-variant/40 shadow-md flex flex-col gap-4">
+            
+            <!-- Sub-panel 1: Antrean Berikutnya (Next Queue) -->
+            <div>
+              <div class="flex items-center justify-between mb-2.5">
+                <span class="text-xs font-bold uppercase tracking-wider text-on-surface flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-[18px] text-secondary">update</span> Antrean Berikutnya (Next Queue)
+                </span>
+                <span class="text-[11px] text-outline">Harap Bersiap</span>
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <!-- PTSP Next -->
+                <div class="p-3 rounded-xl bg-surface-container-low border border-outline-variant/40 flex items-center justify-between">
+                  <div>
+                    <span class="text-[11px] text-on-surface-variant font-medium block">PTSP Berikutnya</span>
+                    <span id="display-next-ptsp" class="font-display font-bold text-lg sm:text-xl text-primary-container">P-002</span>
+                  </div>
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary-fixed text-on-primary-fixed">Antre</span>
+                </div>
+                <!-- Sidang Next -->
+                <div class="p-3 rounded-xl bg-surface-container-low border border-outline-variant/40 flex items-center justify-between">
+                  <div>
+                    <span class="text-[11px] text-on-surface-variant font-medium block">Sidang Berikutnya</span>
+                    <span id="display-next-sidang" class="font-display font-bold text-lg sm:text-xl text-secondary">S-001</span>
+                  </div>
+                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-secondary-fixed text-on-secondary-fixed-variant">Antre</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Sub-panel 2: Riwayat 3-4 Nomor Antrean Terakhir (Recent Queue) -->
+            <div class="pt-2 border-t border-outline-variant/40">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold uppercase tracking-wider text-on-surface flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-[18px] text-primary-container">history</span> Riwayat Panggilan Terakhir
+                </span>
+                <span class="text-[11px] text-outline">3-4 Terakhir</span>
+              </div>
+              <div id="display-recent-list" class="flex flex-col gap-2">
+                <!-- Generated dynamically via JS -->
+                <div class="p-2.5 rounded-xl bg-surface-container-low/50 border border-outline-variant/30 flex items-center justify-between text-xs">
+                  <div class="flex items-center gap-2.5">
+                    <span class="font-display font-bold text-sm text-primary-container">P-001</span>
+                    <span class="text-on-surface font-medium">Loket 1 PTSP</span>
+                  </div>
+                  <span class="text-outline text-[11px]">08:30 WIB</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
   </main>
 
   <!-- FOOTER -->
@@ -1785,6 +2063,63 @@
         <button type="button" id="btn-close-info" class="p-1 rounded-lg hover:bg-white/10"><span class="material-symbols-outlined">close</span></button>
       </div>
       <div id="modal-info-body" class="p-5 text-sm"></div>
+    </div>
+  </div>
+
+  <!-- MODAL PENGATURAN DISPLAY TV (YOUTUBE & MARQUEE) -->
+  <div id="modal-display-settings" class="hidden fixed inset-0 z-[96] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 no-print">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden border border-outline-variant/40">
+      <div class="bg-primary-container text-white px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <span class="material-symbols-outlined text-secondary-fixed">tune</span>
+          <div>
+            <h3 class="font-display font-bold text-base">Pengaturan Display Monitor TV</h3>
+            <p class="text-xs text-secondary-fixed-dim">Kustomisasi siaran video YouTube, running text, dan suara panggilan.</p>
+          </div>
+        </div>
+        <button type="button" id="btn-close-display-settings" class="p-1.5 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-colors">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+
+      <form id="form-display-settings" class="p-6 flex flex-col gap-4 text-xs">
+        <!-- Video YouTube Section -->
+        <div class="flex flex-col gap-1.5">
+          <label class="font-bold text-on-surface">URL atau Video ID YouTube (Responsif 16:9)</label>
+          <input type="text" id="input-display-yt" placeholder="Contoh: https://www.youtube.com/watch?v=... atau ID" class="w-full h-10 px-3 rounded-xl border border-outline-variant bg-surface-container-lowest text-xs" />
+          <div class="flex flex-wrap gap-1.5 mt-1">
+            <span class="text-[11px] text-outline self-center mr-1">Preset Cepat:</span>
+            <button type="button" class="btn-yt-preset px-2.5 py-1 rounded-lg bg-surface-container hover:bg-surface-container-high text-[11px] font-semibold text-primary-container" data-yt="r72fG0644_k">Profil MA-RI</button>
+            <button type="button" class="btn-yt-preset px-2.5 py-1 rounded-lg bg-surface-container hover:bg-surface-container-high text-[11px] font-semibold text-primary-container" data-yt="zpOULjyy-n8">Hymne MA-RI</button>
+            <button type="button" class="btn-yt-preset px-2.5 py-1 rounded-lg bg-surface-container hover:bg-surface-container-high text-[11px] font-semibold text-primary-container" data-yt="dQw4w9WgXcQ">Edukasi Hukum</button>
+          </div>
+        </div>
+
+        <!-- Running Text / Marquee Section -->
+        <div class="flex flex-col gap-1.5">
+          <label class="font-bold text-on-surface">Teks Running Text / Marquee Pengumuman Resmi</label>
+          <textarea id="input-display-marquee" rows="3" placeholder="Ketik pengumuman yang akan berjalan di bawah video..." class="w-full p-3 rounded-xl border border-outline-variant bg-surface-container-lowest text-xs leading-relaxed"></textarea>
+          <span class="text-[11px] text-outline">Teks akan berjalan terus-menerus di bawah video player TV secara otomatis.</span>
+        </div>
+
+        <!-- Suara TV Toggle -->
+        <div class="p-3.5 rounded-xl bg-surface-container-low border border-outline-variant/40 flex items-center justify-between">
+          <div>
+            <span class="font-bold text-on-surface block">Panggilan Suara &amp; Bel Nada (TTS Chime)</span>
+            <span class="text-[11px] text-on-surface-variant">Bunyikan bel dan suara otomatis saat nomor antrean berganti di TV monitor.</span>
+          </div>
+          <label class="relative inline-flex items-center cursor-pointer">
+            <input type="checkbox" id="input-display-audio-toggle" class="sr-only peer" checked />
+            <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-container"></div>
+          </label>
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex items-center justify-end gap-2 pt-2 border-t border-outline-variant/40">
+          <button type="button" id="btn-cancel-display-settings" class="px-4 h-10 rounded-xl border border-outline-variant hover:bg-surface-container-low font-semibold text-on-surface">Batal</button>
+          <button type="submit" class="px-5 h-10 rounded-xl bg-primary-container hover:bg-primary text-white font-bold shadow-md">Simpan &amp; Terapkan</button>
+        </div>
+      </form>
     </div>
   </div>
 

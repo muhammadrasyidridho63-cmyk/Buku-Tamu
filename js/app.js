@@ -299,14 +299,15 @@ window.AppUI = (function () {
     }
 
     state.view = target;
-    const views = ['kiosk', 'ptsp', 'sidang', 'tiket', 'pantau', 'dashboard'];
+    const views = ['kiosk', 'ptsp', 'sidang', 'tiket', 'pantau', 'dashboard', 'display'];
     const mapId = {
       kiosk: 'view-kiosk',
       ptsp: 'view-form-ptsp',
       sidang: 'view-form-sidang',
       tiket: 'view-tiket',
       pantau: 'view-pantau',
-      dashboard: 'view-dashboard'
+      dashboard: 'view-dashboard',
+      display: 'view-display'
     };
 
     views.forEach(function (v) {
@@ -356,7 +357,8 @@ window.AppUI = (function () {
       sidang: 'Registrasi Sidang',
       tiket: 'Tiket Digital',
       pantau: 'Layar Pantau Petugas',
-      dashboard: 'Dashboard & Laporan'
+      dashboard: 'Dashboard & Laporan',
+      display: 'Display Ruang Tunggu'
     };
     const topTitle = document.getElementById('topbar-view-title');
     if (topTitle) {
@@ -371,6 +373,10 @@ window.AppUI = (function () {
     if (target === 'tiket') renderTiketView();
     if (target === 'pantau') loadPantauData(true);
     if (target === 'dashboard') loadDashboardData();
+    if (target === 'display') {
+      initDisplayView();
+      renderDisplayQueue(false);
+    }
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -388,6 +394,12 @@ window.AppUI = (function () {
 
       const kd = document.getElementById('kiosk-date-label');
       if (kd) kd.textContent = HARI[d.getDay()] + ', ' + tgl;
+
+      const dClock = document.getElementById('display-clock-jumbo');
+      if (dClock) dClock.textContent = jam + ' WIB';
+
+      const dDate = document.getElementById('display-date-label');
+      if (dDate) dDate.textContent = HARI[d.getDay()] + ', ' + tgl;
     };
     tick();
     setInterval(tick, 1000);
@@ -445,7 +457,7 @@ window.AppUI = (function () {
     if (state.boot && state.boot.pengaturan) {
       state.boot.pengaturan.NAMA_SATKER = clean;
     }
-    ['hero-satker-name', 'nav-satker-subtitle', 'sidebar-satker-subtitle', 'dash-satker-name', 'footer-satker-name', 'tkt-satker-nama'].forEach(function (id) {
+    ['hero-satker-name', 'nav-satker-subtitle', 'sidebar-satker-subtitle', 'dash-satker-name', 'footer-satker-name', 'tkt-satker-nama', 'display-satker-name'].forEach(function (id) {
       const el = document.getElementById(id);
       if (el) el.textContent = clean;
     });
@@ -468,6 +480,7 @@ window.AppUI = (function () {
     const sideBox = document.getElementById('sidebar-logo-box');
     const tktBox = document.getElementById('tkt-logo-box');
     const prevBox = document.getElementById('cfg-logo-preview');
+    const dispBox = document.getElementById('display-satker-logo');
     const urlInp = document.getElementById('cfg-logo-url');
 
     if (urlInp && document.activeElement !== urlInp) {
@@ -488,6 +501,7 @@ window.AppUI = (function () {
       renderImg(navBox, DEFAULT_LOGO_SVG);
       renderImg(sideBox, DEFAULT_LOGO_SVG);
       renderImg(prevBox, DEFAULT_LOGO_SVG);
+      renderImg(dispBox, DEFAULT_LOGO_SVG);
       renderImg(tktBox, '<span class="material-symbols-outlined">account_balance</span>');
 
       // Update favicon
@@ -502,6 +516,7 @@ window.AppUI = (function () {
       if (navBox) navBox.innerHTML = DEFAULT_LOGO_SVG;
       if (sideBox) sideBox.innerHTML = DEFAULT_LOGO_SVG;
       if (prevBox) prevBox.innerHTML = DEFAULT_LOGO_SVG;
+      if (dispBox) dispBox.innerHTML = DEFAULT_LOGO_SVG;
       if (tktBox) tktBox.innerHTML = '<span class="material-symbols-outlined">account_balance</span>';
     }
   }
@@ -550,6 +565,7 @@ window.AppUI = (function () {
     renderRuangSidangSelects();
     if (state.view === 'sidang') renderJadwalOptions();
     if (state.view === 'pantau') renderPantau();
+    renderDisplayQueue(false);
   }
 
   // ==========================================================================
@@ -1161,6 +1177,13 @@ window.AppUI = (function () {
 
     if (act === 'panggil') {
       panggilSuara('Nomor antrean ' + item.Nomor_Antrean + ', ' + item.Nama_Lengkap + ', silakan menuju Loket ' + item.Loket_Tujuan);
+      updateLiveDisplayQueue({
+        nomor: item.Nomor_Antrean,
+        loket: item.Loket_Tujuan ? ('Loket ' + item.Loket_Tujuan) : 'Loket Layanan PTSP',
+        nama: item.Nama_Lengkap,
+        jalur: 'PTSP',
+        status: 'Dipanggil ke Loket'
+      });
       return;
     }
 
@@ -1197,6 +1220,13 @@ window.AppUI = (function () {
 
     if (act === 'layani') {
       panggilSuara('Nomor antrean ' + item.Nomor_Antrean + ', silakan menuju Loket ' + item.Loket_Tujuan);
+      updateLiveDisplayQueue({
+        nomor: item.Nomor_Antrean,
+        loket: item.Loket_Tujuan ? ('Loket ' + item.Loket_Tujuan) : 'Loket Layanan PTSP',
+        nama: item.Nama_Lengkap,
+        jalur: 'PTSP',
+        status: 'Sedang Dilayani'
+      });
     }
 
     const res = await window.ApiClient.call('tamu.ubahStatus', {
@@ -1295,6 +1325,14 @@ window.AppUI = (function () {
     if (withSuara) {
       panggilSuara('Para pihak nomor perkara ' + item.Nomor_Perkara + ', ' + item.Nama_Lengkap + ', dipersilakan memasuki ' + item.Ruang_Sidang);
     }
+
+    updateLiveDisplayQueue({
+      nomor: item.Nomor_Antrean,
+      loket: ruang || 'Ruang Sidang Utama',
+      nama: item.Nama_Lengkap + (item.Nomor_Perkara ? ' (' + item.Nomor_Perkara + ')' : ''),
+      jalur: 'SIDANG',
+      status: 'Masuk Ruang Sidang'
+    });
 
     const res = await window.ApiClient.call('tamu.ubahStatus', {
       idTiket: item.ID_Tiket,
@@ -2858,6 +2896,277 @@ window.AppUI = (function () {
   }
 
   // ==========================================================================
+  // VIEW 7: DISPLAY RUANG TUNGGU PUBLIK / DASHBOARD ANTREAN TV ENGINE
+  // ==========================================================================
+  const DEFAULT_DISPLAY_SETTINGS = {
+    ytId: 'r72fG0644_k',
+    marquee: 'Selamat Datang di Pengadilan Tata Usaha Negara Palembang • Jam Pelayanan PTSP: Senin - Kamis 08.00 - 15.00 WIB, Jumat 08.00 - 15.30 WIB • Wujudkan Peradilan Bersih, Transparan, Bebas dari Pungli & Korupsi • Perhatikan nomor antrean yang dipanggil pada layar monitor • Terima kasih atas kunjungan Anda.',
+    audioEnabled: true
+  };
+
+  function getDisplaySettings() {
+    try {
+      const raw = localStorage.getItem('ETAMU_DISPLAY_SETTINGS');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        return Object.assign({}, DEFAULT_DISPLAY_SETTINGS, parsed);
+      }
+    } catch (e) {}
+    return Object.assign({}, DEFAULT_DISPLAY_SETTINGS);
+  }
+
+  function saveDisplaySettings(settings) {
+    try {
+      localStorage.setItem('ETAMU_DISPLAY_SETTINGS', JSON.stringify(settings));
+    } catch (e) {}
+  }
+
+  function extractYouTubeId(urlOrId) {
+    if (!urlOrId) return '';
+    const str = String(urlOrId).trim();
+    if (/^[a-zA-Z0-9_-]{11}$/.test(str)) return str;
+    const regExp = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=|shorts\/)|youtu\.be\/)([^"&?\/\s]{11})/i;
+    const match = str.match(regExp);
+    return match ? match[1] : '';
+  }
+
+  function applyYouTubePlayer(videoId) {
+    const iframe = document.getElementById('display-yt-iframe');
+    if (!iframe) return;
+    const vid = videoId || getDisplaySettings().ytId || DEFAULT_DISPLAY_SETTINGS.ytId;
+    const currentSrc = iframe.getAttribute('src') || '';
+    const targetSrc = 'https://www.youtube-nocookie.com/embed/' + encodeURIComponent(vid) +
+      '?autoplay=1&mute=1&loop=1&playlist=' + encodeURIComponent(vid) +
+      '&controls=1&rel=0&modestbranding=1&playsinline=1&enablejsapi=1';
+
+    if (currentSrc.indexOf(vid) === -1) {
+      iframe.setAttribute('src', targetSrc);
+    }
+  }
+
+  function playQueueChime() {
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      const ctx = new AudioCtx();
+      const now = ctx.currentTime;
+
+      // Nada 1: 523.25 Hz (C5)
+      const osc1 = ctx.createOscillator();
+      const gain1 = ctx.createGain();
+      osc1.type = 'sine';
+      osc1.frequency.setValueAtTime(523.25, now);
+      gain1.gain.setValueAtTime(0.22, now);
+      gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+      osc1.connect(gain1);
+      gain1.connect(ctx.destination);
+      osc1.start(now);
+      osc1.stop(now + 0.45);
+
+      // Nada 2: 659.25 Hz (E5)
+      const osc2 = ctx.createOscillator();
+      const gain2 = ctx.createGain();
+      osc2.type = 'sine';
+      osc2.frequency.setValueAtTime(659.25, now + 0.22);
+      gain2.gain.setValueAtTime(0.26, now + 0.22);
+      gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.85);
+      osc2.connect(gain2);
+      gain2.connect(ctx.destination);
+      osc2.start(now + 0.22);
+      osc2.stop(now + 0.85);
+    } catch (e) {}
+  }
+
+  function panggilSuaraDisplay(teks) {
+    const st = getDisplaySettings();
+    if (st.audioEnabled === false) return;
+    playQueueChime();
+    setTimeout(function () {
+      panggilSuara(teks);
+    }, 450);
+  }
+
+  function getLiveQueueState() {
+    try {
+      const raw = localStorage.getItem('ETAMU_LIVE_QUEUE');
+      if (raw) return JSON.parse(raw);
+    } catch (e) {}
+    const ring = (state.boot && state.boot.ringkasan) ? state.boot.ringkasan : {};
+    return {
+      nomor: ring.ptspBerjalan || 'P-001',
+      loket: 'LOKET 1 - KEPANITERAAN PERKARA',
+      nama: 'Pengunjung PTSP',
+      jalur: 'PTSP',
+      status: 'Sedang Dilayani',
+      waktu: 'Pukul 08.30 WIB'
+    };
+  }
+
+  function getQueueHistory() {
+    try {
+      const raw = localStorage.getItem('ETAMU_QUEUE_HISTORY');
+      if (raw) {
+        const arr = JSON.parse(raw);
+        if (Array.isArray(arr) && arr.length) return arr;
+      }
+    } catch (e) {}
+    return [
+      { nomor: 'P-001', loket: 'Loket 1 - PTSP', waktu: '08:30 WIB', status: 'Dilayani' },
+      { nomor: 'S-001', loket: 'Ruang Sidang Utama', waktu: '08:15 WIB', status: 'Masuk Sidang' },
+      { nomor: 'P-000', loket: 'Loket 2 - Informasi', waktu: '08:00 WIB', status: 'Selesai' }
+    ];
+  }
+
+  function updateLiveDisplayQueue(data) {
+    const current = getLiveQueueState();
+    const d = new Date();
+    const jam = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+    data.waktu = 'Pukul ' + jam + ' WIB';
+
+    // Masukkan antrean sebelumnya ke riwayat (maksimal 4 riwayat)
+    if (current && current.nomor && current.nomor !== data.nomor) {
+      const hist = getQueueHistory().filter(function (h) { return h.nomor !== current.nomor; });
+      hist.unshift({
+        nomor: current.nomor,
+        loket: current.loket,
+        waktu: current.waktu ? current.waktu.replace('Pukul ', '') : (jam + ' WIB'),
+        status: current.status || 'Dilayani'
+      });
+      try {
+        localStorage.setItem('ETAMU_QUEUE_HISTORY', JSON.stringify(hist.slice(0, 4)));
+      } catch (e) {}
+    }
+
+    try {
+      localStorage.setItem('ETAMU_LIVE_QUEUE', JSON.stringify(data));
+    } catch (e) {}
+
+    renderDisplayQueue(true);
+  }
+
+  function renderDisplayQueue(isNewCall) {
+    const data = getLiveQueueState();
+    const ring = (state.boot && state.boot.ringkasan) ? state.boot.ringkasan : {};
+
+    // 1. Current Queue Card
+    const elNomor = document.getElementById('display-curr-nomor');
+    const elLoket = document.getElementById('display-curr-loket');
+    const elTamu = document.getElementById('display-curr-tamu');
+    const elTime = document.getElementById('display-curr-time');
+    const elBadge = document.getElementById('display-curr-status-badge');
+    const card = document.getElementById('display-current-card');
+
+    if (elNomor) elNomor.textContent = data.nomor || 'P-001';
+    if (elLoket) elLoket.textContent = data.loket || 'LOKET 1 - KEPANITERAAN PERKARA';
+    if (elTamu) elTamu.textContent = data.nama || 'Pengunjung Pengadilan';
+    if (elTime) elTime.textContent = data.waktu || 'Pukul --:-- WIB';
+    if (elBadge) elBadge.textContent = data.status ? data.status.toUpperCase() : 'SEDANG DIPANGGIL';
+
+    // Highlight / Pulse Animasi Halus saat nomor antrean berganti
+    if (isNewCall) {
+      if (card) {
+        card.classList.remove('queue-pulse-active');
+        void card.offsetWidth; // Trigger reflow
+        card.classList.add('queue-pulse-active');
+      }
+      if (elNomor) {
+        elNomor.classList.remove('anim-flash-number');
+        void elNomor.offsetWidth;
+        elNomor.classList.add('anim-flash-number');
+      }
+      panggilSuaraDisplay('Nomor antrean ' + (data.nomor || '') + ', silakan menuju ' + (data.loket || ''));
+    }
+
+    // 2. Next Queue Panel
+    const nextPtsp = ring.ptspBerikutnya || 'P-002';
+    const nextSidang = ring.sidangBerikutnya || 'S-001';
+    const elNextPtsp = document.getElementById('display-next-ptsp');
+    const elNextSidang = document.getElementById('display-next-sidang');
+    if (elNextPtsp) elNextPtsp.textContent = nextPtsp;
+    if (elNextSidang) elNextSidang.textContent = nextSidang;
+
+    // 3. Riwayat 3-4 Nomor Antrean Terakhir
+    const recBox = document.getElementById('display-recent-list');
+    if (recBox) {
+      const history = getQueueHistory().slice(0, 4);
+      recBox.innerHTML = history.map(function (item) {
+        return '<div class="p-2.5 rounded-xl bg-surface-container-low/60 border border-outline-variant/30 flex items-center justify-between text-xs">' +
+          '<div class="flex items-center gap-2.5">' +
+            '<span class="font-display font-bold text-sm text-primary-container">' + esc(item.nomor) + '</span>' +
+            '<span class="text-on-surface font-medium truncate max-w-[170px]">' + esc(item.loket) + '</span>' +
+          '</div>' +
+          '<div class="flex items-center gap-2">' +
+            '<span class="text-outline text-[11px]">' + esc(item.waktu) + '</span>' +
+            '<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-white text-on-surface-variant border border-outline-variant/40">' + esc(item.status || 'Dilayani') + '</span>' +
+          '</div>' +
+        '</div>';
+      }).join('') || '<div class="text-xs text-outline text-center py-2">Belum ada riwayat panggilan.</div>';
+    }
+
+    // 4. Stats Summary di Bawah Video
+    const elStatTot = document.getElementById('display-stat-total');
+    const elStatPtsp = document.getElementById('display-stat-ptsp');
+    const elStatSid = document.getElementById('display-stat-sidang');
+    const elStatSel = document.getElementById('display-stat-selesai');
+    if (elStatTot) elStatTot.textContent = (ring.totalHariIni || 0) + ' Tamu';
+    if (elStatPtsp) elStatPtsp.textContent = (ring.ptspTotal || 0) + ' Orang';
+    if (elStatSid) elStatSid.textContent = (ring.sidangTotal || 0) + ' Perkara';
+    if (elStatSel) elStatSel.textContent = (ring.totalSelesai || 0) + ' Selesai';
+  }
+
+  function initDisplayView() {
+    const st = getDisplaySettings();
+    applyYouTubePlayer(st.ytId);
+
+    const marq = document.getElementById('display-marquee-content');
+    if (marq) marq.textContent = st.marquee || DEFAULT_DISPLAY_SETTINGS.marquee;
+
+    updateDisplayAudioButton(st.audioEnabled !== false);
+  }
+
+  function updateDisplayAudioButton(enabled) {
+    const icon = document.getElementById('display-audio-icon');
+    const label = document.getElementById('display-audio-label');
+    const chk = document.getElementById('input-display-audio-toggle');
+    if (icon) icon.textContent = enabled ? 'volume_up' : 'volume_off';
+    if (label) label.textContent = enabled ? 'Suara TV: Aktif' : 'Suara TV: Mute';
+    if (chk) chk.checked = enabled;
+  }
+
+  function toggleTvFullscreen() {
+    const doc = document.documentElement;
+    const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement);
+    if (!isFs) {
+      if (doc.requestFullscreen) doc.requestFullscreen().catch(function () {});
+      else if (doc.webkitRequestFullscreen) doc.webkitRequestFullscreen();
+      else if (doc.mozRequestFullScreen) doc.mozRequestFullScreen();
+      document.body.classList.add('is-tv-fullscreen');
+    } else {
+      if (document.exitFullscreen) document.exitFullscreen().catch(function () {});
+      else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
+      document.body.classList.remove('is-tv-fullscreen');
+    }
+  }
+
+  function openDisplaySettingsModal() {
+    const st = getDisplaySettings();
+    const inpYt = document.getElementById('input-display-yt');
+    const inpMarq = document.getElementById('input-display-marquee');
+    const chkAudio = document.getElementById('input-display-audio-toggle');
+    if (inpYt) inpYt.value = st.ytId || DEFAULT_DISPLAY_SETTINGS.ytId;
+    if (inpMarq) inpMarq.value = st.marquee || DEFAULT_DISPLAY_SETTINGS.marquee;
+    if (chkAudio) chkAudio.checked = st.audioEnabled !== false;
+    const modal = document.getElementById('modal-display-settings');
+    if (modal) modal.classList.remove('hidden');
+  }
+
+  function closeDisplaySettingsModal() {
+    const modal = document.getElementById('modal-display-settings');
+    if (modal) modal.classList.add('hidden');
+  }
+
+  // ==========================================================================
   // LOGIN / LOGOUT, BANTUAN & VERIFIKASI QR
   // ==========================================================================
   function openLoginModal() {
@@ -3101,6 +3410,111 @@ window.AppUI = (function () {
         await showVerificationResult(id, '');
       };
     };
+
+    // Display TV Modal & Controls
+    const btnDisplaySettings = document.getElementById('btn-display-settings');
+    if (btnDisplaySettings) btnDisplaySettings.onclick = openDisplaySettingsModal;
+
+    const btnCloseDispModal = document.getElementById('btn-close-display-settings');
+    if (btnCloseDispModal) btnCloseDispModal.onclick = closeDisplaySettingsModal;
+
+    const btnCancelDispModal = document.getElementById('btn-cancel-display-settings');
+    if (btnCancelDispModal) btnCancelDispModal.onclick = closeDisplaySettingsModal;
+
+    const btnQuickEditMarq = document.getElementById('btn-quick-edit-marquee');
+    if (btnQuickEditMarq) btnQuickEditMarq.onclick = openDisplaySettingsModal;
+
+    const btnVideoQuickChange = document.getElementById('btn-video-quick-change');
+    if (btnVideoQuickChange) btnVideoQuickChange.onclick = openDisplaySettingsModal;
+
+    const btnVideoQuickReload = document.getElementById('btn-video-quick-reload');
+    if (btnVideoQuickReload) {
+      btnVideoQuickReload.onclick = function () {
+        const iframe = document.getElementById('display-yt-iframe');
+        if (iframe) {
+          const src = iframe.getAttribute('src');
+          iframe.setAttribute('src', '');
+          setTimeout(function () { iframe.setAttribute('src', src); }, 100);
+        }
+      };
+    }
+
+    const formDisp = document.getElementById('form-display-settings');
+    if (formDisp) {
+      formDisp.onsubmit = function (e) {
+        e.preventDefault();
+        const rawYt = document.getElementById('input-display-yt').value.trim();
+        const rawMarq = document.getElementById('input-display-marquee').value.trim();
+        const audioOn = document.getElementById('input-display-audio-toggle').checked;
+        const ytId = extractYouTubeId(rawYt) || DEFAULT_DISPLAY_SETTINGS.ytId;
+
+        const nextSettings = {
+          ytId: ytId,
+          marquee: rawMarq || DEFAULT_DISPLAY_SETTINGS.marquee,
+          audioEnabled: audioOn
+        };
+        saveDisplaySettings(nextSettings);
+        initDisplayView();
+        closeDisplaySettingsModal();
+        toast('Pengaturan Display Monitor TV berhasil diterapkan!', 'success');
+      };
+    }
+
+    // Preset buttons YouTube
+    document.querySelectorAll('.btn-yt-preset').forEach(function (btn) {
+      btn.onclick = function () {
+        const yt = btn.getAttribute('data-yt');
+        const inp = document.getElementById('input-display-yt');
+        if (inp && yt) inp.value = yt;
+      };
+    });
+
+    // Toggle Audio TV Display
+    const btnToggleAudio = document.getElementById('btn-display-toggle-audio');
+    if (btnToggleAudio) {
+      btnToggleAudio.onclick = function () {
+        const st = getDisplaySettings();
+        st.audioEnabled = !st.audioEnabled;
+        saveDisplaySettings(st);
+        updateDisplayAudioButton(st.audioEnabled);
+        toast(st.audioEnabled ? 'Suara TV panggilan aktif' : 'Suara TV dimatikan (mute)', 'info');
+      };
+    }
+
+    // Layar Penuh TV (Fullscreen)
+    const btnFullscreen = document.getElementById('btn-display-fullscreen');
+    if (btnFullscreen) btnFullscreen.onclick = toggleTvFullscreen;
+
+    document.addEventListener('fullscreenchange', function () {
+      const isFs = !!document.fullscreenElement;
+      document.body.classList.toggle('is-tv-fullscreen', isFs);
+      const fsIcon = document.getElementById('display-fs-icon');
+      const fsLabel = document.getElementById('display-fs-label');
+      if (fsIcon) fsIcon.textContent = isFs ? 'fullscreen_exit' : 'fullscreen';
+      if (fsLabel) fsLabel.textContent = isFs ? 'Keluar Layar Penuh' : 'Layar Penuh TV';
+    });
+
+    // Replay call on display card
+    const btnReplay = document.getElementById('btn-display-replay-call');
+    if (btnReplay) {
+      btnReplay.onclick = function () {
+        const data = getLiveQueueState();
+        panggilSuaraDisplay('Nomor antrean ' + (data.nomor || '') + ', silakan menuju ' + (data.loket || ''));
+      };
+    }
+
+    // Cross-tab Synchronization via Storage Event (0ms live TV monitor update)
+    window.addEventListener('storage', function (e) {
+      if (e.key === 'ETAMU_LIVE_QUEUE') {
+        renderDisplayQueue(true);
+      }
+      if (e.key === 'ETAMU_DISPLAY_SETTINGS') {
+        initDisplayView();
+      }
+      if (e.key === 'ETAMU_QUEUE_HISTORY') {
+        renderDisplayQueue(false);
+      }
+    });
   }
 
   async function showVerificationResult(id, sig) {
@@ -3142,7 +3556,7 @@ window.AppUI = (function () {
       const delay = idleMs > 60000 ? 60000 : 15000;
       state.pollTimer = setTimeout(async function () {
         if (document.visibilityState === 'visible') {
-          if (state.view === 'kiosk') await loadBootPublic(false);
+          if (state.view === 'kiosk' || state.view === 'display') await loadBootPublic(false);
           else if (state.view === 'pantau') await loadPantauData(false);
         }
         schedule();
@@ -3236,7 +3650,12 @@ window.AppUI = (function () {
       if (vid) showVerificationResult(vid, vsig);
     }
 
-    goView('kiosk');
+    // Direct route ke Display TV jika hash #display
+    if (window.location.hash === '#display') {
+      goView('display');
+    } else {
+      goView('kiosk');
+    }
     loadBootPublic(true);
     startAdaptivePolling();
   }
