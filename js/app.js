@@ -3526,6 +3526,54 @@ window.AppUI = (function () {
     renderDisplayQueue(shouldSpeak);
   }
 
+  function getNextQueueNumbers() {
+    const ring = (state.boot && state.boot.ringkasan) ? state.boot.ringkasan : {};
+    let nextPtsp = '';
+    let nextSidang = '';
+
+    // 1. Cek dari state pantau (jika data live tersedia dari backend)
+    if (state.pantau) {
+      const ptspWait = (state.pantau.ptsp || []).filter(function (r) {
+        return r.Status_Layanan === 'Menunggu';
+      });
+      if (ptspWait.length > 0 && ptspWait[0].Nomor_Antrean) {
+        nextPtsp = ptspWait[0].Nomor_Antrean;
+      }
+
+      const sidangWait = (state.pantau.sidang || []).filter(function (r) {
+        return r.Status_Kehadiran === 'Hadir di Ruang Tunggu';
+      });
+      if (sidangWait.length > 0 && sidangWait[0].Nomor_Antrean) {
+        nextSidang = sidangWait[0].Nomor_Antrean;
+      }
+    }
+
+    // 2. Fallback cerdas berdasarkan live queue saat ini
+    const live = getLiveQueueState();
+    if (!nextPtsp) {
+      if (live && live.nomor && live.nomor.startsWith('P-')) {
+        const num = parseInt(live.nomor.replace('P-', ''), 10);
+        nextPtsp = (!isNaN(num) && num >= 1) ? ('P-' + String(num + 1).padStart(3, '0')) : (ring.ptspBerikutnya || 'P-002');
+      } else {
+        nextPtsp = ring.ptspBerikutnya || 'P-002';
+      }
+    }
+
+    if (!nextSidang) {
+      if (live && live.nomor && live.nomor.startsWith('S-')) {
+        const num = parseInt(live.nomor.replace('S-', ''), 10);
+        nextSidang = (!isNaN(num) && num >= 1) ? ('S-' + String(num + 1).padStart(3, '0')) : (ring.sidangBerikutnya || 'S-002');
+      } else {
+        nextSidang = ring.sidangBerikutnya || 'S-001';
+      }
+    }
+
+    return {
+      nextPtsp: nextPtsp || 'P-002',
+      nextSidang: nextSidang || 'S-001'
+    };
+  }
+
   function renderDisplayQueue(isNewCall) {
     const data = getLiveQueueState();
     const ring = (state.boot && state.boot.ringkasan) ? state.boot.ringkasan : {};
@@ -3577,15 +3625,14 @@ window.AppUI = (function () {
     }
 
     // 2. Next Queue Panel (Both Kiosk & Display)
-    const nextPtsp = ring.ptspBerikutnya || 'P-002';
-    const nextSidang = ring.sidangBerikutnya || 'S-001';
+    const nextQ = getNextQueueNumbers();
     ['kiosk-next-ptsp', 'display-next-ptsp'].forEach(function (id) {
       const el = document.getElementById(id);
-      if (el) el.textContent = nextPtsp;
+      if (el) el.textContent = nextQ.nextPtsp;
     });
     ['kiosk-next-sidang', 'display-next-sidang'].forEach(function (id) {
       const el = document.getElementById(id);
-      if (el) el.textContent = nextSidang;
+      if (el) el.textContent = nextQ.nextSidang;
     });
 
     // 3. Riwayat 3-4 Nomor Antrean Terakhir
@@ -4058,7 +4105,10 @@ window.AppUI = (function () {
     if (btnKioskReplay) {
       btnKioskReplay.onclick = function () {
         const data = getLiveQueueState();
-        panggilSuaraDisplay('Nomor antrean ' + (data.nomor || '') + ', silakan menuju ' + (data.loket || ''));
+        const teksPanggil = (data.jalur === 'SIDANG')
+          ? ('Para pihak ' + (data.nama || '') + ', dipersilakan memasuki ' + (data.loket || 'Ruang Sidang'))
+          : ('Nomor antrean ' + (data.nomor || '') + ', silakan menuju ' + (data.loket || ''));
+        panggilSuaraDisplay(teksPanggil);
       };
     }
 
@@ -4127,7 +4177,10 @@ window.AppUI = (function () {
     if (btnReplay) {
       btnReplay.onclick = function () {
         const data = getLiveQueueState();
-        panggilSuaraDisplay('Nomor antrean ' + (data.nomor || '') + ', silakan menuju ' + (data.loket || ''));
+        const teksPanggil = (data.jalur === 'SIDANG')
+          ? ('Para pihak ' + (data.nama || '') + ', dipersilakan memasuki ' + (data.loket || 'Ruang Sidang'))
+          : ('Nomor antrean ' + (data.nomor || '') + ', silakan menuju ' + (data.loket || ''));
+        panggilSuaraDisplay(teksPanggil);
       };
     }
 
