@@ -2290,6 +2290,26 @@ window.AppUI = (function () {
       };
     }
 
+    // Salin Tautan Display TV untuk Multi-Perangkat (HP & Smart TV)
+    const btnCopyLink = document.getElementById('btn-admin-disp-copy-link');
+    if (btnCopyLink) {
+      btnCopyLink.onclick = function () {
+        const rawYt = (document.getElementById('admin-disp-yt').value || '').trim();
+        const ytId = extractYouTubeId(rawYt) || DEFAULT_DISPLAY_SETTINGS.ytId;
+        const baseUrl = window.location.origin + window.location.pathname;
+        const tvUrl = baseUrl + '?yt=' + encodeURIComponent(ytId) + '#display';
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(tvUrl).then(function () {
+            toast('Link TV Display disalin! Buka di HP atau Smart TV untuk menonton video ini.', 'success');
+          }).catch(function () {
+            prompt('Salin tautan TV Display ini untuk HP/Smart TV:', tvUrl);
+          });
+        } else {
+          prompt('Salin tautan TV Display ini untuk HP/Smart TV:', tvUrl);
+        }
+      };
+    }
+
     // Pratinjau YouTube di Admin Dashboard
     const btnTestYt = document.getElementById('btn-admin-disp-test-yt');
     if (btnTestYt) {
@@ -3224,22 +3244,27 @@ window.AppUI = (function () {
   // VIEW 7: DISPLAY RUANG TUNGGU PUBLIK / DASHBOARD ANTREAN TV ENGINE
   // ==========================================================================
   const DEFAULT_DISPLAY_SETTINGS = {
-    ytId: 'r72fG0644_k',
-    marquee: 'Selamat Datang di Pengadilan Tata Usaha Negara Palembang • Pelayanan Terpadu Satu Pintu (PTSP) melayani dengan Tulus, Cepat, Akuntabel, dan Transparan • Seluruh layanan peradilan bebas dari pungutan liar, gratifikasi, dan korupsi.',
+    ytId: (window.APP_CONFIG && window.APP_CONFIG.DEFAULT_YT_ID) ? window.APP_CONFIG.DEFAULT_YT_ID : '8dup11sZtq8',
+    marquee: (window.APP_CONFIG && window.APP_CONFIG.DEFAULT_MARQUEE) ? window.APP_CONFIG.DEFAULT_MARQUEE : 'Selamat Datang di Pengadilan Tata Usaha Negara Palembang • Pelayanan Terpadu Satu Pintu (PTSP) melayani dengan Tulus, Cepat, Akuntabel, dan Transparan • Seluruh layanan peradilan bebas dari pungutan liar, gratifikasi, dan korupsi.',
     audioEnabled: true,       // Suara Bel & Panggilan Antrean
     videoSound: false,        // Suara Video YouTube (default mute agar autoplay diizinkan browser)
     autoMuteOnCall: true      // Mute suara video otomatis saat pemanggilan nomor antrean
   };
 
   function getDisplaySettings() {
+    const defaultYt = (window.APP_CONFIG && window.APP_CONFIG.DEFAULT_YT_ID) ? window.APP_CONFIG.DEFAULT_YT_ID : '8dup11sZtq8';
     try {
       const raw = localStorage.getItem('ETAMU_DISPLAY_SETTINGS');
       if (raw) {
         const parsed = JSON.parse(raw);
+        // Otomatis bersihkan video ID rusak lama jika pernah tersimpan di cache browser
+        if (!parsed.ytId || parsed.ytId === 'r72fG0644_k' || parsed.ytId === 'hQ0k8jL9A0U') {
+          parsed.ytId = defaultYt;
+        }
         return Object.assign({}, DEFAULT_DISPLAY_SETTINGS, parsed);
       }
     } catch (e) {}
-    return Object.assign({}, DEFAULT_DISPLAY_SETTINGS);
+    return Object.assign({}, DEFAULT_DISPLAY_SETTINGS, { ytId: defaultYt });
   }
 
   function saveDisplaySettings(settings) {
@@ -3255,6 +3280,26 @@ window.AppUI = (function () {
     const regExp = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=|shorts\/)|youtu\.be\/)([^"&?\/\s]{11})/i;
     const match = str.match(regExp);
     return match ? match[1] : '';
+  }
+
+  // Periksa parameter URL (?yt=... atau ?v=...) agar video bisa dibuka langsung di HP / Smart TV
+  function checkUrlDisplayParams() {
+    try {
+      const searchParams = new URLSearchParams(window.location.search);
+      let ytParam = searchParams.get('yt') || searchParams.get('v') || searchParams.get('video');
+      if (!ytParam && window.location.hash && window.location.hash.indexOf('?') !== -1) {
+        const hashParams = new URLSearchParams(window.location.hash.split('?')[1]);
+        ytParam = hashParams.get('yt') || hashParams.get('v') || hashParams.get('video');
+      }
+      if (ytParam) {
+        const extracted = extractYouTubeId(ytParam);
+        if (extracted) {
+          const cur = getDisplaySettings();
+          cur.ytId = extracted;
+          saveDisplaySettings(cur);
+        }
+      }
+    } catch (e) {}
   }
 
   // Dapatkan elemen iframe video yang saat ini aktif ditampilkan
@@ -4199,6 +4244,7 @@ window.AppUI = (function () {
     initForms();
     initAdminTabs();
     initModals();
+    checkUrlDisplayParams();
     initDisplayView();
     applyFooterSettings();
     renderDisplayQueue(false);
@@ -4242,8 +4288,8 @@ window.AppUI = (function () {
       if (vid) showVerificationResult(vid, vsig);
     }
 
-    // Direct route ke Display TV jika hash #display
-    if (window.location.hash === '#display') {
+    // Direct route ke Display TV jika hash diawali #display
+    if (window.location.hash && window.location.hash.indexOf('#display') === 0) {
       goView('display');
     } else {
       goView('kiosk');

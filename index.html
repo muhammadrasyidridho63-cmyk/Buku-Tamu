@@ -391,7 +391,7 @@
               <iframe
                 id="kiosk-yt-iframe"
                 class="absolute inset-0 w-full h-full border-0 rounded-2xl"
-                src="https://www.youtube-nocookie.com/embed/r72fG0644_k?autoplay=1&mute=1&loop=1&playlist=r72fG0644_k&controls=1&rel=0&modestbranding=1&playsinline=1&enablejsapi=1"
+                src="https://www.youtube-nocookie.com/embed/8dup11sZtq8?autoplay=1&mute=1&loop=1&playlist=8dup11sZtq8&controls=1&rel=0&modestbranding=1&playsinline=1&enablejsapi=1"
                 title="Informasi &amp; Edukasi Publik"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowfullscreen
@@ -1367,7 +1367,7 @@
                       id="admin-disp-yt"
                       type="text"
                       required
-                      placeholder="Contoh: r72fG0644_k atau https://www.youtube.com/watch?v=r72fG0644_k"
+                      placeholder="Contoh: 8dup11sZtq8 atau https://www.youtube.com/watch?v=8dup11sZtq8"
                       class="w-full h-10 pl-9 pr-3 rounded-lg border border-outline-variant bg-white text-xs font-mono focus:border-primary-container focus:ring-1 focus:ring-primary-container"
                     />
                   </div>
@@ -1376,20 +1376,20 @@
                   </button>
                 </div>
                 
-                <!-- Preset Video Cepat Mahkamah Agung & PTSP -->
+                <!-- Preset Video Cepat Mahkamah Agung & PTSP PTUN Palembang -->
                 <div class="flex flex-wrap items-center gap-1.5 pt-1">
-                  <span class="text-[11px] text-outline font-medium">Pilihan Preset Video:</span>
-                  <button type="button" data-admin-yt="r72fG0644_k" class="btn-admin-preset px-2.5 py-1 rounded-md bg-surface-container hover:bg-surface-container-high text-on-surface text-[11px] font-semibold transition-colors">
-                    Profil MA-RI
+                  <span class="text-[11px] text-outline font-medium">Pilihan Preset Video Resmi:</span>
+                  <button type="button" data-admin-yt="8dup11sZtq8" class="btn-admin-preset px-2.5 py-1 rounded-md bg-surface-container hover:bg-surface-container-high text-on-surface text-[11px] font-semibold transition-colors" title="Video Alur Penyelesaian Perkara resmi PTUN Palembang">
+                    Alur Perkara PTUN
                   </button>
-                  <button type="button" data-admin-yt="zpOULjyy-n8" class="btn-admin-preset px-2.5 py-1 rounded-md bg-surface-container hover:bg-surface-container-high text-on-surface text-[11px] font-semibold transition-colors">
+                  <button type="button" data-admin-yt="beA_ImgW7b8" class="btn-admin-preset px-2.5 py-1 rounded-md bg-surface-container hover:bg-surface-container-high text-on-surface text-[11px] font-semibold transition-colors" title="SI-PANKUM (Layanan Bantuan Hukum) PTUN Palembang">
+                    SI-PANKUM PTUN
+                  </button>
+                  <button type="button" data-admin-yt="wYI3ru_KSu4" class="btn-admin-preset px-2.5 py-1 rounded-md bg-surface-container hover:bg-surface-container-high text-on-surface text-[11px] font-semibold transition-colors" title="Hymne Mahkamah Agung Republik Indonesia">
                     Hymne MA-RI
                   </button>
-                  <button type="button" data-admin-yt="dQw4w9WgXcQ" class="btn-admin-preset px-2.5 py-1 rounded-md bg-surface-container hover:bg-surface-container-high text-on-surface text-[11px] font-semibold transition-colors">
-                    Edukasi Hukum PTSP
-                  </button>
-                  <button type="button" data-admin-yt="hQ0k8jL9A0U" class="btn-admin-preset px-2.5 py-1 rounded-md bg-surface-container hover:bg-surface-container-high text-on-surface text-[11px] font-semibold transition-colors">
-                    Tata Cara Persidangan
+                  <button type="button" data-admin-yt="wQjA3NSBB6g" class="btn-admin-preset px-2.5 py-1 rounded-md bg-surface-container hover:bg-surface-container-high text-on-surface text-[11px] font-semibold transition-colors" title="Zona Integritas Bebas Korupsi PTTUN Palembang">
+                    Zona Integritas WBK
                   </button>
                 </div>
               </div>
@@ -1432,6 +1432,11 @@
 
               <!-- Row 4: Action Buttons -->
               <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-outline-variant/20">
+                <div class="flex items-center gap-2">
+                  <button type="button" id="btn-admin-disp-copy-link" class="h-9 px-3.5 rounded-lg border border-secondary-fixed/50 bg-secondary-fixed/15 hover:bg-secondary-fixed/25 text-on-secondary-fixed text-xs font-semibold flex items-center gap-1.5 transition-colors" title="Salin link langsung untuk dibuka di HP atau Smart TV ruang tunggu">
+                    <span class="material-symbols-outlined text-[16px]">share</span> Salin Link Display TV
+                  </button>
+                </div>
                 <div class="flex items-center gap-2 ml-auto">
                   <button type="button" id="btn-admin-disp-test-audio" class="h-9 px-3 rounded-lg border border-outline-variant hover:bg-surface-container text-xs font-semibold flex items-center gap-1.5">
                     <span class="material-symbols-outlined text-[16px] text-primary-container">volume_up</span> Test Panggilan Suara
@@ -1442,6 +1447,19 @@
                 </div>
               </div>
             </form>
+
+            <!-- Tips Multi-Device Sync -->
+            <div class="p-3.5 rounded-xl bg-surface-container-low text-[11px] text-on-surface-variant flex items-start gap-2.5 border border-outline-variant/40">
+              <span class="material-symbols-outlined text-[18px] text-primary-container shrink-0 mt-0.5">devices</span>
+              <div class="leading-relaxed">
+                <strong class="text-on-surface">Sinkronisasi Video Multi-Perangkat (HP, Smart TV, &amp; Browser Lain):</strong>
+                <ul class="list-disc list-inside mt-1 space-y-0.5">
+                  <li>Pengaturan yang disimpan melalui tombol <strong>Simpan Pengaturan Layar</strong> berlaku langsung di browser ini.</li>
+                  <li>Untuk membuka video yang sama di <strong>Handphone atau Smart TV</strong>, klik <strong>Salin Link Display TV</strong> lalu buka link tersebut di HP atau Smart TV Anda.</li>
+                  <li>Untuk menjadikan video sebagai <strong>bawaan utama global</strong> di seluruh perangkat secara otomatis, cantumkan ID video pada <code>DEFAULT_YT_ID</code> di berkas <code>frontend/js/config.js</code>.</li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
 
