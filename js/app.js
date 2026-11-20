@@ -315,6 +315,9 @@ window.AppUI = (function () {
       if (el) el.classList.toggle('hidden', v !== target);
     });
 
+    // Toggle kelas khusus untuk halaman display TV (hilangkan footer & sesuaikan layar)
+    document.body.classList.toggle('is-view-display', target === 'display');
+
     // Mode Tampilan Dual-Mode:
     // 1. Sidebar (Menu Kesamping) untuk Admin, Petugas PTSP, Petugas Sidang (Panitera), dan Satpam di SEMUA menu
     // 2. Navbar horizontal atas tetap untuk Pengunjung Publik (belum login)
@@ -3622,6 +3625,7 @@ window.AppUI = (function () {
     const doc = document.documentElement;
     const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement);
     if (!isFs) {
+      goView('display');
       if (doc.requestFullscreen) doc.requestFullscreen().catch(function () {});
       else if (doc.webkitRequestFullscreen) doc.webkitRequestFullscreen();
       else if (doc.mozRequestFullScreen) doc.mozRequestFullScreen();
@@ -4047,9 +4051,19 @@ window.AppUI = (function () {
       };
     }
 
-    // Layar Penuh TV (Fullscreen)
+    // Layar Penuh TV (Fullscreen) & Floating Exit Button
     const btnFullscreen = document.getElementById('btn-display-fullscreen');
     if (btnFullscreen) btnFullscreen.onclick = toggleTvFullscreen;
+
+    const btnFloatExit = document.getElementById('btn-floating-exit-tv');
+    if (btnFloatExit) btnFloatExit.onclick = toggleTvFullscreen;
+
+    // Tombol Escape untuk keluar dari mode fullscreen TV
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && document.body.classList.contains('is-tv-fullscreen')) {
+        toggleTvFullscreen();
+      }
+    });
 
     document.addEventListener('fullscreenchange', function () {
       const isFs = !!document.fullscreenElement;

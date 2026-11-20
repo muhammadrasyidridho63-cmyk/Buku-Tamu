@@ -2105,10 +2105,15 @@
     <!-- ================================================================== -->
     <!-- VIEW 7: DISPLAY RUANG TUNGGU PUBLIK / DASHBOARD ANTREAN TV         -->
     <!-- ================================================================== -->
-    <section id="view-display" class="view-panel hidden max-w-[1600px] mx-auto px-3 sm:px-6 py-4 sm:py-6 flex flex-col gap-4">
+    <section id="view-display" class="view-panel hidden max-w-[1600px] mx-auto px-3 sm:px-6 py-4 sm:py-6 flex flex-col gap-4 relative">
       
+      <!-- Floating Exit Fullscreen Button (Tampil saat TV Fullscreen) -->
+      <button type="button" id="btn-floating-exit-tv" class="hidden fixed top-4 right-4 z-50 p-2.5 rounded-full bg-black/60 hover:bg-black text-white text-xs backdrop-blur-md border border-white/20 transition-all opacity-40 hover:opacity-100 shadow-xl" title="Keluar Layar Penuh (Esc)">
+        <span class="material-symbols-outlined text-[22px]">fullscreen_exit</span>
+      </button>
+
       <!-- Header TV Bar (Satker, Live Clock, TV Controls) -->
-      <div class="bg-gradient-to-r from-primary-container via-primary to-primary-container text-white rounded-2xl p-4 sm:p-5 shadow-lg border border-secondary-fixed/20 flex flex-wrap items-center justify-between gap-4">
+      <div id="display-header-bar" class="bg-gradient-to-r from-primary-container via-primary to-primary-container text-white rounded-2xl p-4 sm:p-5 shadow-lg border border-secondary-fixed/20 flex flex-wrap items-center justify-between gap-4">
         <div class="flex items-center gap-3.5">
           <div id="display-satker-logo" class="w-12 h-12 rounded-xl bg-primary flex items-center justify-center border border-secondary-fixed/40 shadow-inner overflow-hidden shrink-0">
             <img src="img/logo-mahkamah-agung.svg" alt="Logo Mahkamah Agung" class="w-full h-full object-contain p-0.5" />
@@ -2146,7 +2151,7 @@
       </div>
 
       <!-- 2 Komponen Utama: Video Area (Sisi Kiri ~60-65%) + Queue Display (Sisi Kanan ~35-40%) -->
-      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6 items-start">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-6 items-stretch flex-1">
         
         <!-- KOMPONEN 1: VIDEO AREA (~60-65% Desktop, 100% Mobile) -->
         <div class="lg:col-span-7 xl:col-span-7 flex flex-col gap-3.5">
@@ -2192,135 +2197,62 @@
             </div>
           </div>
 
-          <!-- Ringkasan Info Layanan Tambahan di Bawah Video -->
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center">
-            <div class="bg-white rounded-xl p-2.5 border border-outline-variant/40 shadow-xs">
-              <span class="text-[11px] text-on-surface-variant block">Total Tamu Hari Ini</span>
-              <span id="display-stat-total" class="font-display font-bold text-sm text-on-surface">0 Tamu</span>
-            </div>
-            <div class="bg-white rounded-xl p-2.5 border border-outline-variant/40 shadow-xs">
-              <span class="text-[11px] text-on-surface-variant block">Layanan PTSP</span>
-              <span id="display-stat-ptsp" class="font-display font-bold text-sm text-primary-container">0 Orang</span>
-            </div>
-            <div class="bg-white rounded-xl p-2.5 border border-outline-variant/40 shadow-xs">
-              <span class="text-[11px] text-on-surface-variant block">Sidang Perkara</span>
-              <span id="display-stat-sidang" class="font-display font-bold text-sm text-secondary">0 Perkara</span>
-            </div>
-            <div class="bg-white rounded-xl p-2.5 border border-outline-variant/40 shadow-xs">
-              <span class="text-[11px] text-on-surface-variant block">Selesai Dilayani</span>
-              <span id="display-stat-selesai" class="font-display font-bold text-sm text-emerald-700">0 Selesai</span>
-            </div>
-          </div>
-
         </div>
 
         <!-- KOMPONEN 2: QUEUE DISPLAY (MONITOR ANTRIAN BERJALAN) -->
-        <div class="lg:col-span-5 xl:col-span-5 flex flex-col gap-4">
+        <div class="lg:col-span-5 xl:col-span-5 flex flex-col h-full">
           
           <!-- KARTU BESAR: NOMOR ANTREAN YANG SEDANG DIPANGGIL SAAT INI (CURRENT QUEUE) -->
-          <div id="display-current-card" class="relative bg-gradient-to-b from-white via-surface-container-lowest to-surface-container-low rounded-2xl p-6 sm:p-7 border-2 border-primary/25 shadow-xl flex flex-col justify-between overflow-hidden transition-all duration-300">
+          <div id="display-current-card" class="relative h-full flex-1 bg-gradient-to-b from-white via-surface-container-lowest to-surface-container-low rounded-2xl p-6 sm:p-8 lg:p-10 border-2 border-primary/25 shadow-xl flex flex-col justify-between overflow-hidden transition-all duration-300">
             
             <!-- Subtle decorative watermark icon -->
             <div class="absolute -right-6 -bottom-6 text-primary-container/[0.04] pointer-events-none">
-              <span class="material-symbols-outlined text-[180px]">confirmation_number</span>
+              <span class="material-symbols-outlined text-[220px]">confirmation_number</span>
             </div>
 
             <!-- Header Kartu: Status Panggilan -->
             <div class="flex items-center justify-between pb-3 border-b border-outline-variant/40">
               <div class="flex items-center gap-2">
-                <span class="relative flex h-3 w-3">
+                <span class="relative flex h-3.5 w-3.5">
                   <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-600"></span>
+                  <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-600"></span>
                 </span>
-                <span class="text-xs uppercase font-extrabold tracking-wider text-emerald-800" id="display-curr-status-badge">SEDANG DIPANGGIL</span>
+                <span class="text-xs sm:text-sm uppercase font-extrabold tracking-wider text-emerald-800" id="display-curr-status-badge">SEDANG DIPANGGIL</span>
               </div>
             </div>
 
             <!-- Main Section: Big Number & Destination -->
-            <div class="my-4 text-center">
-              <span class="text-xs font-bold text-outline uppercase tracking-widest block">NOMOR ANTREAN</span>
+            <div class="my-auto py-6 text-center">
+              <span class="text-xs sm:text-sm font-bold text-outline uppercase tracking-widest block">NOMOR ANTREAN</span>
               <!-- Jumbo Number with smooth pulse animation -->
-              <div id="display-curr-nomor" class="font-display text-6xl sm:text-7xl font-extrabold text-primary-container tracking-wider my-2 drop-shadow-sm transition-transform duration-300">
+              <div id="display-curr-nomor" class="font-display text-7xl sm:text-8xl lg:text-9xl font-extrabold text-primary-container tracking-wider my-3 drop-shadow-md transition-transform duration-300">
                 P-001
               </div>
 
               <!-- Loket / Ruang Tujuan -->
-              <div class="mt-3">
-                <div id="display-curr-loket" class="inline-block px-5 py-2.5 rounded-xl bg-secondary-container text-on-secondary-fixed font-display font-extrabold text-base sm:text-lg shadow-sm border border-secondary-fixed/30 tracking-wide">
+              <div class="mt-4">
+                <div id="display-curr-loket" class="inline-block px-6 py-3 rounded-2xl bg-secondary-container text-on-secondary-fixed font-display font-extrabold text-lg sm:text-2xl shadow-md border border-secondary-fixed/40 tracking-wide">
                   LOKET 1 - KEPANITERAAN PERKARA
                 </div>
               </div>
 
               <!-- Info Tamu / Nama / Perkara -->
-              <div class="mt-3 text-xs sm:text-sm text-on-surface-variant font-medium flex items-center justify-center gap-1.5">
-                <span class="material-symbols-outlined text-[18px] text-primary-container">person</span>
+              <div class="mt-4 text-sm sm:text-base text-on-surface-variant font-semibold flex items-center justify-center gap-2">
+                <span class="material-symbols-outlined text-[20px] text-primary-container">person</span>
                 <span id="display-curr-tamu">Pengunjung PTSP</span>
               </div>
             </div>
 
             <!-- Footer Kartu: Action / Sound Chime Test -->
-            <div class="pt-3 border-t border-outline-variant/40 flex items-center justify-between">
-              <span class="text-[11px] text-outline font-medium flex items-center gap-1">
-                <span class="material-symbols-outlined text-[15px]">hearing</span> Panggilan Suara Otomatis
+            <div class="pt-4 border-t border-outline-variant/40 flex items-center justify-between">
+              <span class="text-xs text-outline font-medium flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[17px]">hearing</span> Panggilan Suara Otomatis
               </span>
-              <button type="button" id="btn-display-replay-call" class="px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs" title="Panggil Ulang Nomor Ini">
-                <span class="material-symbols-outlined text-[16px] text-primary-container">volume_up</span>
+              <button type="button" id="btn-display-replay-call" class="px-3.5 py-2 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-xs" title="Panggil Ulang Nomor Ini">
+                <span class="material-symbols-outlined text-[17px] text-primary-container">volume_up</span>
                 <span>Ulangi Panggil</span>
               </button>
             </div>
-          </div>
-
-          <!-- PANEL RINGKAS DI BAWAHNYA: NEXT QUEUE & RECENT QUEUE -->
-          <div class="bg-white rounded-2xl p-4 sm:p-5 border border-outline-variant/40 shadow-md flex flex-col gap-4">
-            
-            <!-- Sub-panel 1: Antrean Berikutnya (Next Queue) -->
-            <div>
-              <div class="flex items-center justify-between mb-2.5">
-                <span class="text-xs font-bold uppercase tracking-wider text-on-surface flex items-center gap-1.5">
-                  <span class="material-symbols-outlined text-[18px] text-secondary">update</span> Antrean Berikutnya (Next Queue)
-                </span>
-                <span class="text-[11px] text-outline">Harap Bersiap</span>
-              </div>
-              <div class="grid grid-cols-2 gap-3">
-                <!-- PTSP Next -->
-                <div class="p-3 rounded-xl bg-surface-container-low border border-outline-variant/40 flex items-center justify-between">
-                  <div>
-                    <span class="text-[11px] text-on-surface-variant font-medium block">PTSP Berikutnya</span>
-                    <span id="display-next-ptsp" class="font-display font-bold text-lg sm:text-xl text-primary-container">P-002</span>
-                  </div>
-                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-primary-fixed text-on-primary-fixed">Antre</span>
-                </div>
-                <!-- Sidang Next -->
-                <div class="p-3 rounded-xl bg-surface-container-low border border-outline-variant/40 flex items-center justify-between">
-                  <div>
-                    <span class="text-[11px] text-on-surface-variant font-medium block">Sidang Berikutnya</span>
-                    <span id="display-next-sidang" class="font-display font-bold text-lg sm:text-xl text-secondary">S-001</span>
-                  </div>
-                  <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-secondary-fixed text-on-secondary-fixed-variant">Antre</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Sub-panel 2: Riwayat 3-4 Nomor Antrean Terakhir (Recent Queue) -->
-            <div class="pt-2 border-t border-outline-variant/40">
-              <div class="flex items-center justify-between mb-2">
-                <span class="text-xs font-bold uppercase tracking-wider text-on-surface flex items-center gap-1.5">
-                  <span class="material-symbols-outlined text-[18px] text-primary-container">history</span> Riwayat Panggilan Terakhir
-                </span>
-                <span class="text-[11px] text-outline">3-4 Terakhir</span>
-              </div>
-              <div id="display-recent-list" class="flex flex-col gap-2">
-                <!-- Generated dynamically via JS -->
-                <div class="p-2.5 rounded-xl bg-surface-container-low/50 border border-outline-variant/30 flex items-center justify-between text-xs">
-                  <div class="flex items-center gap-2.5">
-                    <span class="font-display font-bold text-sm text-primary-container">P-001</span>
-                    <span class="text-on-surface font-medium">Loket 1 PTSP</span>
-                  </div>
-                  <span class="text-outline text-[11px]">08:30 WIB</span>
-                </div>
-              </div>
-            </div>
-
           </div>
 
         </div>
