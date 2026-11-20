@@ -489,7 +489,9 @@ window.AppUI = (function () {
     document.title = 'SI-BUKU TAMU — ' + clean;
   }
 
-  const DEFAULT_LOGO_SVG = '<svg class="w-6 h-6 text-secondary-fixed" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3zm-1 14H8v-2h3v2zm0-4H8V8h3v4zm5 4h-3v-6h3v6z"/></svg>';
+  const DEFAULT_LOGO_URL = 'img/logo-mahkamah-agung.svg';
+  const DEFAULT_LOGO_FALLBACK = 'https://upload.wikimedia.org/wikipedia/commons/9/98/Insignia_of_the_Supreme_Court_of_the_Republic_of_Indonesia.svg';
+  const DEFAULT_LOGO_HTML = '<img src="' + DEFAULT_LOGO_URL + '" alt="Logo Mahkamah Agung" class="w-full h-full object-contain p-0.5" onerror="this.onerror=null;this.src=\'' + DEFAULT_LOGO_FALLBACK + '\';" />';
 
   function applySatkerLogo(url) {
     const clean = String(url || '').trim();
@@ -499,47 +501,48 @@ window.AppUI = (function () {
 
     const navBox = document.getElementById('nav-logo-box');
     const sideBox = document.getElementById('sidebar-logo-box');
+    const kioskBox = document.getElementById('kiosk-satker-logo');
+    const dispBox = document.getElementById('display-satker-logo');
     const tktBox = document.getElementById('tkt-logo-box');
     const prevBox = document.getElementById('cfg-logo-preview');
-    const dispBox = document.getElementById('display-satker-logo');
     const urlInp = document.getElementById('cfg-logo-url');
 
     if (urlInp && document.activeElement !== urlInp) {
       urlInp.value = clean.indexOf('data:image') === 0 ? '' : clean;
     }
 
-    if (clean) {
-      const renderImg = function (box, fallbackHtml) {
-        if (!box) return;
-        box.innerHTML = '';
-        const img = document.createElement('img');
-        img.src = clean;
-        img.alt = 'Logo Pengadilan';
-        img.className = 'w-full h-full object-contain p-1';
-        img.onerror = function () { box.innerHTML = fallbackHtml; };
-        box.appendChild(img);
-      };
-      renderImg(navBox, DEFAULT_LOGO_SVG);
-      renderImg(sideBox, DEFAULT_LOGO_SVG);
-      renderImg(prevBox, DEFAULT_LOGO_SVG);
-      renderImg(dispBox, DEFAULT_LOGO_SVG);
-      renderImg(tktBox, '<span class="material-symbols-outlined">account_balance</span>');
+    const effectiveUrl = clean || DEFAULT_LOGO_URL;
 
-      // Update favicon
-      let fav = document.querySelector('link[rel="icon"]');
-      if (!fav) {
-        fav = document.createElement('link');
-        fav.rel = 'icon';
-        document.head.appendChild(fav);
-      }
-      fav.href = clean;
-    } else {
-      if (navBox) navBox.innerHTML = DEFAULT_LOGO_SVG;
-      if (sideBox) sideBox.innerHTML = DEFAULT_LOGO_SVG;
-      if (prevBox) prevBox.innerHTML = DEFAULT_LOGO_SVG;
-      if (dispBox) dispBox.innerHTML = DEFAULT_LOGO_SVG;
-      if (tktBox) tktBox.innerHTML = '<span class="material-symbols-outlined">account_balance</span>';
+    const renderImg = function (box) {
+      if (!box) return;
+      box.innerHTML = '';
+      const img = document.createElement('img');
+      img.src = effectiveUrl;
+      img.alt = 'Logo Pengadilan';
+      img.className = 'w-full h-full object-contain p-0.5';
+      img.onerror = function () {
+        if (img.src !== DEFAULT_LOGO_FALLBACK) {
+          img.src = DEFAULT_LOGO_FALLBACK;
+        } else {
+          box.innerHTML = '<span class="material-symbols-outlined text-secondary-fixed">account_balance</span>';
+        }
+      };
+      box.appendChild(img);
+    };
+
+    [navBox, sideBox, kioskBox, dispBox, prevBox, tktBox].forEach(function (box) {
+      renderImg(box);
+    });
+
+    // Update favicon
+    let fav = document.querySelector('link[rel="icon"]');
+    if (!fav) {
+      fav = document.createElement('link');
+      fav.rel = 'icon';
+      fav.type = 'image/svg+xml';
+      document.head.appendChild(fav);
     }
+    fav.href = effectiveUrl;
   }
 
   function applyBootData(d) {
