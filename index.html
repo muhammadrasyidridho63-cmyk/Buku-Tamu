@@ -1199,7 +1199,10 @@
               <option value="PTSP">Khusus PTSP</option>
               <option value="SIDANG">Khusus Persidangan</option>
             </select>
-            <button type="button" id="btn-dash-filter" class="h-10 px-4 rounded-xl bg-surface-container hover:bg-surface-container-high text-xs font-bold">Terapkan</button>
+            <button type="button" id="btn-dash-filter" class="h-10 px-4 rounded-xl bg-primary-container hover:bg-primary text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all cursor-pointer" title="Terapkan Filter Rentang Tanggal &amp; Jalur Layanan">
+              <span class="material-symbols-outlined text-[16px]" id="icon-dash-filter">filter_alt</span>
+              <span id="label-dash-filter">Terapkan</span>
+            </button>
             <button type="button" id="btn-export-csv" class="h-10 px-4 rounded-xl border border-outline-variant bg-white hover:bg-surface-container-low text-xs font-bold flex items-center gap-1.5">
               <span class="material-symbols-outlined text-[16px]">table_view</span> Unduh Excel (.csv)
             </button>

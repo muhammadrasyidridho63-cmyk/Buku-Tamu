@@ -1407,7 +1407,7 @@ window.AppUI = (function () {
   // ==========================================================================
   // VIEW 6: DASHBOARD ANALITIK, LAPORAN & ADMINISTRASI
   // ==========================================================================
-  async function loadDashboardData() {
+  async function loadDashboardData(showFeedback) {
     const curNama = state.boot && state.boot.pengaturan && state.boot.pengaturan.NAMA_SATKER;
     if (curNama) {
       const dashInp = document.getElementById('dash-nama-pengadilan');
@@ -1416,6 +1416,11 @@ window.AppUI = (function () {
 
     const startEl = document.getElementById('dash-start');
     const endEl = document.getElementById('dash-end');
+    const jalurEl = document.getElementById('dash-jalur');
+    const btnFilter = document.getElementById('btn-dash-filter');
+    const labelFilter = document.getElementById('label-dash-filter');
+    const iconFilter = document.getElementById('icon-dash-filter');
+
     if (!endEl.value) endEl.value = todayYmd();
     if (!startEl.value) {
       const d = new Date();
@@ -1423,17 +1428,49 @@ window.AppUI = (function () {
       startEl.value = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
     }
 
-    const res = await window.ApiClient.call('admin.dashboard', {
-      start: startEl.value,
-      end: endEl.value,
-      jalur: document.getElementById('dash-jalur').value
-    });
-    if (res && res.success && res.data) {
-      state.dash = res.data;
-      renderDashboard();
+    if (startEl.value && endEl.value && startEl.value > endEl.value) {
+      toast('Tanggal awal tidak boleh melebihi tanggal akhir.', 'error');
+      return;
     }
-    if (!curNama) {
-      loadBootPublic(false);
+
+    // Set status tombol Terapkan ke mode memuat
+    if (btnFilter) {
+      btnFilter.disabled = true;
+      btnFilter.classList.add('opacity-75', 'cursor-not-allowed');
+      if (labelFilter) labelFilter.textContent = 'Memuat...';
+      if (iconFilter) iconFilter.classList.add('animate-spin');
+    }
+
+    try {
+      const jalur = jalurEl ? jalurEl.value : 'ALL';
+      const res = await window.ApiClient.call('admin.dashboard', {
+        start: startEl.value,
+        end: endEl.value,
+        jalur: jalur
+      });
+
+      if (res && res.success && res.data) {
+        state.dash = res.data;
+        renderDashboard();
+        if (showFeedback === true) {
+          const jml = (res.data.riwayat && res.data.riwayat.length) || 0;
+          toast('Filter berhasil diterapkan (' + jml + ' data kunjungan ditemukan).', 'success');
+        }
+      } else {
+        toast((res && res.message) || 'Gagal memuat data dashboard.', 'error');
+      }
+    } catch (err) {
+      toast('Gagal memuat data dashboard: ' + (err.message || err), 'error');
+    } finally {
+      if (btnFilter) {
+        btnFilter.disabled = false;
+        btnFilter.classList.remove('opacity-75', 'cursor-not-allowed');
+        if (labelFilter) labelFilter.textContent = 'Terapkan';
+        if (iconFilter) iconFilter.classList.remove('animate-spin');
+      }
+      if (!curNama) {
+        loadBootPublic(false);
+      }
     }
   }
 
@@ -1690,7 +1727,33 @@ window.AppUI = (function () {
       };
     }
 
-    document.getElementById('btn-dash-filter').onclick = loadDashboardData;
+    // Filter Dashboard & Laporan (Tombol Terapkan, Ganti Jalur, & Enter)
+    const btnDashFilter = document.getElementById('btn-dash-filter');
+    if (btnDashFilter) {
+      btnDashFilter.onclick = function () {
+        loadDashboardData(true);
+      };
+    }
+
+    const selDashJalur = document.getElementById('dash-jalur');
+    if (selDashJalur) {
+      selDashJalur.onchange = function () {
+        loadDashboardData(true);
+      };
+    }
+
+    ['dash-start', 'dash-end'].forEach(function (id) {
+      const inp = document.getElementById(id);
+      if (inp) {
+        inp.onkeydown = function (e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            loadDashboardData(true);
+          }
+        };
+      }
+    });
+
     document.getElementById('dash-search-riwayat').oninput = renderRiwayatTable;
     document.getElementById('btn-export-csv').onclick = exportCsv;
     document.getElementById('btn-export-pdf').onclick = function () {

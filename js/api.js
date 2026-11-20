@@ -622,16 +622,30 @@ window.ApiClient = (function () {
       }
 
       if (action === 'admin.dashboard') {
-        const ptsp = (data.jalur === 'SIDANG') ? [] : db.ptsp;
-        const sidang = (data.jalur === 'PTSP') ? [] : db.sidang;
+        const start = data.start ? String(data.start).slice(0, 10) : '';
+        const end = data.end ? String(data.end).slice(0, 10) : '';
+        const inRange = function (iso) {
+          if (!iso) return false;
+          const d = String(iso).slice(0, 10);
+          if (start && d < start) return false;
+          if (end && d > end) return false;
+          return true;
+        };
+
+        const rawPtsp = Array.isArray(db.ptsp) ? db.ptsp : [];
+        const rawSidang = Array.isArray(db.sidang) ? db.sidang : [];
+
+        const ptsp = (data.jalur === 'SIDANG') ? [] : rawPtsp.filter(function (r) { return inRange(r.Waktu_Masuk); });
+        const sidang = (data.jalur === 'PTSP') ? [] : rawSidang.filter(function (r) { return inRange(r.Waktu_Masuk); });
+
         const dailyMap = {};
         ptsp.forEach(function (r) {
-          const d = r.Waktu_Masuk.slice(0, 10);
+          const d = String(r.Waktu_Masuk || '').slice(0, 10);
           if (!dailyMap[d]) dailyMap[d] = { tanggal: d, ptsp: 0, sidang: 0 };
           dailyMap[d].ptsp++;
         });
         sidang.forEach(function (r) {
-          const d = r.Waktu_Masuk.slice(0, 10);
+          const d = String(r.Waktu_Masuk || '').slice(0, 10);
           if (!dailyMap[d]) dailyMap[d] = { tanggal: d, ptsp: 0, sidang: 0 };
           dailyMap[d].sidang++;
         });
