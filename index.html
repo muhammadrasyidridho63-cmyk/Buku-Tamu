@@ -154,11 +154,48 @@
         <span class="flex-1 font-medium text-xs sm:text-sm">Dashboard &amp; Laporan</span>
       </button>
 
-      <!-- 7. Pengaturan Lengkap -->
-      <button type="button" id="nav-btn-pengaturan-lengkap" class="nav-side-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-primary-fixed-dim hover:text-white hover:bg-white/10 transition-all text-left group">
-        <span class="material-symbols-outlined text-[20px] text-secondary-fixed group-hover:scale-110 transition-transform">settings</span>
-        <span class="flex-1 font-medium text-xs sm:text-sm">Pengaturan Lengkap</span>
-      </button>
+      <!-- 7. Pengaturan Lengkap (Accordion Menu dengan Sub-menu) -->
+      <div class="flex flex-col" id="nav-group-pengaturan">
+        <button type="button" id="nav-btn-pengaturan-lengkap" class="nav-side-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-primary-fixed-dim hover:text-white hover:bg-white/10 transition-all text-left group">
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-[20px] text-secondary-fixed group-hover:scale-110 transition-transform">settings</span>
+            <span class="font-medium text-xs sm:text-sm">Pengaturan Lengkap</span>
+          </div>
+          <span id="nav-pengaturan-chevron" class="material-symbols-outlined text-[18px] text-primary-fixed-dim/70 transition-transform duration-200">expand_more</span>
+        </button>
+
+        <!-- Sub-Menu Vertikal (Langsung Akses Tab Pengaturan) -->
+        <div id="nav-sub-pengaturan" class="pl-3.5 pr-1 flex flex-col gap-1 border-l-2 border-secondary-fixed/30 ml-5 my-1 transition-all">
+          <button type="button" data-atab-nav="display" class="nav-sub-btn w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium text-primary-fixed-dim/80 hover:text-white hover:bg-white/10 transition-colors text-left group">
+            <span class="material-symbols-outlined text-[16px] text-secondary-fixed">smart_display</span>
+            <span class="truncate">Display Antrean TV</span>
+          </button>
+          <button type="button" data-atab-nav="pengaturan" class="nav-sub-btn w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium text-primary-fixed-dim/80 hover:text-white hover:bg-white/10 transition-colors text-left group">
+            <span class="material-symbols-outlined text-[16px] text-secondary-fixed">tune</span>
+            <span class="truncate">Sistem, Printer &amp; Footer</span>
+          </button>
+          <button type="button" data-atab-nav="ruang" class="nav-sub-btn w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium text-primary-fixed-dim/80 hover:text-white hover:bg-white/10 transition-colors text-left group">
+            <span class="material-symbols-outlined text-[16px] text-secondary-fixed">meeting_room</span>
+            <span class="truncate">Kelola Ruang Sidang</span>
+          </button>
+          <button type="button" data-atab-nav="jadwal" class="nav-sub-btn w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium text-primary-fixed-dim/80 hover:text-white hover:bg-white/10 transition-colors text-left group">
+            <span class="material-symbols-outlined text-[16px] text-secondary-fixed">calendar_month</span>
+            <span class="truncate">Kelola Jadwal Sidang</span>
+          </button>
+          <button type="button" data-atab-nav="users" class="nav-sub-btn w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium text-primary-fixed-dim/80 hover:text-white hover:bg-white/10 transition-colors text-left group">
+            <span class="material-symbols-outlined text-[16px] text-secondary-fixed">group</span>
+            <span class="truncate">Manajemen Pengguna</span>
+          </button>
+          <button type="button" data-atab-nav="crm" class="nav-sub-btn w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium text-primary-fixed-dim/80 hover:text-white hover:bg-white/10 transition-colors text-left group">
+            <span class="material-symbols-outlined text-[16px] text-emerald-400">forum</span>
+            <span class="truncate">WhatsApp CRM &amp; Blast</span>
+          </button>
+          <button type="button" data-atab-nav="migrasi" class="nav-sub-btn w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium text-primary-fixed-dim/80 hover:text-white hover:bg-white/10 transition-colors text-left group">
+            <span class="material-symbols-outlined text-[16px] text-secondary-fixed">database</span>
+            <span class="truncate">Rahasia &amp; Migrasi</span>
+          </button>
+        </div>
+      </div>
     </div>
 
     <!-- Footer Sidebar -->
@@ -1199,23 +1236,50 @@
         </div>
       </div>
 
-      <!-- Admin Sub-Tabs -->
+      <!-- Admin Sub-Tabs (Flex Wrap Anti-Potong dengan Ikon Lengkap) -->
       <div class="bg-white rounded-2xl border border-outline-variant/40 shadow-sm overflow-hidden">
-        <div class="px-4 pt-3 border-b border-outline-variant/40 flex items-center gap-2 overflow-x-auto no-scrollbar no-print" id="admin-subtabs">
-          <button type="button" data-atab="riwayat" class="atab-btn px-4 py-2.5 text-xs sm:text-sm font-bold border-b-2 border-primary-container text-primary-container whitespace-nowrap">Riwayat Transaksi Tamu</button>
-          <button type="button" data-atab="jadwal" class="atab-btn px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-on-surface-variant hover:text-on-surface whitespace-nowrap">Kelola Jadwal Sidang</button>
-          <button type="button" data-atab="ruang" class="atab-btn px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-on-surface-variant hover:text-on-surface whitespace-nowrap">Kelola Ruang Sidang</button>
-          <button type="button" data-atab="users" class="atab-btn px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-on-surface-variant hover:text-on-surface whitespace-nowrap">Manajemen Pengguna (RBAC)</button>
-          <button type="button" data-atab="display" class="atab-btn px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-on-surface-variant hover:text-on-surface whitespace-nowrap flex items-center gap-1.5">
-            <span class="material-symbols-outlined text-sm text-secondary">smart_display</span>
-            <span>Pengaturan Display TV</span>
-          </button>
-          <button type="button" data-atab="pengaturan" class="atab-btn px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-on-surface-variant hover:text-on-surface whitespace-nowrap">Pengaturan, Printer &amp; Template</button>
-          <button type="button" data-atab="crm" class="atab-btn px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-on-surface-variant hover:text-on-surface whitespace-nowrap flex items-center gap-1.5">
-            <span class="material-symbols-outlined text-sm text-emerald-600">forum</span>
-            <span>WhatsApp &amp; CRM Kontak</span>
-          </button>
-          <button type="button" data-atab="migrasi" class="atab-btn px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-on-surface-variant hover:text-on-surface whitespace-nowrap">Rahasia &amp; Migrasi Database</button>
+        <div class="p-3 sm:p-4 border-b border-outline-variant/40 bg-surface-container-low/40 no-print">
+          <div class="flex items-center justify-between gap-2 mb-2.5">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-primary-container"></span>
+              <span class="text-xs font-bold uppercase tracking-wider text-on-surface">Pilih Menu &amp; Pengaturan</span>
+            </div>
+            <span class="text-[11px] text-on-surface-variant hidden sm:inline-block">Dapat diakses juga via sidebar "Pengaturan Lengkap"</span>
+          </div>
+          <div class="flex flex-wrap items-center gap-1.5 sm:gap-2" id="admin-subtabs">
+            <button type="button" data-atab="riwayat" class="atab-btn px-3 sm:px-3.5 py-2 text-xs sm:text-sm font-bold rounded-xl bg-primary-container text-white shadow-sm flex items-center gap-1.5 transition-all">
+              <span class="material-symbols-outlined text-[18px]">bar_chart</span>
+              <span>Riwayat Tamu</span>
+            </button>
+            <button type="button" data-atab="display" class="atab-btn px-3 sm:px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-white hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface border border-outline-variant/60 flex items-center gap-1.5 transition-all">
+              <span class="material-symbols-outlined text-[18px] text-secondary">smart_display</span>
+              <span>Display Antrean TV</span>
+            </button>
+            <button type="button" data-atab="pengaturan" class="atab-btn px-3 sm:px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-white hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface border border-outline-variant/60 flex items-center gap-1.5 transition-all">
+              <span class="material-symbols-outlined text-[18px] text-primary">tune</span>
+              <span>Sistem, Printer &amp; Footer</span>
+            </button>
+            <button type="button" data-atab="ruang" class="atab-btn px-3 sm:px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-white hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface border border-outline-variant/60 flex items-center gap-1.5 transition-all">
+              <span class="material-symbols-outlined text-[18px] text-primary">meeting_room</span>
+              <span>Kelola Ruang Sidang</span>
+            </button>
+            <button type="button" data-atab="jadwal" class="atab-btn px-3 sm:px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-white hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface border border-outline-variant/60 flex items-center gap-1.5 transition-all">
+              <span class="material-symbols-outlined text-[18px] text-primary">calendar_month</span>
+              <span>Kelola Jadwal Sidang</span>
+            </button>
+            <button type="button" data-atab="users" class="atab-btn px-3 sm:px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-white hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface border border-outline-variant/60 flex items-center gap-1.5 transition-all">
+              <span class="material-symbols-outlined text-[18px] text-primary">group</span>
+              <span>Manajemen Pengguna</span>
+            </button>
+            <button type="button" data-atab="crm" class="atab-btn px-3 sm:px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-white hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface border border-outline-variant/60 flex items-center gap-1.5 transition-all">
+              <span class="material-symbols-outlined text-[18px] text-emerald-600">forum</span>
+              <span>WhatsApp CRM &amp; Blast</span>
+            </button>
+            <button type="button" data-atab="migrasi" class="atab-btn px-3 sm:px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-white hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface border border-outline-variant/60 flex items-center gap-1.5 transition-all">
+              <span class="material-symbols-outlined text-[18px] text-primary">database</span>
+              <span>Rahasia &amp; Migrasi</span>
+            </button>
+          </div>
         </div>
 
         <!-- TAB 1: RIWAYAT -->

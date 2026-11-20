@@ -1578,8 +1578,8 @@ window.AppUI = (function () {
     document.querySelectorAll('.atab-btn').forEach(function (b) {
       const active = b.getAttribute('data-atab') === t;
       b.className = active
-        ? 'atab-btn px-4 py-2.5 text-xs sm:text-sm font-bold border-b-2 border-primary-container text-primary-container whitespace-nowrap'
-        : 'atab-btn px-4 py-2.5 text-xs sm:text-sm font-semibold border-b-2 border-transparent text-on-surface-variant hover:text-on-surface whitespace-nowrap';
+        ? 'atab-btn px-3 sm:px-3.5 py-2 text-xs sm:text-sm font-bold rounded-xl bg-primary-container text-white shadow-sm flex items-center gap-1.5 transition-all'
+        : 'atab-btn px-3 sm:px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-white hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface border border-outline-variant/60 flex items-center gap-1.5 transition-all';
     });
     document.querySelectorAll('.atab-pane').forEach(function (p) {
       p.classList.toggle('hidden', p.id !== 'atab-' + t);
@@ -1590,6 +1590,34 @@ window.AppUI = (function () {
     if (t === 'display') loadAdminDisplayTab();
     if (t === 'pengaturan' || t === 'migrasi') loadAdminPengaturan();
     if (t === 'crm') loadNotifCrmTab();
+
+    updateSidebarSubmenu(t);
+  }
+
+  function updateSidebarSubmenu(activeAtab) {
+    const subContainer = document.getElementById('nav-sub-pengaturan');
+    const chevron = document.getElementById('nav-pengaturan-chevron');
+    const isPengaturanTab = ['display', 'pengaturan', 'ruang', 'jadwal', 'users', 'crm', 'migrasi'].indexOf(activeAtab) !== -1;
+
+    // Jika tab pengaturan yang sedang aktif, pastikan submenu accordion terbuka
+    if (isPengaturanTab && subContainer) {
+      subContainer.classList.remove('hidden');
+      if (chevron) chevron.classList.add('rotate-180');
+    }
+
+    document.querySelectorAll('.nav-sub-btn').forEach(function (btn) {
+      const isSubActive = isPengaturanTab && (btn.getAttribute('data-atab-nav') === activeAtab);
+      btn.className = isSubActive
+        ? 'nav-sub-btn w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold bg-secondary-container text-on-secondary-fixed shadow-sm transition-all text-left'
+        : 'nav-sub-btn w-full flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium text-primary-fixed-dim/80 hover:text-white hover:bg-white/10 transition-colors text-left group';
+
+      const icon = btn.querySelector('.material-symbols-outlined');
+      if (icon) {
+        icon.className = isSubActive
+          ? 'material-symbols-outlined text-[16px] text-on-secondary-fixed'
+          : 'material-symbols-outlined text-[16px] text-secondary-fixed';
+      }
+    });
   }
 
   function loadAdminDisplayTab() {
@@ -1713,13 +1741,42 @@ window.AppUI = (function () {
     const navBtnPengaturanLengkap = document.getElementById('nav-btn-pengaturan-lengkap');
     if (navBtnPengaturanLengkap) {
       navBtnPengaturanLengkap.onclick = function () {
-        closeSidebarMobile();
-        goView('dashboard');
-        openAdminTab('pengaturan');
-        const tabBtn = document.querySelector('.atab-btn[data-atab="pengaturan"]');
-        if (tabBtn) tabBtn.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const subContainer = document.getElementById('nav-sub-pengaturan');
+        const chevron = document.getElementById('nav-pengaturan-chevron');
+        if (subContainer) {
+          const isCurrentlyHidden = subContainer.classList.contains('hidden');
+          if (isCurrentlyHidden) {
+            subContainer.classList.remove('hidden');
+            if (chevron) chevron.classList.add('rotate-180');
+            if (state.view !== 'dashboard') {
+              goView('dashboard');
+              openAdminTab('pengaturan');
+            }
+          } else {
+            subContainer.classList.add('hidden');
+            if (chevron) chevron.classList.remove('rotate-180');
+          }
+        } else {
+          closeSidebarMobile();
+          goView('dashboard');
+          openAdminTab('pengaturan');
+        }
       };
     }
+
+    // Sub-menu Pengaturan Lengkap listener
+    document.querySelectorAll('.nav-sub-btn').forEach(function (btn) {
+      btn.onclick = function () {
+        const targetTab = btn.getAttribute('data-atab-nav');
+        closeSidebarMobile();
+        goView('dashboard');
+        openAdminTab(targetTab);
+        const subTabsWrap = document.getElementById('admin-subtabs');
+        if (subTabsWrap) {
+          subTabsWrap.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+      };
+    });
 
     const btnShortcutDisp = document.getElementById('btn-shortcut-ke-display-tab');
     if (btnShortcutDisp) {
