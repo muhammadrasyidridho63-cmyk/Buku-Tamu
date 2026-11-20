@@ -478,7 +478,7 @@ window.AppUI = (function () {
     if (state.boot && state.boot.pengaturan) {
       state.boot.pengaturan.NAMA_SATKER = clean;
     }
-    ['hero-satker-name', 'nav-satker-subtitle', 'sidebar-satker-subtitle', 'dash-satker-name', 'footer-satker-name', 'footer-brand-subtitle', 'tkt-satker-nama', 'display-satker-name'].forEach(function (id) {
+    ['hero-satker-name', 'nav-satker-subtitle', 'sidebar-satker-subtitle', 'dash-satker-name', 'footer-satker-name', 'footer-brand-title', 'tkt-satker-nama', 'display-satker-name'].forEach(function (id) {
       const el = document.getElementById(id);
       if (el) el.textContent = clean;
     });
@@ -3554,8 +3554,7 @@ window.AppUI = (function () {
   // FOOTER RESMI DUA KOLOM & TAUTAN PENTING ENGINE
   // ==========================================================================
   const DEFAULT_FOOTER_SETTINGS = {
-    brand: 'PTUN PALEMBANG',
-    subtitle: 'Pengadilan Tata Usaha Negara Palembang',
+    brand: 'Pengadilan Tata Usaha Negara Palembang',
     desc: 'Wilayah Hukum Pengadilan Tata Usaha Negara Palembang meliputi Provinsi Sumatera Selatan. Berkomitmen memberikan pelayanan peradilan yang modern, cepat, transparan, dan akuntabel.',
     address: 'Jl. Jend. A. Yani, No.67, Plaju, Palembang, Sumatera Selatan',
     phone: '(0711) 513812 / 513813',
@@ -3574,6 +3573,9 @@ window.AppUI = (function () {
       const raw = localStorage.getItem('SI_BUKU_TAMU_FOOTER_CFG');
       if (raw) {
         const parsed = JSON.parse(raw);
+        if (parsed.brand === 'PTUN PALEMBANG') {
+          parsed.brand = DEFAULT_FOOTER_SETTINGS.brand;
+        }
         return Object.assign({}, DEFAULT_FOOTER_SETTINGS, parsed);
       }
     } catch (e) {}
@@ -3590,13 +3592,13 @@ window.AppUI = (function () {
     const st = settings || getFooterSettings();
 
     const brandEl = document.getElementById('footer-brand-title');
-    if (brandEl) brandEl.textContent = st.brand || DEFAULT_FOOTER_SETTINGS.brand;
+    if (brandEl) {
+      const namaSatker = (state.boot && state.boot.pengaturan && state.boot.pengaturan.NAMA_SATKER) || '';
+      brandEl.textContent = (st.brand && st.brand !== 'PTUN PALEMBANG') ? st.brand : (namaSatker || DEFAULT_FOOTER_SETTINGS.brand);
+    }
 
     const subEl = document.getElementById('footer-brand-subtitle');
-    if (subEl) {
-      const namaSatker = (state.boot && state.boot.pengaturan && state.boot.pengaturan.NAMA_SATKER) || '';
-      subEl.textContent = namaSatker || st.subtitle || DEFAULT_FOOTER_SETTINGS.subtitle;
-    }
+    if (subEl) subEl.remove();
 
     const descEl = document.getElementById('footer-desc');
     if (descEl) descEl.textContent = st.desc || DEFAULT_FOOTER_SETTINGS.desc;
