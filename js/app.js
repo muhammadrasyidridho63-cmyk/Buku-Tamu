@@ -3334,7 +3334,6 @@ window.AppUI = (function () {
         nomor: document.getElementById('kiosk-curr-nomor'),
         loket: document.getElementById('kiosk-curr-loket'),
         tamu: document.getElementById('kiosk-curr-tamu'),
-        time: document.getElementById('kiosk-curr-time'),
         badge: document.getElementById('kiosk-curr-status-badge'),
         card: document.getElementById('kiosk-current-card')
       },
@@ -3342,7 +3341,6 @@ window.AppUI = (function () {
         nomor: document.getElementById('display-curr-nomor'),
         loket: document.getElementById('display-curr-loket'),
         tamu: document.getElementById('display-curr-tamu'),
-        time: document.getElementById('display-curr-time'),
         badge: document.getElementById('display-curr-status-badge'),
         card: document.getElementById('display-current-card')
       }
@@ -3352,7 +3350,6 @@ window.AppUI = (function () {
       if (t.nomor) t.nomor.textContent = data.nomor || 'P-001';
       if (t.loket) t.loket.textContent = data.loket || 'LOKET 1 - KEPANITERAAN PERKARA';
       if (t.tamu) t.tamu.textContent = data.nama || 'Pengunjung Pengadilan';
-      if (t.time) t.time.textContent = data.waktu || 'Pukul --:-- WIB';
       if (t.badge) t.badge.textContent = data.status ? data.status.toUpperCase() : 'SEDANG DIPANGGIL';
 
       // Highlight / Pulse Animasi Halus saat nomor antrean berganti
