@@ -159,13 +159,6 @@
         <span class="material-symbols-outlined text-[20px] text-secondary-fixed group-hover:scale-110 transition-transform">settings</span>
         <span class="flex-1 font-medium text-xs sm:text-sm">Pengaturan Lengkap</span>
       </button>
-
-      <!-- 8. Pengaturan Display TV -->
-      <button type="button" id="nav-btn-pengaturan-display" class="nav-side-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-primary-fixed-dim hover:text-white hover:bg-white/10 transition-all text-left group">
-        <span class="material-symbols-outlined text-[20px] text-secondary-fixed group-hover:scale-110 transition-transform">tune</span>
-        <span class="flex-1 font-medium text-xs sm:text-sm">Pengaturan Display TV</span>
-        <span class="text-[9px] px-1.5 py-0.5 rounded bg-secondary-container text-on-secondary-fixed font-bold">TV</span>
-      </button>
     </div>
 
     <!-- Footer Sidebar -->
@@ -1454,6 +1447,23 @@
               </div>
             </div>
           </form>
+
+          <!-- PENGATURAN DISPLAY TV DALAM MENU PENGATURAN LENGKAP -->
+          <div class="p-5 rounded-xl bg-surface-container-low/60 border border-outline-variant/50 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div class="flex items-center gap-3.5">
+              <div class="w-12 h-12 rounded-2xl bg-secondary-container text-on-secondary-fixed flex items-center justify-center shrink-0 shadow-sm">
+                <span class="material-symbols-outlined text-[24px]">smart_display</span>
+              </div>
+              <div>
+                <h3 class="font-display font-bold text-sm text-on-surface">Pengaturan Display TV &amp; Video Antrean</h3>
+                <p class="text-xs text-on-surface-variant mt-0.5">Atur video edukasi YouTube 16:9, teks running text pengumuman resmi, saklar suara bel, dan fitur auto-mute video saat panggilan antrean.</p>
+              </div>
+            </div>
+            <button type="button" id="btn-shortcut-ke-display-tab" class="h-10 px-4 rounded-xl bg-primary-container hover:bg-primary text-white text-xs font-bold flex items-center gap-1.5 shrink-0 shadow-sm transition-colors whitespace-nowrap">
+              <span class="material-symbols-outlined text-[16px]">tune</span>
+              <span>Buka Pengaturan Display TV</span>
+            </button>
+          </div>
 
           <form id="form-pengaturan" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-4 rounded-xl bg-surface-container-low/60 border border-outline-variant/40">
             <div><label class="block text-xs font-semibold mb-1">Nama Pengadilan (Satuan Kerja)</label><input id="cfg-nama" type="text" required placeholder="Contoh: PENGADILAN TATA USAHA NEGARA PALEMBANG" class="w-full h-10 px-3 rounded-lg border border-outline-variant bg-white text-sm" /></div>

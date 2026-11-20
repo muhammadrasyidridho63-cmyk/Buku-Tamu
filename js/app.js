@@ -1720,6 +1720,13 @@ window.AppUI = (function () {
       };
     }
 
+    const btnShortcutDisp = document.getElementById('btn-shortcut-ke-display-tab');
+    if (btnShortcutDisp) {
+      btnShortcutDisp.onclick = function () {
+        openAdminTab('display');
+      };
+    }
+
     // Simpan Pengaturan
     document.getElementById('form-pengaturan').onsubmit = async function (e) {
       e.preventDefault();
