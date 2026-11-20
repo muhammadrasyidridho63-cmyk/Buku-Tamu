@@ -2444,29 +2444,178 @@
     </div>
   </footer>
 
-  <!-- MODAL LOGIN PETUGAS -->
-  <div id="modal-login" class="hidden fixed inset-0 z-[90] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-outline-variant/40">
-      <div class="bg-primary-container text-white px-6 py-4 flex items-center justify-between">
-        <div class="flex items-center gap-2">
-          <span class="material-symbols-outlined text-secondary-fixed">lock</span>
-          <h3 class="font-display font-bold text-base">Login Petugas &amp; Pimpinan</h3>
+  <!-- MODAL LOGIN PETUGAS MODERN ELEGAN (SPLIT CARD SCREEN - NUANSA PENGADILAN) -->
+  <div id="modal-login" class="hidden fixed inset-0 z-[90] bg-slate-950/75 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 overflow-y-auto">
+    
+    <!-- Modal Card Container (Split 2 Kolom Modern Presisi) -->
+    <div class="bg-white rounded-[24px] sm:rounded-[32px] shadow-2xl w-full max-w-4xl overflow-hidden border border-white/20 grid grid-cols-1 md:grid-cols-12 my-auto relative animate-fadeIn">
+      
+      <!-- SISI KIRI: BRANDING HERO BANNER (NUANSA HIJAU TUA & EMAS PENGADILAN) -->
+      <div class="md:col-span-5 relative overflow-hidden bg-gradient-to-br from-[#002619] via-[#00170f] to-[#01140c] p-6 sm:p-8 lg:p-10 flex flex-col justify-between text-white border-b md:border-b-0 md:border-r border-white/10">
+        <!-- Ambient Decorative Glows -->
+        <div class="absolute -top-24 -left-24 w-72 h-72 rounded-full bg-emerald-500/20 blur-3xl pointer-events-none"></div>
+        <div class="absolute top-1/2 -right-20 w-80 h-80 rounded-full bg-amber-500/15 blur-3xl pointer-events-none"></div>
+
+        <!-- Top Badge -->
+        <div class="relative z-10 flex items-center justify-between">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-[11px] font-semibold text-secondary-fixed">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span>PORTAL RESMI SATKER</span>
+          </div>
         </div>
-        <button type="button" id="btn-close-login" class="p-1 rounded-lg hover:bg-white/10"><span class="material-symbols-outlined">close</span></button>
+
+        <!-- Center Emblem, Title & Subtitle -->
+        <div class="relative z-10 my-auto py-8 sm:py-10 text-center">
+          <!-- Emblem Tile Mahkamah Agung -->
+          <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-white/10 backdrop-blur-md border border-white/25 p-3.5 shadow-2xl flex items-center justify-center mx-auto mb-6 group hover:scale-105 transition-transform duration-300">
+            <img src="img/logo-mahkamah-agung.svg" alt="Logo Mahkamah Agung RI" class="w-full h-full object-contain filter drop-shadow-md" />
+          </div>
+
+          <h2 class="font-display font-black text-2xl sm:text-3xl text-white tracking-tight leading-snug">
+            Satu Platform Terpadu<br/>
+            <span class="text-secondary-fixed">Pelayanan Peradilan</span>
+          </h2>
+
+          <p class="text-xs sm:text-sm text-emerald-100/75 mt-3.5 leading-relaxed max-w-xs mx-auto font-medium">
+            Sistem Informasi Buku Tamu Digital &amp; Antrean Terpadu Pengadilan Tata Usaha Negara Palembang.
+          </p>
+
+          <!-- Decorative Indicator Dots (Sesuai Desain Referensi) -->
+          <div class="flex items-center justify-center gap-1.5 mt-6">
+            <span class="w-6 h-1.5 rounded-full bg-secondary-fixed shadow-sm"></span>
+            <span class="w-1.5 h-1.5 rounded-full bg-white/30"></span>
+            <span class="w-1.5 h-1.5 rounded-full bg-white/30"></span>
+          </div>
+        </div>
+
+        <!-- Bottom Footer Sisi Kiri -->
+        <div class="relative z-10 pt-4 border-t border-white/10 flex items-center justify-center gap-2 text-[11px] text-emerald-200/60 font-medium">
+          <span class="material-symbols-outlined text-[15px] text-secondary-fixed">verified</span>
+          <span>Wilayah Bebas dari Korupsi (WBK / WBBM)</span>
+        </div>
       </div>
-      <form id="form-login" class="p-6 flex flex-col gap-4">
-        <p class="text-xs text-on-surface-variant">Masukkan Username dan PIN/Sandi yang diberikan oleh Administrator Satker. (Maks 5x percobaan gagal akan mengunci sementara 15 menit).</p>
-        <div>
-          <label class="block text-xs font-semibold mb-1">Username</label>
-          <input id="login-username" type="text" required placeholder="admin / ptsp / panitera / satpam" class="w-full h-11 px-3.5 rounded-xl border border-outline-variant text-sm" />
+
+      <!-- SISI KANAN: FORMULIR LOGIN PETUGAS (CLEAN WHITE) -->
+      <div class="md:col-span-7 p-6 sm:p-8 lg:p-10 flex flex-col justify-between bg-white">
+        
+        <!-- Top Nav di Sisi Kanan -->
+        <div class="flex items-center justify-between pb-2">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-xl bg-primary-container/10 p-1 border border-primary/20 flex items-center justify-center shadow-xs">
+              <img src="img/logo-mahkamah-agung.svg" alt="Emblem" class="w-full h-full object-contain" />
+            </div>
+            <div class="flex flex-col">
+              <span class="font-display font-extrabold text-xs text-primary-container uppercase tracking-wider leading-tight">PTUN Palembang</span>
+              <span class="text-[10px] text-outline font-medium leading-none">Autentikasi Petugas</span>
+            </div>
+          </div>
+          
+          <button type="button" id="btn-close-login" class="w-8 h-8 rounded-full bg-surface-container hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-colors cursor-pointer" title="Tutup Modal Login">
+            <span class="material-symbols-outlined text-[18px]">close</span>
+          </button>
         </div>
-        <div>
-          <label class="block text-xs font-semibold mb-1">PIN / Sandi</label>
-          <input id="login-pin" type="password" required placeholder="••••••" class="w-full h-11 px-3.5 rounded-xl border border-outline-variant text-sm" />
+
+        <!-- Header Form & Input Area -->
+        <div class="my-auto py-2">
+          <div class="text-center sm:text-left mb-4">
+            <h3 class="font-display font-black text-2xl sm:text-[26px] text-on-surface tracking-tight">
+              Selamat Datang Petugas!
+            </h3>
+            <p class="text-xs text-on-surface-variant mt-1.5 leading-relaxed">
+              Silakan pilih peran cepat atau masukkan kredensial akun untuk mengakses sistem operasional.
+            </p>
+          </div>
+
+          <!-- Pilihan Shortcut Peran Cepat (Mirip Tombol Google/Apple di Referensi Gambar) -->
+          <div class="flex flex-col gap-2 mb-3.5">
+            <button type="button" class="btn-quick-login-role w-full h-10 px-3.5 rounded-xl border border-outline-variant hover:border-primary-container bg-surface-container-lowest hover:bg-surface-container-low text-on-surface text-xs font-semibold flex items-center justify-center gap-2.5 transition-all shadow-2xs group cursor-pointer" data-role="ptsp">
+              <span class="material-symbols-outlined text-[18px] text-primary-container group-hover:scale-110 transition-transform">support_agent</span>
+              <span>Masuk sebagai <strong>Petugas PTSP</strong></span>
+            </button>
+            <button type="button" class="btn-quick-login-role w-full h-10 px-3.5 rounded-xl border border-outline-variant hover:border-amber-600 bg-surface-container-lowest hover:bg-surface-container-low text-on-surface text-xs font-semibold flex items-center justify-center gap-2.5 transition-all shadow-2xs group cursor-pointer" data-role="panitera">
+              <span class="material-symbols-outlined text-[18px] text-amber-800 group-hover:scale-110 transition-transform">gavel</span>
+              <span>Masuk sebagai <strong>Panitera Pengganti</strong></span>
+            </button>
+          </div>
+
+          <!-- Divider Separator -->
+          <div class="relative my-3 flex items-center justify-center">
+            <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-outline-variant/40"></div></div>
+            <span class="relative px-3 bg-white text-[10px] sm:text-[11px] uppercase tracking-wider text-outline font-semibold">Atau masuk dengan kredensial</span>
+          </div>
+
+          <!-- Form Input Username & PIN -->
+          <form id="form-login" class="flex flex-col gap-3">
+            <div>
+              <label for="login-username" class="block text-xs font-bold text-on-surface mb-1">
+                Username / Akun Petugas
+              </label>
+              <div class="relative">
+                <span class="material-symbols-outlined absolute left-3.5 top-2.5 text-outline text-[18px]">person</span>
+                <input
+                  id="login-username"
+                  type="text"
+                  required
+                  placeholder="admin / ptsp / panitera / satpam"
+                  class="w-full h-10 pl-10 pr-3.5 rounded-xl border border-outline-variant bg-surface-container-lowest text-xs font-semibold text-on-surface placeholder:text-outline/70 focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label for="login-pin" class="block text-xs font-bold text-on-surface mb-1">
+                PIN / Kata Sandi
+              </label>
+              <div class="relative">
+                <span class="material-symbols-outlined absolute left-3.5 top-2.5 text-outline text-[18px]">lock</span>
+                <input
+                  id="login-pin"
+                  type="password"
+                  required
+                  placeholder="Masukkan PIN Anda"
+                  class="w-full h-10 pl-10 pr-10 rounded-xl border border-outline-variant bg-surface-container-lowest text-xs font-semibold text-on-surface placeholder:text-outline/70 focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all"
+                />
+                <button type="button" id="btn-toggle-login-pin" class="absolute right-3 top-2.5 text-outline hover:text-on-surface cursor-pointer" title="Tampilkan / Sembunyikan PIN">
+                  <span class="material-symbols-outlined text-[18px]" id="login-pin-eye-icon">visibility</span>
+                </button>
+              </div>
+            </div>
+
+            <p id="login-err" class="hidden text-xs text-error font-semibold p-2 rounded-lg bg-error-container/20 border border-error/30 text-center"></p>
+
+            <!-- Tombol Submit (Nuansa Emas/Amber Elegan Pengadilan Sesuai Gambar) -->
+            <button
+              type="submit"
+              id="btn-login-submit"
+              class="w-full h-11 mt-1 rounded-xl bg-gradient-to-r from-secondary-container via-amber-500 to-secondary-fixed text-on-secondary-fixed font-display font-extrabold text-sm tracking-wide shadow-md hover:shadow-lg hover:brightness-105 active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <span>Masuk ke Sistem</span>
+              <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+            </button>
+
+            <!-- Link Lupa PIN / Bantuan -->
+            <div class="text-center pt-0.5">
+              <button type="button" id="btn-login-help" class="text-xs font-semibold text-primary-container hover:underline cursor-pointer">
+                Lupa PIN atau Butuh Akses Darurat?
+              </button>
+            </div>
+          </form>
         </div>
-        <p id="login-err" class="hidden text-xs text-error font-semibold"></p>
-        <button type="submit" id="btn-login-submit" class="h-11 rounded-xl bg-primary-container hover:bg-primary text-white font-bold text-sm">Masuk ke Panel Petugas</button>
-      </form>
+
+        <!-- Footer Bawah Kanan -->
+        <div class="pt-3.5 border-t border-outline-variant/30 flex items-center justify-between text-[11px] text-outline mt-3">
+          <span>&copy; 2026 PTUN Palembang</span>
+          <div class="flex items-center gap-3">
+            <button type="button" id="link-login-panduan" class="hover:text-primary-container transition-colors cursor-pointer">Panduan Sistem</button>
+            <span>&bull;</span>
+            <span class="text-emerald-700 font-semibold flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span> Layanan Aktif
+            </span>
+          </div>
+        </div>
+
+      </div>
+
     </div>
   </div>
 

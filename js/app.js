@@ -4028,6 +4028,62 @@ window.AppUI = (function () {
       else goView('pantau');
     };
 
+    // Toggle Show/Hide PIN Password pada Modal Login
+    const btnTogglePin = document.getElementById('btn-toggle-login-pin');
+    if (btnTogglePin) {
+      btnTogglePin.onclick = function () {
+        const pinInput = document.getElementById('login-pin');
+        const eyeIcon = document.getElementById('login-pin-eye-icon');
+        if (!pinInput) return;
+        const isPw = pinInput.type === 'password';
+        pinInput.type = isPw ? 'text' : 'password';
+        if (eyeIcon) eyeIcon.textContent = isPw ? 'visibility_off' : 'visibility';
+      };
+    }
+
+    // Shortcut Pemilihan Peran Cepat pada Modal Login
+    document.querySelectorAll('.btn-quick-login-role').forEach(function (btn) {
+      btn.onclick = function () {
+        const role = btn.getAttribute('data-role');
+        const inpUser = document.getElementById('login-username');
+        const inpPin = document.getElementById('login-pin');
+        if (inpUser) {
+          inpUser.value = role;
+        }
+        if (inpPin) {
+          inpPin.focus();
+        }
+        toast('Akun ' + role.toUpperCase() + ' dipilih. Silakan masukkan PIN.', 'info');
+      };
+    });
+
+    // Bantuan Akses & Pemulihan PIN pada Modal Login
+    const btnLoginHelp = document.getElementById('btn-login-help');
+    if (btnLoginHelp) {
+      btnLoginHelp.onclick = function () {
+        alert('BANTUAN AKSES & PEMULIHAN PIN PETUGAS:\n\n1. Petugas PTSP / Panitera / Satpam: Silakan hubungi Administrator Satker untuk mereset atau menerbitkan PIN baru.\n2. Administrator / Pimpinan: Jika lupa sandi, gunakan akun Darurat (Username: admin) dan Sandi Darurat dari Script Properties.');
+      };
+    }
+
+    // Buka Panduan Sistem dari Modal Login
+    const linkLoginPanduan = document.getElementById('link-login-panduan');
+    if (linkLoginPanduan) {
+      linkLoginPanduan.onclick = function () {
+        closeLoginModal();
+        document.getElementById('modal-info').classList.remove('hidden');
+      };
+    }
+
+    // Klik di luar kartu modal login untuk menutup
+    const modalLogin = document.getElementById('modal-login');
+    if (modalLogin) {
+      modalLogin.onclick = function (e) {
+        if (e.target === modalLogin) {
+          closeLoginModal();
+        }
+      };
+    }
+
     document.getElementById('btn-close-info').onclick = function () {
       document.getElementById('modal-info').classList.add('hidden');
     };
