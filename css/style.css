@@ -390,3 +390,17 @@ body.is-staff-view #view-display {
   padding-right: 1.5rem !important;
   max-width: 100% !important;
 }
+
+/* Responsif Frame Video 16:9 Khusus Mobile & Desktop */
+.aspect-video {
+  aspect-ratio: 16 / 9;
+  position: relative;
+  width: 100%;
+}
+.aspect-video iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
+}
