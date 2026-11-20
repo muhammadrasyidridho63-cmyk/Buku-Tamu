@@ -369,6 +369,10 @@ window.AppUI = (function () {
       closeSidebarMobile();
     }
 
+    if (target === 'kiosk') {
+      initDisplayView();
+      renderDisplayQueue(false);
+    }
     if (target === 'sidang') renderJadwalOptions();
     if (target === 'tiket') renderTiketView();
     if (target === 'pantau') loadPantauData(true);
@@ -415,7 +419,10 @@ window.AppUI = (function () {
     if (u) {
       initEl.textContent = (u.nama || u.username || 'P').charAt(0).toUpperCase();
       nameEl.textContent = u.nama || u.username;
-      roleEl.textContent = u.role + ' (Aktif)';
+      if (roleEl) {
+        roleEl.textContent = u.role + ' (Aktif)';
+        roleEl.classList.remove('hidden');
+      }
       iconEl.textContent = 'expand_more';
       document.getElementById('btn-auth-chip').title = 'Menu Akun: Edit Password / Keluar';
       const ddName = document.getElementById('dd-user-name');
@@ -425,7 +432,10 @@ window.AppUI = (function () {
     } else {
       initEl.textContent = 'T';
       nameEl.textContent = 'Login';
-      roleEl.textContent = 'Publik / Tamu';
+      if (roleEl) {
+        roleEl.textContent = '';
+        roleEl.classList.add('hidden');
+      }
       iconEl.textContent = 'lock';
       document.getElementById('btn-auth-chip').title = 'Login Petugas / Pimpinan';
       closeUserDropdown();
@@ -2055,6 +2065,76 @@ window.AppUI = (function () {
         }
       };
     }
+
+    // Pengaturan Display Ruang Tunggu & Video Antrean dari Admin Dashboard
+    const formDispAdmin = document.getElementById('form-display-admin');
+    if (formDispAdmin) {
+      formDispAdmin.onsubmit = function (e) {
+        e.preventDefault();
+        const rawYt = (document.getElementById('admin-disp-yt').value || '').trim();
+        const rawMarq = (document.getElementById('admin-disp-marquee').value || '').trim();
+        const audioOn = document.getElementById('admin-disp-audio-toggle').checked;
+        const ytId = extractYouTubeId(rawYt) || DEFAULT_DISPLAY_SETTINGS.ytId;
+
+        const nextSettings = {
+          ytId: ytId,
+          marquee: rawMarq || DEFAULT_DISPLAY_SETTINGS.marquee,
+          audioEnabled: audioOn
+        };
+        saveDisplaySettings(nextSettings);
+        initDisplayView();
+        toast('Pengaturan Display & Video Antrean berhasil disimpan!', 'success');
+      };
+    }
+
+    // Preset Video Cepat di Admin Dashboard
+    document.querySelectorAll('.btn-admin-preset').forEach(function (btn) {
+      btn.onclick = function () {
+        const yt = btn.getAttribute('data-admin-yt');
+        const inp = document.getElementById('admin-disp-yt');
+        if (inp && yt) {
+          inp.value = yt;
+          toast('Preset video dipilih: ' + btn.textContent.trim(), 'info');
+        }
+      };
+    });
+
+    // Reset teks running text pengumuman di Admin Dashboard
+    const btnResetMarq = document.getElementById('btn-admin-disp-reset-marquee');
+    if (btnResetMarq) {
+      btnResetMarq.onclick = function () {
+        const inp = document.getElementById('admin-disp-marquee');
+        if (inp) {
+          inp.value = DEFAULT_DISPLAY_SETTINGS.marquee;
+          toast('Teks pengumuman dikembalikan ke bawaan.', 'info');
+        }
+      };
+    }
+
+    // Pratinjau YouTube di Admin Dashboard
+    const btnTestYt = document.getElementById('btn-admin-disp-test-yt');
+    if (btnTestYt) {
+      btnTestYt.onclick = function () {
+        const rawYt = (document.getElementById('admin-disp-yt').value || '').trim();
+        const ytId = extractYouTubeId(rawYt) || DEFAULT_DISPLAY_SETTINGS.ytId;
+        if (ytId) {
+          window.open('https://www.youtube.com/watch?v=' + encodeURIComponent(ytId), '_blank');
+        } else {
+          toast('Masukkan URL atau ID YouTube yang valid.', 'error');
+        }
+      };
+    }
+
+    // Test Bunyi Bel & Panggilan di Admin Dashboard
+    const btnTestAudio = document.getElementById('btn-admin-disp-test-audio');
+    if (btnTestAudio) {
+      btnTestAudio.onclick = function () {
+        playQueueChime();
+        setTimeout(function () {
+          panggilSuara('Nomor antrean P-001, silakan menuju Loket 1');
+        }, 450);
+      };
+    }
   }
 
   function resetRuangForm() {
@@ -2465,6 +2545,15 @@ window.AppUI = (function () {
     renderAdminPeranList();
     renderAdminRuangList();
     renderRuangSidangSelects();
+
+    // Muat Pengaturan Display & Video Antrean
+    const dispSt = getDisplaySettings();
+    const inAdminYt = document.getElementById('admin-disp-yt');
+    const inAdminMarq = document.getElementById('admin-disp-marquee');
+    const inAdminAudio = document.getElementById('admin-disp-audio-toggle');
+    if (inAdminYt) inAdminYt.value = dispSt.ytId || DEFAULT_DISPLAY_SETTINGS.ytId;
+    if (inAdminMarq) inAdminMarq.value = dispSt.marquee || DEFAULT_DISPLAY_SETTINGS.marquee;
+    if (inAdminAudio) inAdminAudio.checked = (dispSt.audioEnabled !== false);
 
     applyMaskedSecrets(res.data.rahasia || {});
     loadWaStatus();
@@ -2931,17 +3020,20 @@ window.AppUI = (function () {
   }
 
   function applyYouTubePlayer(videoId) {
-    const iframe = document.getElementById('display-yt-iframe');
-    if (!iframe) return;
     const vid = videoId || getDisplaySettings().ytId || DEFAULT_DISPLAY_SETTINGS.ytId;
-    const currentSrc = iframe.getAttribute('src') || '';
     const targetSrc = 'https://www.youtube-nocookie.com/embed/' + encodeURIComponent(vid) +
       '?autoplay=1&mute=1&loop=1&playlist=' + encodeURIComponent(vid) +
       '&controls=1&rel=0&modestbranding=1&playsinline=1&enablejsapi=1';
 
-    if (currentSrc.indexOf(vid) === -1) {
-      iframe.setAttribute('src', targetSrc);
-    }
+    ['kiosk-yt-iframe', 'display-yt-iframe'].forEach(function (id) {
+      const iframe = document.getElementById(id);
+      if (iframe) {
+        const currentSrc = iframe.getAttribute('src') || '';
+        if (currentSrc.indexOf(vid) === -1) {
+          iframe.setAttribute('src', targetSrc);
+        }
+      }
+    });
   }
 
   function playQueueChime() {
@@ -3048,60 +3140,83 @@ window.AppUI = (function () {
     const data = getLiveQueueState();
     const ring = (state.boot && state.boot.ringkasan) ? state.boot.ringkasan : {};
 
-    // 1. Current Queue Card
-    const elNomor = document.getElementById('display-curr-nomor');
-    const elLoket = document.getElementById('display-curr-loket');
-    const elTamu = document.getElementById('display-curr-tamu');
-    const elTime = document.getElementById('display-curr-time');
-    const elBadge = document.getElementById('display-curr-status-badge');
-    const card = document.getElementById('display-current-card');
+    // 1. Current Queue Card (Sinkronkan ke Kiosk Publik & Display TV)
+    const targets = [
+      {
+        nomor: document.getElementById('kiosk-curr-nomor'),
+        loket: document.getElementById('kiosk-curr-loket'),
+        tamu: document.getElementById('kiosk-curr-tamu'),
+        time: document.getElementById('kiosk-curr-time'),
+        badge: document.getElementById('kiosk-curr-status-badge'),
+        card: document.getElementById('kiosk-current-card')
+      },
+      {
+        nomor: document.getElementById('display-curr-nomor'),
+        loket: document.getElementById('display-curr-loket'),
+        tamu: document.getElementById('display-curr-tamu'),
+        time: document.getElementById('display-curr-time'),
+        badge: document.getElementById('display-curr-status-badge'),
+        card: document.getElementById('display-current-card')
+      }
+    ];
 
-    if (elNomor) elNomor.textContent = data.nomor || 'P-001';
-    if (elLoket) elLoket.textContent = data.loket || 'LOKET 1 - KEPANITERAAN PERKARA';
-    if (elTamu) elTamu.textContent = data.nama || 'Pengunjung Pengadilan';
-    if (elTime) elTime.textContent = data.waktu || 'Pukul --:-- WIB';
-    if (elBadge) elBadge.textContent = data.status ? data.status.toUpperCase() : 'SEDANG DIPANGGIL';
+    targets.forEach(function (t) {
+      if (t.nomor) t.nomor.textContent = data.nomor || 'P-001';
+      if (t.loket) t.loket.textContent = data.loket || 'LOKET 1 - KEPANITERAAN PERKARA';
+      if (t.tamu) t.tamu.textContent = data.nama || 'Pengunjung Pengadilan';
+      if (t.time) t.time.textContent = data.waktu || 'Pukul --:-- WIB';
+      if (t.badge) t.badge.textContent = data.status ? data.status.toUpperCase() : 'SEDANG DIPANGGIL';
 
-    // Highlight / Pulse Animasi Halus saat nomor antrean berganti
+      // Highlight / Pulse Animasi Halus saat nomor antrean berganti
+      if (isNewCall) {
+        if (t.card) {
+          t.card.classList.remove('queue-pulse-active');
+          void t.card.offsetWidth; // Trigger reflow
+          t.card.classList.add('queue-pulse-active');
+        }
+        if (t.nomor) {
+          t.nomor.classList.remove('anim-flash-number');
+          void t.nomor.offsetWidth;
+          t.nomor.classList.add('anim-flash-number');
+        }
+      }
+    });
+
     if (isNewCall) {
-      if (card) {
-        card.classList.remove('queue-pulse-active');
-        void card.offsetWidth; // Trigger reflow
-        card.classList.add('queue-pulse-active');
-      }
-      if (elNomor) {
-        elNomor.classList.remove('anim-flash-number');
-        void elNomor.offsetWidth;
-        elNomor.classList.add('anim-flash-number');
-      }
       panggilSuaraDisplay('Nomor antrean ' + (data.nomor || '') + ', silakan menuju ' + (data.loket || ''));
     }
 
-    // 2. Next Queue Panel
+    // 2. Next Queue Panel (Both Kiosk & Display)
     const nextPtsp = ring.ptspBerikutnya || 'P-002';
     const nextSidang = ring.sidangBerikutnya || 'S-001';
-    const elNextPtsp = document.getElementById('display-next-ptsp');
-    const elNextSidang = document.getElementById('display-next-sidang');
-    if (elNextPtsp) elNextPtsp.textContent = nextPtsp;
-    if (elNextSidang) elNextSidang.textContent = nextSidang;
+    ['kiosk-next-ptsp', 'display-next-ptsp'].forEach(function (id) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = nextPtsp;
+    });
+    ['kiosk-next-sidang', 'display-next-sidang'].forEach(function (id) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = nextSidang;
+    });
 
     // 3. Riwayat 3-4 Nomor Antrean Terakhir
-    const recBox = document.getElementById('display-recent-list');
-    if (recBox) {
-      const history = getQueueHistory().slice(0, 4);
-      recBox.innerHTML = history.map(function (item) {
-        return '<div class="p-2.5 rounded-xl bg-surface-container-low/60 border border-outline-variant/30 flex items-center justify-between text-xs">' +
-          '<div class="flex items-center gap-2.5">' +
-            '<span class="font-display font-bold text-sm text-primary-container">' + esc(item.nomor) + '</span>' +
-            '<span class="text-on-surface font-medium truncate max-w-[170px]">' + esc(item.loket) + '</span>' +
-          '</div>' +
-          '<div class="flex items-center gap-2">' +
-            '<span class="text-outline text-[11px]">' + esc(item.waktu) + '</span>' +
-            '<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-white text-on-surface-variant border border-outline-variant/40">' + esc(item.status || 'Dilayani') + '</span>' +
-          '</div>' +
-        '</div>';
-      }).join('') || '<div class="text-xs text-outline text-center py-2">Belum ada riwayat panggilan.</div>';
-    }
+    const history = getQueueHistory().slice(0, 4);
+    const htmlRecent = history.map(function (item) {
+      return '<div class="p-2 rounded-xl bg-surface-container-low/60 border border-outline-variant/30 flex items-center justify-between text-xs">' +
+        '<div class="flex items-center gap-2">' +
+          '<span class="font-display font-bold text-xs sm:text-sm text-primary-container">' + esc(item.nomor) + '</span>' +
+          '<span class="text-on-surface font-medium truncate max-w-[130px] sm:max-w-[170px]">' + esc(item.loket) + '</span>' +
+        '</div>' +
+        '<div class="flex items-center gap-1.5">' +
+          '<span class="text-outline text-[10px]">' + esc(item.waktu) + '</span>' +
+          '<span class="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-white text-on-surface-variant border border-outline-variant/40">' + esc(item.status || 'Dilayani') + '</span>' +
+        '</div>' +
+      '</div>';
+    }).join('') || '<div class="text-xs text-outline text-center py-2">Belum ada riwayat panggilan.</div>';
+
+    ['kiosk-recent-list', 'display-recent-list'].forEach(function (id) {
+      const recBox = document.getElementById(id);
+      if (recBox) recBox.innerHTML = htmlRecent;
+    });
 
     // 4. Stats Summary di Bawah Video
     const elStatTot = document.getElementById('display-stat-total');
@@ -3118,19 +3233,27 @@ window.AppUI = (function () {
     const st = getDisplaySettings();
     applyYouTubePlayer(st.ytId);
 
-    const marq = document.getElementById('display-marquee-content');
-    if (marq) marq.textContent = st.marquee || DEFAULT_DISPLAY_SETTINGS.marquee;
+    const kMarq = document.getElementById('kiosk-marquee-content');
+    if (kMarq) kMarq.textContent = st.marquee || DEFAULT_DISPLAY_SETTINGS.marquee;
+    const dMarq = document.getElementById('display-marquee-content');
+    if (dMarq) dMarq.textContent = st.marquee || DEFAULT_DISPLAY_SETTINGS.marquee;
 
+    updateKioskAudioButton(st.audioEnabled !== false);
     updateDisplayAudioButton(st.audioEnabled !== false);
+  }
+
+  function updateKioskAudioButton(enabled) {
+    const icon = document.getElementById('kiosk-audio-icon');
+    const label = document.getElementById('kiosk-audio-label');
+    if (icon) icon.textContent = enabled ? 'volume_up' : 'volume_off';
+    if (label) label.textContent = enabled ? 'Suara: Aktif' : 'Suara: Mute';
   }
 
   function updateDisplayAudioButton(enabled) {
     const icon = document.getElementById('display-audio-icon');
     const label = document.getElementById('display-audio-label');
-    const chk = document.getElementById('input-display-audio-toggle');
     if (icon) icon.textContent = enabled ? 'volume_up' : 'volume_off';
     if (label) label.textContent = enabled ? 'Suara TV: Aktif' : 'Suara TV: Mute';
-    if (chk) chk.checked = enabled;
   }
 
   function toggleTvFullscreen() {
@@ -3147,23 +3270,6 @@ window.AppUI = (function () {
       else if (document.mozCancelFullScreen) document.mozCancelFullScreen();
       document.body.classList.remove('is-tv-fullscreen');
     }
-  }
-
-  function openDisplaySettingsModal() {
-    const st = getDisplaySettings();
-    const inpYt = document.getElementById('input-display-yt');
-    const inpMarq = document.getElementById('input-display-marquee');
-    const chkAudio = document.getElementById('input-display-audio-toggle');
-    if (inpYt) inpYt.value = st.ytId || DEFAULT_DISPLAY_SETTINGS.ytId;
-    if (inpMarq) inpMarq.value = st.marquee || DEFAULT_DISPLAY_SETTINGS.marquee;
-    if (chkAudio) chkAudio.checked = st.audioEnabled !== false;
-    const modal = document.getElementById('modal-display-settings');
-    if (modal) modal.classList.remove('hidden');
-  }
-
-  function closeDisplaySettingsModal() {
-    const modal = document.getElementById('modal-display-settings');
-    if (modal) modal.classList.add('hidden');
   }
 
   // ==========================================================================
@@ -3411,73 +3517,42 @@ window.AppUI = (function () {
       };
     };
 
-    // Display TV Modal & Controls
-    const btnDisplaySettings = document.getElementById('btn-display-settings');
-    if (btnDisplaySettings) btnDisplaySettings.onclick = openDisplaySettingsModal;
+    // Kiosk Display Controls (Halaman Publik)
+    const btnKioskFs = document.getElementById('btn-kiosk-fullscreen');
+    if (btnKioskFs) btnKioskFs.onclick = toggleTvFullscreen;
 
-    const btnCloseDispModal = document.getElementById('btn-close-display-settings');
-    if (btnCloseDispModal) btnCloseDispModal.onclick = closeDisplaySettingsModal;
-
-    const btnCancelDispModal = document.getElementById('btn-cancel-display-settings');
-    if (btnCancelDispModal) btnCancelDispModal.onclick = closeDisplaySettingsModal;
-
-    const btnQuickEditMarq = document.getElementById('btn-quick-edit-marquee');
-    if (btnQuickEditMarq) btnQuickEditMarq.onclick = openDisplaySettingsModal;
-
-    const btnVideoQuickChange = document.getElementById('btn-video-quick-change');
-    if (btnVideoQuickChange) btnVideoQuickChange.onclick = openDisplaySettingsModal;
-
-    const btnVideoQuickReload = document.getElementById('btn-video-quick-reload');
-    if (btnVideoQuickReload) {
-      btnVideoQuickReload.onclick = function () {
-        const iframe = document.getElementById('display-yt-iframe');
-        if (iframe) {
-          const src = iframe.getAttribute('src');
-          iframe.setAttribute('src', '');
-          setTimeout(function () { iframe.setAttribute('src', src); }, 100);
-        }
+    const btnKioskAudio = document.getElementById('btn-kiosk-toggle-audio');
+    if (btnKioskAudio) {
+      btnKioskAudio.onclick = function () {
+        const st = getDisplaySettings();
+        const nextVal = !(st.audioEnabled !== false);
+        st.audioEnabled = nextVal;
+        saveDisplaySettings(st);
+        updateKioskAudioButton(nextVal);
+        updateDisplayAudioButton(nextVal);
+        toast(nextVal ? 'Suara panggilan diaktifkan.' : 'Suara panggilan dimatikan (Mute).', 'info');
       };
     }
 
-    const formDisp = document.getElementById('form-display-settings');
-    if (formDisp) {
-      formDisp.onsubmit = function (e) {
-        e.preventDefault();
-        const rawYt = document.getElementById('input-display-yt').value.trim();
-        const rawMarq = document.getElementById('input-display-marquee').value.trim();
-        const audioOn = document.getElementById('input-display-audio-toggle').checked;
-        const ytId = extractYouTubeId(rawYt) || DEFAULT_DISPLAY_SETTINGS.ytId;
-
-        const nextSettings = {
-          ytId: ytId,
-          marquee: rawMarq || DEFAULT_DISPLAY_SETTINGS.marquee,
-          audioEnabled: audioOn
-        };
-        saveDisplaySettings(nextSettings);
-        initDisplayView();
-        closeDisplaySettingsModal();
-        toast('Pengaturan Display Monitor TV berhasil diterapkan!', 'success');
+    const btnKioskReplay = document.getElementById('btn-kiosk-replay-call');
+    if (btnKioskReplay) {
+      btnKioskReplay.onclick = function () {
+        const data = getLiveQueueState();
+        panggilSuaraDisplay('Nomor antrean ' + (data.nomor || '') + ', silakan menuju ' + (data.loket || ''));
       };
     }
-
-    // Preset buttons YouTube
-    document.querySelectorAll('.btn-yt-preset').forEach(function (btn) {
-      btn.onclick = function () {
-        const yt = btn.getAttribute('data-yt');
-        const inp = document.getElementById('input-display-yt');
-        if (inp && yt) inp.value = yt;
-      };
-    });
 
     // Toggle Audio TV Display
     const btnToggleAudio = document.getElementById('btn-display-toggle-audio');
     if (btnToggleAudio) {
       btnToggleAudio.onclick = function () {
         const st = getDisplaySettings();
-        st.audioEnabled = !st.audioEnabled;
+        const nextVal = !(st.audioEnabled !== false);
+        st.audioEnabled = nextVal;
         saveDisplaySettings(st);
-        updateDisplayAudioButton(st.audioEnabled);
-        toast(st.audioEnabled ? 'Suara TV panggilan aktif' : 'Suara TV dimatikan (mute)', 'info');
+        updateKioskAudioButton(nextVal);
+        updateDisplayAudioButton(nextVal);
+        toast(nextVal ? 'Suara TV panggilan aktif' : 'Suara TV dimatikan (Mute)', 'info');
       };
     }
 
@@ -3616,6 +3691,8 @@ window.AppUI = (function () {
     initForms();
     initAdminTabs();
     initModals();
+    initDisplayView();
+    renderDisplayQueue(false);
 
     // Navigation click listeners
     document.querySelectorAll('[data-nav]').forEach(function (el) {
