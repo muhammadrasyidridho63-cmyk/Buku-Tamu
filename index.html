@@ -1556,6 +1556,65 @@
             <h3 class="font-display font-bold text-base mb-3">Editor Template Struk Thermal &amp; Pratinjau</h3>
             <div id="admin-template-editor"></div>
           </div>
+
+          <!-- PENGATURAN FOOTER WEBSITE & TAUTAN PENTING -->
+          <div class="p-5 rounded-xl bg-surface-container-low/60 border border-outline-variant/50 flex flex-col gap-4">
+            <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-outline-variant/40">
+              <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-lg bg-primary-container text-white flex items-center justify-center">
+                  <span class="material-symbols-outlined text-[20px]">bottom_navigation</span>
+                </div>
+                <div>
+                  <h3 class="font-display font-bold text-base text-on-surface">Pengaturan Footer &amp; Tautan Penting</h3>
+                  <p class="text-xs text-on-surface-variant">Sesuaikan judul, deskripsi satker, alamat kantor, nomor telepon, email, dan daftar tautan penting pada footer website.</p>
+                </div>
+              </div>
+              <button type="button" id="btn-footer-reset" class="h-8 px-3 rounded-lg border border-outline-variant bg-white hover:bg-error-container/40 text-error text-xs font-semibold transition-colors" title="Kembalikan Teks Footer ke Bawaan">Reset Bawaan</button>
+            </div>
+
+            <form id="form-footer-admin" class="flex flex-col gap-4">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-bold uppercase tracking-wider text-outline mb-1">Judul Singkat Satker (Kiri Atas)</label>
+                  <input id="cfg-footer-brand" type="text" required placeholder="Contoh: PTUN PALEMBANG" class="w-full h-10 px-3 rounded-lg border border-outline-variant bg-white text-sm font-semibold" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold uppercase tracking-wider text-outline mb-1">Nomor Telepon / Fax</label>
+                  <input id="cfg-footer-phone" type="text" placeholder="Contoh: (0711) 513812 / 513813" class="w-full h-10 px-3 rounded-lg border border-outline-variant bg-white text-sm" />
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-bold uppercase tracking-wider text-outline mb-1">Email Resmi Pengadilan</label>
+                  <input id="cfg-footer-email" type="email" placeholder="Contoh: ptun.palembang.official@gmail.com" class="w-full h-10 px-3 rounded-lg border border-outline-variant bg-white text-sm" />
+                </div>
+                <div>
+                  <label class="block text-xs font-bold uppercase tracking-wider text-outline mb-1">Alamat Lengkap Kantor</label>
+                  <input id="cfg-footer-address" type="text" placeholder="Contoh: Jl. Jend. A. Yani, No.67, Plaju, Palembang, Sumatera Selatan" class="w-full h-10 px-3 rounded-lg border border-outline-variant bg-white text-sm" />
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold uppercase tracking-wider text-outline mb-1">Deskripsi Wilayah Hukum &amp; Komitmen Pelayanan</label>
+                <textarea id="cfg-footer-desc" rows="2" class="w-full p-3 rounded-lg border border-outline-variant bg-white text-xs leading-relaxed" placeholder="Wilayah Hukum Pengadilan Tata Usaha Negara Palembang meliputi Provinsi Sumatera Selatan. Berkomitmen memberikan pelayanan peradilan yang modern, cepat, transparan, dan akuntabel."></textarea>
+              </div>
+
+              <div>
+                <div class="flex items-center justify-between mb-1.5">
+                  <label class="block text-xs font-bold uppercase tracking-wider text-outline">Daftar Tautan Penting (Format: Judul | URL per baris)</label>
+                  <span class="text-[11px] text-outline font-medium">1 tautan per baris</span>
+                </div>
+                <textarea id="cfg-footer-links" rows="5" class="w-full p-3 rounded-lg border border-outline-variant bg-white text-xs font-mono leading-relaxed" placeholder="Mahkamah Agung RI | https://www.mahkamahagung.go.id&#10;Ditjen Badilmiltun MA RI | https://ditjenmiltun.mahkamahagung.go.id&#10;Website Resmi PTUN Palembang | https://ptun-palembang.go.id&#10;SIPP PTUN Palembang | http://sipp.ptun-palembang.go.id&#10;SIWAS MA-RI (Pengaduan) | https://siwas.mahkamahagung.go.id"></textarea>
+              </div>
+
+              <div class="flex justify-end pt-1">
+                <button type="submit" id="btn-footer-save" class="h-10 px-5 rounded-lg bg-primary-container hover:bg-primary text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-colors">
+                  <span class="material-symbols-outlined text-[16px]">save</span> Simpan Pengaturan Footer
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
 
         <!-- TAB 6: WHATSAPP GATEWAY & CRM KONTAK (gas-notifikasi-wa-crm) -->
@@ -2186,10 +2245,111 @@
     </section>
   </main>
 
-  <!-- FOOTER -->
-  <footer class="bg-white border-t border-outline-variant/40 py-4 px-6 text-xs text-on-surface-variant no-print">
-    <div class="max-w-[1440px] mx-auto flex items-center justify-center text-center">
-      <span>copyright@<span id="footer-satker-name">Pengadilan Tata Usaha Negara Palembang</span> 2026</span>
+  <!-- FOOTER RESMI MODERN & ELEGAN -->
+  <footer class="bg-gradient-to-b from-primary via-[#012619] to-[#00170e] text-white border-t-2 border-secondary-fixed/30 pt-10 pb-6 px-4 sm:px-8 mt-12 no-print shadow-2xl relative overflow-hidden">
+    <!-- Subtle Ambient Glow -->
+    <div class="absolute -top-32 -left-32 w-96 h-96 bg-primary-container/20 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-32 -right-32 w-96 h-96 bg-secondary-container/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="max-w-[1440px] mx-auto relative z-10 flex flex-col gap-8">
+      
+      <!-- Konten Utama 2 Kolom (Split Grid Sesuai Desain Resmi) -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+        
+        <!-- KOLOM 1: IDENTITAS SATKER & KONTAK RESMI (~60%) -->
+        <div class="lg:col-span-7 flex flex-col gap-4">
+          <div class="flex items-center gap-3">
+            <div class="w-11 h-11 rounded-xl bg-primary-container/80 flex items-center justify-center border border-secondary-fixed/40 shadow-inner overflow-hidden shrink-0">
+              <img src="img/logo-mahkamah-agung.svg" alt="Logo Mahkamah Agung" class="w-full h-full object-contain p-0.5" />
+            </div>
+            <div>
+              <h2 id="footer-brand-title" class="font-display font-extrabold text-base sm:text-lg tracking-wider text-white uppercase drop-shadow-sm">
+                PTUN PALEMBANG
+              </h2>
+              <span id="footer-brand-subtitle" class="text-xs text-secondary-fixed font-medium">Pengadilan Tata Usaha Negara Palembang</span>
+            </div>
+          </div>
+
+          <p id="footer-desc" class="text-xs sm:text-sm text-white/85 leading-relaxed max-w-xl">
+            Wilayah Hukum Pengadilan Tata Usaha Negara Palembang meliputi Provinsi Sumatera Selatan. Berkomitmen memberikan pelayanan peradilan yang modern, cepat, transparan, dan akuntabel.
+          </p>
+
+          <!-- List Kontak dengan Ikon Resmi -->
+          <div class="flex flex-col gap-2.5 pt-1 text-xs sm:text-sm text-white/90">
+            <!-- Alamat -->
+            <div class="flex items-start gap-2.5 group">
+              <span class="material-symbols-outlined text-[19px] text-secondary-fixed shrink-0 mt-0.5">location_on</span>
+              <span id="footer-address" class="leading-snug text-white/90">Jl. Jend. A. Yani, No.67, Plaju, Palembang, Sumatera Selatan</span>
+            </div>
+
+            <!-- Telepon -->
+            <div class="flex items-center gap-2.5 group">
+              <span class="material-symbols-outlined text-[19px] text-secondary-fixed shrink-0">call</span>
+              <span id="footer-phone" class="font-mono text-xs sm:text-sm text-white/90">(0711) 513812 / 513813</span>
+            </div>
+
+            <!-- Email -->
+            <div class="flex items-center gap-2.5 group">
+              <span class="material-symbols-outlined text-[19px] text-secondary-fixed shrink-0">mail</span>
+              <a id="footer-email-link" href="mailto:ptun.palembang.official@gmail.com" class="hover:text-secondary-fixed transition-colors underline-offset-2 hover:underline">
+                <span id="footer-email">ptun.palembang.official@gmail.com</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- KOLOM 2: TAUTAN PENTING (> CHEVRON) (~40%) -->
+        <div class="lg:col-span-5 flex flex-col gap-3.5">
+          <div class="border-b border-white/15 pb-2.5">
+            <h3 id="footer-links-title" class="font-display font-extrabold text-sm sm:text-base tracking-wider text-white uppercase flex items-center gap-2">
+              <span class="material-symbols-outlined text-secondary-fixed text-[19px]">link</span>
+              <span>TAUTAN PENTING</span>
+            </h3>
+          </div>
+
+          <!-- Daftar Tautan Resmi -->
+          <ul id="footer-links-list" class="flex flex-col gap-2">
+            <li>
+              <a href="https://www.mahkamahagung.go.id" target="_blank" rel="noopener noreferrer" class="group flex items-center gap-2.5 text-xs sm:text-sm text-white/85 hover:text-secondary-fixed transition-all py-0.5">
+                <span class="material-symbols-outlined text-[16px] text-secondary-fixed group-hover:translate-x-1 transition-transform">chevron_right</span>
+                <span>Mahkamah Agung RI</span>
+              </a>
+            </li>
+            <li>
+              <a href="https://ditjenmiltun.mahkamahagung.go.id" target="_blank" rel="noopener noreferrer" class="group flex items-center gap-2.5 text-xs sm:text-sm text-white/85 hover:text-secondary-fixed transition-all py-0.5">
+                <span class="material-symbols-outlined text-[16px] text-secondary-fixed group-hover:translate-x-1 transition-transform">chevron_right</span>
+                <span>Ditjen Badilmiltun MA RI</span>
+              </a>
+            </li>
+            <li>
+              <a href="https://ptun-palembang.go.id" target="_blank" rel="noopener noreferrer" class="group flex items-center gap-2.5 text-xs sm:text-sm text-white/85 hover:text-secondary-fixed transition-all py-0.5">
+                <span class="material-symbols-outlined text-[16px] text-secondary-fixed group-hover:translate-x-1 transition-transform">chevron_right</span>
+                <span>Website Resmi PTUN Palembang</span>
+              </a>
+            </li>
+            <li>
+              <a href="http://sipp.ptun-palembang.go.id" target="_blank" rel="noopener noreferrer" class="group flex items-center gap-2.5 text-xs sm:text-sm text-white/85 hover:text-secondary-fixed transition-all py-0.5">
+                <span class="material-symbols-outlined text-[16px] text-secondary-fixed group-hover:translate-x-1 transition-transform">chevron_right</span>
+                <span>SIPP PTUN Palembang</span>
+              </a>
+            </li>
+            <li>
+              <a href="https://siwas.mahkamahagung.go.id" target="_blank" rel="noopener noreferrer" class="group flex items-center gap-2.5 text-xs sm:text-sm text-white/85 hover:text-secondary-fixed transition-all py-0.5">
+                <span class="material-symbols-outlined text-[16px] text-secondary-fixed group-hover:translate-x-1 transition-transform">chevron_right</span>
+                <span>SIWAS MA-RI (Pengaduan)</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- Bilah Bawah: Copyright & Sistem Info -->
+      <div class="border-t border-white/10 pt-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-white/70">
+        <span>© 2026 <span id="footer-satker-name" class="font-semibold text-white/90">Pengadilan Tata Usaha Negara Palembang</span>. Hak Cipta Dilindungi.</span>
+        <span class="text-[11px] text-secondary-fixed/90 font-mono">SI-BUKU TAMU v2.0 Turbo • Pelayanan Terpadu Satu Pintu</span>
+      </div>
+
     </div>
   </footer>
 

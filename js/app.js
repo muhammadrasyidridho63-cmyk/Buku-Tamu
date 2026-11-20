@@ -478,7 +478,7 @@ window.AppUI = (function () {
     if (state.boot && state.boot.pengaturan) {
       state.boot.pengaturan.NAMA_SATKER = clean;
     }
-    ['hero-satker-name', 'nav-satker-subtitle', 'sidebar-satker-subtitle', 'dash-satker-name', 'footer-satker-name', 'tkt-satker-nama', 'display-satker-name'].forEach(function (id) {
+    ['hero-satker-name', 'nav-satker-subtitle', 'sidebar-satker-subtitle', 'dash-satker-name', 'footer-satker-name', 'footer-brand-subtitle', 'tkt-satker-nama', 'display-satker-name'].forEach(function (id) {
       const el = document.getElementById(id);
       if (el) el.textContent = clean;
     });
@@ -587,6 +587,7 @@ window.AppUI = (function () {
     renderKioskPeranPills();
     renderSidangPeranGrid();
     renderRuangSidangSelects();
+    applyFooterSettings();
     if (state.view === 'sidang') renderJadwalOptions();
     if (state.view === 'pantau') renderPantau();
     renderDisplayQueue(false);
@@ -2220,6 +2221,69 @@ window.AppUI = (function () {
         panggilSuaraDisplay('Nomor antrean P-001, silakan menuju Loket 1');
       };
     }
+
+    // Pengaturan Footer & Tautan Penting dari Dashboard Admin
+    const formFooterAdmin = document.getElementById('form-footer-admin');
+    if (formFooterAdmin) {
+      formFooterAdmin.onsubmit = function (e) {
+        e.preventDefault();
+        const brand = (document.getElementById('cfg-footer-brand').value || '').trim();
+        const phone = (document.getElementById('cfg-footer-phone').value || '').trim();
+        const email = (document.getElementById('cfg-footer-email').value || '').trim();
+        const address = (document.getElementById('cfg-footer-address').value || '').trim();
+        const desc = (document.getElementById('cfg-footer-desc').value || '').trim();
+        const rawLinks = (document.getElementById('cfg-footer-links').value || '').trim();
+
+        const links = [];
+        if (rawLinks) {
+          rawLinks.split('\n').forEach(function (line) {
+            const trimmed = line.trim();
+            if (!trimmed) return;
+            const parts = trimmed.split('|');
+            if (parts.length >= 2) {
+              const t = parts[0].trim();
+              const u = parts.slice(1).join('|').trim();
+              if (t && u) links.push({ text: t, url: u });
+            } else if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+              links.push({ text: trimmed, url: trimmed });
+            } else {
+              links.push({ text: trimmed, url: '#' });
+            }
+          });
+        }
+
+        const nextSettings = {
+          brand: brand || DEFAULT_FOOTER_SETTINGS.brand,
+          desc: desc || DEFAULT_FOOTER_SETTINGS.desc,
+          address: address || DEFAULT_FOOTER_SETTINGS.address,
+          phone: phone || DEFAULT_FOOTER_SETTINGS.phone,
+          email: email || DEFAULT_FOOTER_SETTINGS.email,
+          links: links.length ? links : DEFAULT_FOOTER_SETTINGS.links
+        };
+
+        saveFooterSettings(nextSettings);
+        applyFooterSettings(nextSettings);
+
+        // Jika alamat kantor diubah dan ada input cfg-alamat di tab pengaturan umum, sinkronkan juga
+        const cfgAlamat = document.getElementById('cfg-alamat');
+        if (cfgAlamat && address && cfgAlamat.value !== address) {
+          cfgAlamat.value = address;
+        }
+
+        toast('Pengaturan footer dan tautan penting berhasil disimpan!', 'success');
+      };
+    }
+
+    const btnFooterReset = document.getElementById('btn-footer-reset');
+    if (btnFooterReset) {
+      btnFooterReset.onclick = function () {
+        if (!confirm('Kembalikan konten footer dan tautan penting ke teks bawaan resmi PTUN Palembang?')) return;
+        saveFooterSettings(DEFAULT_FOOTER_SETTINGS);
+        applyFooterSettings(DEFAULT_FOOTER_SETTINGS);
+        loadAdminFooterForm();
+        toast('Footer berhasil dikembalikan ke pengaturan bawaan.', 'info');
+      };
+    }
   }
 
   function resetRuangForm() {
@@ -2633,6 +2697,9 @@ window.AppUI = (function () {
 
     // Muat Pengaturan Display & Video Antrean
     loadAdminDisplayTab();
+
+    // Muat Pengaturan Footer & Tautan Penting
+    loadAdminFooterForm();
 
     applyMaskedSecrets(res.data.rahasia || {});
     loadWaStatus();
@@ -3484,6 +3551,118 @@ window.AppUI = (function () {
   }
 
   // ==========================================================================
+  // FOOTER RESMI DUA KOLOM & TAUTAN PENTING ENGINE
+  // ==========================================================================
+  const DEFAULT_FOOTER_SETTINGS = {
+    brand: 'PTUN PALEMBANG',
+    subtitle: 'Pengadilan Tata Usaha Negara Palembang',
+    desc: 'Wilayah Hukum Pengadilan Tata Usaha Negara Palembang meliputi Provinsi Sumatera Selatan. Berkomitmen memberikan pelayanan peradilan yang modern, cepat, transparan, dan akuntabel.',
+    address: 'Jl. Jend. A. Yani, No.67, Plaju, Palembang, Sumatera Selatan',
+    phone: '(0711) 513812 / 513813',
+    email: 'ptun.palembang.official@gmail.com',
+    links: [
+      { text: 'Mahkamah Agung RI', url: 'https://www.mahkamahagung.go.id' },
+      { text: 'Ditjen Badilmiltun MA RI', url: 'https://ditjenmiltun.mahkamahagung.go.id' },
+      { text: 'Website Resmi PTUN Palembang', url: 'https://ptun-palembang.go.id' },
+      { text: 'SIPP PTUN Palembang', url: 'http://sipp.ptun-palembang.go.id' },
+      { text: 'SIWAS MA-RI (Pengaduan)', url: 'https://siwas.mahkamahagung.go.id' }
+    ]
+  };
+
+  function getFooterSettings() {
+    try {
+      const raw = localStorage.getItem('SI_BUKU_TAMU_FOOTER_CFG');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        return Object.assign({}, DEFAULT_FOOTER_SETTINGS, parsed);
+      }
+    } catch (e) {}
+    return Object.assign({}, DEFAULT_FOOTER_SETTINGS);
+  }
+
+  function saveFooterSettings(settings) {
+    try {
+      localStorage.setItem('SI_BUKU_TAMU_FOOTER_CFG', JSON.stringify(settings));
+    } catch (e) {}
+  }
+
+  function applyFooterSettings(settings) {
+    const st = settings || getFooterSettings();
+
+    const brandEl = document.getElementById('footer-brand-title');
+    if (brandEl) brandEl.textContent = st.brand || DEFAULT_FOOTER_SETTINGS.brand;
+
+    const subEl = document.getElementById('footer-brand-subtitle');
+    if (subEl) {
+      const namaSatker = (state.boot && state.boot.pengaturan && state.boot.pengaturan.NAMA_SATKER) || '';
+      subEl.textContent = namaSatker || st.subtitle || DEFAULT_FOOTER_SETTINGS.subtitle;
+    }
+
+    const descEl = document.getElementById('footer-desc');
+    if (descEl) descEl.textContent = st.desc || DEFAULT_FOOTER_SETTINGS.desc;
+
+    const addrEl = document.getElementById('footer-address');
+    if (addrEl) {
+      const satkerAddr = (state.boot && state.boot.pengaturan && state.boot.pengaturan.ALAMAT_SATKER) || '';
+      addrEl.textContent = st.address || satkerAddr || DEFAULT_FOOTER_SETTINGS.address;
+    }
+
+    const phoneEl = document.getElementById('footer-phone');
+    if (phoneEl) phoneEl.textContent = st.phone || DEFAULT_FOOTER_SETTINGS.phone;
+
+    const emailEl = document.getElementById('footer-email');
+    const emailLink = document.getElementById('footer-email-link');
+    const emailVal = st.email || DEFAULT_FOOTER_SETTINGS.email;
+    if (emailEl) emailEl.textContent = emailVal;
+    if (emailLink) emailLink.href = 'mailto:' + encodeURIComponent(emailVal);
+
+    const satkerCopyright = document.getElementById('footer-satker-name');
+    if (satkerCopyright) {
+      const namaSatker = (state.boot && state.boot.pengaturan && state.boot.pengaturan.NAMA_SATKER) || '';
+      satkerCopyright.textContent = namaSatker || st.subtitle || DEFAULT_FOOTER_SETTINGS.subtitle;
+    }
+
+    // Render tautan penting
+    const listEl = document.getElementById('footer-links-list');
+    if (listEl) {
+      const links = (st.links && Array.isArray(st.links) && st.links.length) ? st.links : DEFAULT_FOOTER_SETTINGS.links;
+      listEl.innerHTML = links.map(function (item) {
+        const text = esc(item.text || item.title || item.url);
+        const url = esc(item.url || '#');
+        return '<li>' +
+          '<a href="' + url + '" target="_blank" rel="noopener noreferrer" class="group flex items-center gap-2.5 text-xs sm:text-sm text-white/85 hover:text-secondary-fixed transition-all py-0.5">' +
+          '<span class="material-symbols-outlined text-[16px] text-secondary-fixed group-hover:translate-x-1 transition-transform">chevron_right</span>' +
+          '<span>' + text + '</span>' +
+          '</a>' +
+          '</li>';
+      }).join('');
+    }
+  }
+
+  function loadAdminFooterForm() {
+    const st = getFooterSettings();
+    const inBrand = document.getElementById('cfg-footer-brand');
+    const inPhone = document.getElementById('cfg-footer-phone');
+    const inEmail = document.getElementById('cfg-footer-email');
+    const inAddr = document.getElementById('cfg-footer-address');
+    const inDesc = document.getElementById('cfg-footer-desc');
+    const inLinks = document.getElementById('cfg-footer-links');
+
+    if (inBrand) inBrand.value = st.brand || DEFAULT_FOOTER_SETTINGS.brand;
+    if (inPhone) inPhone.value = st.phone || DEFAULT_FOOTER_SETTINGS.phone;
+    if (inEmail) inEmail.value = st.email || DEFAULT_FOOTER_SETTINGS.email;
+    if (inAddr) {
+      const currentAddr = (state.boot && state.boot.pengaturan && state.boot.pengaturan.ALAMAT_SATKER) || '';
+      inAddr.value = st.address || currentAddr || DEFAULT_FOOTER_SETTINGS.address;
+    }
+    if (inDesc) inDesc.value = st.desc || DEFAULT_FOOTER_SETTINGS.desc;
+    if (inLinks) {
+      const links = (st.links && Array.isArray(st.links) && st.links.length) ? st.links : DEFAULT_FOOTER_SETTINGS.links;
+      inLinks.value = links.map(function (l) { return (l.text || '') + ' | ' + (l.url || ''); }).join('\n');
+    }
+  }
+
+  // ==========================================================================
   // LOGIN / LOGOUT, BANTUAN & VERIFIKASI QR
   // ==========================================================================
   function openLoginModal() {
@@ -3918,6 +4097,7 @@ window.AppUI = (function () {
     initAdminTabs();
     initModals();
     initDisplayView();
+    applyFooterSettings();
     renderDisplayQueue(false);
 
     // Navigation click listeners
