@@ -715,13 +715,38 @@ window.ApiClient = (function () {
 
       if (action === 'users.list') return { success: true, data: db.users };
       if (action === 'users.simpan') {
-        const u = String(data.Username || '').toLowerCase();
-        const idx = db.users.findIndex(function (x) { return x.Username === u; });
-        const obj = { Username: u, Nama_Petugas: data.Nama_Petugas, Role: data.Role, Status_Aktif: data.Status_Aktif || 'Aktif' };
+        const u = String(data.Username || '').trim().toLowerCase();
+        if (!u || !data.Nama_Petugas) return { success: false, message: 'Username dan Nama Petugas wajib diisi.' };
+        const idx = db.users.findIndex(function (x) { return String(x.Username).toLowerCase() === u; });
+        if (idx === -1 && (!data.pinBaru || String(data.pinBaru).length < 4)) {
+          return { success: false, message: 'PIN / Sandi minimal 4 karakter untuk pengguna baru.' };
+        }
+        const obj = {
+          Username: u,
+          Nama_Petugas: String(data.Nama_Petugas).trim(),
+          Role: data.Role || 'PTSP',
+          Status_Aktif: data.Status_Aktif || 'Aktif'
+        };
         if (idx > -1) db.users[idx] = obj;
         else db.users.push(obj);
         saveDb(db);
-        return { success: true, data: db.users, message: 'Pengguna disimpan.' };
+        return { success: true, data: db.users, message: 'Data pengguna "' + u + '" berhasil disimpan.' };
+      }
+      if (action === 'users.hapus') {
+        const u = String(data.Username || data.username || '').trim().toLowerCase();
+        if (!u) return { success: false, message: 'Username wajib diisi.' };
+        if (u === 'admin') return { success: false, message: 'Akun Administrator Utama (admin) dilindungi dan tidak dapat dihapus.' };
+        const actor = window.ApiClient.getUser();
+        if (actor && actor.username && actor.username.toLowerCase() === u) {
+          return { success: false, message: 'Anda tidak dapat menghapus akun Anda sendiri saat sedang aktif.' };
+        }
+        const initLen = db.users.length;
+        db.users = db.users.filter(function (x) { return String(x.Username).toLowerCase() !== u; });
+        if (db.users.length === initLen) {
+          return { success: false, message: 'Pengguna "' + u + '" tidak ditemukan.' };
+        }
+        saveDb(db);
+        return { success: true, data: db.users, message: 'Pengguna "' + u + '" berhasil dihapus.' };
       }
       if (action === 'users.cabutSesi') return { success: true, message: 'Sesi pengguna ' + data.username + ' dicabut (Simulasi).' };
 

@@ -1795,24 +1795,59 @@ window.AppUI = (function () {
       }
     };
 
-    // Simpan User
-    document.getElementById('form-user').onsubmit = async function (e) {
-      e.preventDefault();
-      const res = await window.ApiClient.call('users.simpan', {
-        Username: document.getElementById('usr-username').value,
-        Nama_Petugas: document.getElementById('usr-nama').value,
-        Role: document.getElementById('usr-role').value,
-        pinBaru: document.getElementById('usr-pin').value,
-        Status_Aktif: 'Aktif'
-      });
-      if (res && res.success) {
-        toast(res.message, 'success');
-        document.getElementById('form-user').reset();
-        renderAdminUsers(res.data || []);
-      } else {
-        toast((res && res.message) || 'Gagal menyimpan pengguna.', 'error');
-      }
-    };
+    // Tombol Tambah Pengguna Baru & Reset
+    const btnTambahUser = document.getElementById('btn-tambah-user');
+    if (btnTambahUser) {
+      btnTambahUser.onclick = function () {
+        resetUserForm();
+        toast('Formulir siap untuk menambah pengguna baru.', 'info');
+      };
+    }
+    const btnResetUser = document.getElementById('btn-reset-user-form');
+    if (btnResetUser) {
+      btnResetUser.onclick = function () {
+        resetUserForm();
+        toast('Formulir isian di-reset.', 'info');
+      };
+    }
+
+    // Simpan / Perbarui Pengguna
+    const formUser = document.getElementById('form-user');
+    if (formUser) {
+      formUser.onsubmit = async function (e) {
+        e.preventDefault();
+        const btnSubmit = document.getElementById('btn-submit-user');
+        const lblSubmit = document.getElementById('lbl-submit-user');
+        if (btnSubmit) {
+          btnSubmit.disabled = true;
+          if (lblSubmit) lblSubmit.textContent = 'Menyimpan...';
+        }
+
+        try {
+          const res = await window.ApiClient.call('users.simpan', {
+            Username: document.getElementById('usr-username').value,
+            Nama_Petugas: document.getElementById('usr-nama').value,
+            Role: document.getElementById('usr-role').value,
+            pinBaru: document.getElementById('usr-pin').value,
+            Status_Aktif: 'Aktif'
+          });
+          if (res && res.success) {
+            toast(res.message, 'success');
+            resetUserForm();
+            loadAdminUsers();
+          } else {
+            toast((res && res.message) || 'Gagal menyimpan pengguna.', 'error');
+          }
+        } catch (err) {
+          toast('Terjadi kesalahan: ' + (err.message || err), 'error');
+        } finally {
+          if (btnSubmit) {
+            btnSubmit.disabled = false;
+            if (lblSubmit) lblSubmit.textContent = 'Simpan';
+          }
+        }
+      };
+    }
 
     // Simpan Cepat Nama Pengadilan dari Dashboard Admin
     document.getElementById('form-dash-nama-pengadilan').onsubmit = async function (e) {
@@ -2828,6 +2863,59 @@ window.AppUI = (function () {
     });
   }
 
+  function resetUserForm() {
+    const form = document.getElementById('form-user');
+    if (form) form.reset();
+    const inpUser = document.getElementById('usr-username');
+    if (inpUser) {
+      inpUser.readOnly = false;
+      inpUser.focus();
+    }
+    const lblTitle = document.getElementById('lbl-form-user-title');
+    if (lblTitle) lblTitle.textContent = 'Formulir Tambah Pengguna Baru';
+    const lblSubmit = document.getElementById('lbl-submit-user');
+    if (lblSubmit) lblSubmit.textContent = 'Simpan Pengguna';
+    const iconSubmit = document.getElementById('icon-submit-user');
+    if (iconSubmit) iconSubmit.textContent = 'person_add';
+    const inpPin = document.getElementById('usr-pin');
+    if (inpPin) inpPin.placeholder = 'PIN baru (min. 4 karakter)';
+  }
+
+  function editUserForm(u) {
+    if (!u) return;
+    const inpUser = document.getElementById('usr-username');
+    const inpNama = document.getElementById('usr-nama');
+    const selRole = document.getElementById('usr-role');
+    const inpPin = document.getElementById('usr-pin');
+    const lblTitle = document.getElementById('lbl-form-user-title');
+    const lblSubmit = document.getElementById('lbl-submit-user');
+    const iconSubmit = document.getElementById('icon-submit-user');
+
+    if (inpUser) {
+      inpUser.value = u.Username || '';
+      inpUser.readOnly = true;
+    }
+    if (inpNama) {
+      inpNama.value = u.Nama_Petugas || '';
+      inpNama.focus();
+    }
+    if (selRole) {
+      selRole.value = u.Role || 'PTSP';
+    }
+    if (inpPin) {
+      inpPin.value = '';
+      inpPin.placeholder = 'Kosongkan jika PIN tidak diubah';
+    }
+    if (lblTitle) lblTitle.textContent = 'Edit Pengguna: @' + (u.Username || '');
+    if (lblSubmit) lblSubmit.textContent = 'Perbarui Pengguna';
+    if (iconSubmit) iconSubmit.textContent = 'save';
+
+    const form = document.getElementById('form-user');
+    if (form) {
+      form.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+
   async function loadAdminUsers() {
     const res = await window.ApiClient.call('users.list', {});
     if (res && res.success) renderAdminUsers(res.data || []);
@@ -2835,14 +2923,102 @@ window.AppUI = (function () {
 
   function renderAdminUsers(users) {
     const box = document.getElementById('admin-users-list');
-    box.innerHTML = '<table class="w-full text-left text-sm"><thead><tr class="text-xs uppercase text-outline border-b"><th class="py-2">Username</th><th class="py-2">Nama</th><th class="py-2">Role</th><th class="py-2">Status</th><th class="py-2 text-right">Sesi</th></tr></thead><tbody class="divide-y">' +
+    if (!box) return;
+
+    const badge = document.getElementById('badge-users-count');
+    if (badge) badge.textContent = (users.length || 0) + ' Akun';
+
+    if (!users || !users.length) {
+      box.innerHTML = '<div class="p-8 text-center text-xs text-on-surface-variant">Belum ada data pengguna aktif. Klik tombol <strong>+ Tambah Pengguna</strong> di atas untuk membuat akun baru.</div>';
+      return;
+    }
+
+    const curUser = window.ApiClient.getUser();
+    const curUsername = (curUser && curUser.username) ? String(curUser.username).toLowerCase() : '';
+
+    box.innerHTML = '<table class="w-full text-left text-sm"><thead class="bg-surface-container-low/60 border-b border-outline-variant/40"><tr class="text-[11px] font-bold uppercase tracking-wider text-outline"><th class="py-3 px-4">Username</th><th class="py-3 px-4">Nama Lengkap</th><th class="py-3 px-4">Peran Hak Akses</th><th class="py-3 px-4">Status</th><th class="py-3 px-4 text-right">Aksi</th></tr></thead><tbody class="divide-y divide-outline-variant/20">' +
       users.map(function (u) {
-        return '<tr><td class="py-2.5 font-mono font-bold">' + esc(u.Username) + '</td><td class="py-2.5">' + esc(u.Nama_Petugas) + '</td><td class="py-2.5"><span class="px-2 py-0.5 rounded bg-surface-container text-xs font-bold">' + esc(getRoleLabel(u.Role)) + '</span></td><td class="py-2.5">' + esc(u.Status_Aktif) + '</td><td class="py-2.5 text-right"><button type="button" data-rev="' + esc(u.Username) + '" class="px-2.5 py-1 rounded border border-outline-variant text-xs font-semibold hover:bg-error-container/40">Cabut Sesi</button></td></tr>';
+        const uLower = String(u.Username || '').toLowerCase();
+        const isAdmin = uLower === 'admin';
+        const isSelf = uLower === curUsername;
+        const roleLabel = getRoleLabel(u.Role);
+
+        let roleBadgeStyle = 'bg-surface-container text-on-surface-variant';
+        if (u.Role === 'Admin') roleBadgeStyle = 'bg-primary-container/15 text-primary-container border border-primary/20';
+        else if (u.Role === 'PTSP') roleBadgeStyle = 'bg-emerald-100 text-emerald-800 border border-emerald-300';
+        else if (u.Role === 'Panitera' || u.Role === 'Sidang') roleBadgeStyle = 'bg-amber-100 text-amber-900 border border-amber-300';
+        else if (u.Role === 'Satpam') roleBadgeStyle = 'bg-slate-100 text-slate-800 border border-slate-300';
+
+        const statusBadge = String(u.Status_Aktif).toLowerCase() === 'aktif'
+          ? '<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200"><span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>Aktif</span>'
+          : '<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-gray-100 text-gray-600 border border-gray-300"><span class="w-1.5 h-1.5 rounded-full bg-gray-400"></span>Nonaktif</span>';
+
+        let delBtnHtml = '';
+        if (isAdmin) {
+          delBtnHtml = '<span class="px-2 py-1 rounded-lg bg-surface-container text-outline text-[11px] font-semibold" title="Akun Administrator Utama dilindungi dan tidak dapat dihapus">Dilindungi</span>';
+        } else if (isSelf) {
+          delBtnHtml = '<span class="px-2 py-1 rounded-lg bg-surface-container text-outline text-[11px] font-semibold" title="Akun sedang digunakan untuk sesi ini">Akun Anda</span>';
+        } else {
+          delBtnHtml = '<button type="button" data-del-usr="' + esc(u.Username) + '" data-nama="' + esc(u.Nama_Petugas) + '" class="px-2.5 py-1 rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 text-red-700 text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer" title="Hapus Akun Pengguna"><span class="material-symbols-outlined text-[14px]">delete</span><span>Hapus</span></button>';
+        }
+
+        return '<tr class="hover:bg-surface-container-low/40 transition-colors">' +
+          '<td class="py-3 px-4 font-mono font-bold text-xs text-primary-container">@' + esc(u.Username) + '</td>' +
+          '<td class="py-3 px-4 font-semibold text-xs text-on-surface">' + esc(u.Nama_Petugas) + '</td>' +
+          '<td class="py-3 px-4"><span class="px-2.5 py-1 rounded-lg text-[11px] font-bold ' + roleBadgeStyle + '">' + esc(roleLabel) + '</span></td>' +
+          '<td class="py-3 px-4">' + statusBadge + '</td>' +
+          '<td class="py-3 px-4 text-right"><div class="flex items-center justify-end gap-1.5">' +
+            '<button type="button" data-edit-usr="' + esc(u.Username) + '" class="px-2.5 py-1 rounded-lg border border-outline-variant hover:bg-surface-container-low text-xs font-semibold flex items-center gap-1 cursor-pointer" title="Edit Data Pengguna"><span class="material-symbols-outlined text-[14px]">edit</span><span>Edit</span></button>' +
+            '<button type="button" data-rev="' + esc(u.Username) + '" class="px-2.5 py-1 rounded-lg border border-outline-variant hover:bg-surface-container-low text-xs font-semibold flex items-center gap-1 cursor-pointer" title="Cabut Sesi Aktif"><span class="material-symbols-outlined text-[14px]">logout</span><span>Cabut Sesi</span></button>' +
+            delBtnHtml +
+          '</div></td></tr>';
       }).join('') + '</tbody></table>';
+
+    // Event Edit Pengguna
+    box.querySelectorAll('[data-edit-usr]').forEach(function (b) {
+      b.onclick = function () {
+        const uname = b.getAttribute('data-edit-usr');
+        const found = users.find(function (x) { return String(x.Username).toLowerCase() === String(uname).toLowerCase(); });
+        if (found) {
+          editUserForm(found);
+          toast('Mode edit aktif untuk pengguna @' + uname + '.', 'info');
+        }
+      };
+    });
+
+    // Event Cabut Sesi
     box.querySelectorAll('[data-rev]').forEach(function (b) {
       b.onclick = async function () {
-        const r = await window.ApiClient.call('users.cabutSesi', { username: b.getAttribute('data-rev') });
+        const uname = b.getAttribute('data-rev');
+        const r = await window.ApiClient.call('users.cabutSesi', { username: uname });
         if (r && r.success) toast(r.message, 'success');
+      };
+    });
+
+    // Event Hapus Pengguna
+    box.querySelectorAll('[data-del-usr]').forEach(function (b) {
+      b.onclick = async function () {
+        const uname = b.getAttribute('data-del-usr');
+        const nama = b.getAttribute('data-nama') || uname;
+        if (!confirm('Apakah Anda yakin ingin menghapus akun pengguna:\n\nUsername: ' + uname + '\nNama: ' + nama + '\n\nAkun yang dihapus tidak akan dapat masuk ke sistem lagi.')) {
+          return;
+        }
+
+        b.disabled = true;
+        b.classList.add('opacity-50');
+        const r = await window.ApiClient.call('users.hapus', { username: uname });
+        if (r && r.success) {
+          toast(r.message || 'Pengguna berhasil dihapus.', 'success');
+          loadAdminUsers();
+          const curInp = document.getElementById('usr-username');
+          if (curInp && String(curInp.value).toLowerCase() === String(uname).toLowerCase()) {
+            resetUserForm();
+          }
+        } else {
+          b.disabled = false;
+          b.classList.remove('opacity-50');
+          toast((r && r.message) || 'Gagal menghapus pengguna.', 'error');
+        }
       };
     });
   }

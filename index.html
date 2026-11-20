@@ -1386,20 +1386,77 @@
         </div>
 
         <!-- TAB 3: USERS RBAC -->
-        <div id="atab-users" class="atab-pane hidden p-5">
-          <form id="form-user" class="grid grid-cols-1 sm:grid-cols-5 gap-3 mb-5 p-4 rounded-xl bg-surface-container-low/60 border border-outline-variant/40">
-            <input id="usr-username" type="text" required placeholder="Username (tanpa spasi)" class="h-10 px-3 rounded-lg border border-outline-variant bg-white text-sm" />
-            <input id="usr-nama" type="text" required placeholder="Nama Petugas" class="h-10 px-3 rounded-lg border border-outline-variant bg-white text-sm" />
-            <select id="usr-role" class="h-10 px-3 rounded-lg border border-outline-variant bg-white text-sm">
-              <option value="PTSP">Petugas PTSP</option>
-              <option value="Panitera">Petugas Sidang</option>
-              <option value="Satpam">Satpam / Resepsionis</option>
-              <option value="Admin">Admin / Pimpinan</option>
-            </select>
-            <input id="usr-pin" type="password" placeholder="PIN / Sandi Baru" class="h-10 px-3 rounded-lg border border-outline-variant bg-white text-sm" />
-            <button type="submit" class="h-10 px-4 rounded-lg bg-primary-container hover:bg-primary text-white text-xs font-bold">Simpan Pengguna</button>
-          </form>
-          <div id="admin-users-list" class="overflow-x-auto"></div>
+        <div id="atab-users" class="atab-pane hidden p-5 flex flex-col gap-5">
+          <!-- Action Bar Header: Info & Tombol Tambah Pengguna -->
+          <div class="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-outline-variant/40">
+            <div class="flex items-center gap-2.5">
+              <div class="w-9 h-9 rounded-lg bg-primary-container text-white flex items-center justify-center shadow-xs">
+                <span class="material-symbols-outlined text-[20px]">manage_accounts</span>
+              </div>
+              <div>
+                <div class="flex items-center gap-2">
+                  <h3 class="font-display font-bold text-base text-on-surface">Manajemen Pengguna &amp; Hak Akses (RBAC)</h3>
+                  <span id="badge-users-count" class="px-2 py-0.5 rounded-full bg-surface-container text-xs font-bold text-on-surface-variant">0 Akun</span>
+                </div>
+                <p class="text-xs text-on-surface-variant">Kelola akun petugas, kata sandi / PIN keamanan, hak akses operasional, serta pemutusan sesi aktif.</p>
+              </div>
+            </div>
+            <button type="button" id="btn-tambah-user" class="h-9 px-4 rounded-xl bg-primary-container hover:bg-primary text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all cursor-pointer" title="Tambah Pengguna Baru">
+              <span class="material-symbols-outlined text-[16px]">person_add</span>
+              <span>+ Tambah Pengguna</span>
+            </button>
+          </div>
+
+          <!-- Form Tambah / Edit Pengguna -->
+          <div class="p-4 rounded-2xl bg-surface-container-low/70 border border-outline-variant/50 shadow-xs flex flex-col gap-3">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2 text-xs font-bold text-on-surface" id="form-user-mode-label">
+                <span class="material-symbols-outlined text-[16px] text-primary-container">edit_note</span>
+                <span id="lbl-form-user-title">Formulir Pengguna (Tambah / Edit)</span>
+              </div>
+              <button type="button" id="btn-reset-user-form" class="text-xs font-semibold text-outline hover:text-on-surface flex items-center gap-1 cursor-pointer" title="Bersihkan isian formulir">
+                <span class="material-symbols-outlined text-[14px]">restart_alt</span>
+                <span>Reset Form</span>
+              </button>
+            </div>
+
+            <form id="form-user" class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-end">
+              <div class="sm:col-span-3">
+                <label for="usr-username" class="block text-[11px] font-bold text-outline uppercase mb-1">Username <span class="text-error">*</span></label>
+                <input id="usr-username" type="text" required placeholder="misal: ptsp / sidang" class="w-full h-10 px-3 rounded-xl border border-outline-variant bg-white text-xs font-semibold text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all" />
+              </div>
+
+              <div class="sm:col-span-3">
+                <label for="usr-nama" class="block text-[11px] font-bold text-outline uppercase mb-1">Nama Petugas <span class="text-error">*</span></label>
+                <input id="usr-nama" type="text" required placeholder="Nama Lengkap &amp; Gelar" class="w-full h-10 px-3 rounded-xl border border-outline-variant bg-white text-xs font-semibold text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all" />
+              </div>
+
+              <div class="sm:col-span-2">
+                <label for="usr-role" class="block text-[11px] font-bold text-outline uppercase mb-1">Peran Akses <span class="text-error">*</span></label>
+                <select id="usr-role" class="w-full h-10 px-3 rounded-xl border border-outline-variant bg-white text-xs font-semibold text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all">
+                  <option value="PTSP">Petugas PTSP</option>
+                  <option value="Panitera">Petugas Sidang</option>
+                  <option value="Satpam">Satpam / Resepsionis</option>
+                  <option value="Admin">Admin / Pimpinan</option>
+                </select>
+              </div>
+
+              <div class="sm:col-span-2">
+                <label for="usr-pin" class="block text-[11px] font-bold text-outline uppercase mb-1">PIN / Sandi</label>
+                <input id="usr-pin" type="password" placeholder="PIN baru (min. 4)" class="w-full h-10 px-3 rounded-xl border border-outline-variant bg-white text-xs font-semibold text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all" />
+              </div>
+
+              <div class="sm:col-span-2 flex items-center gap-2">
+                <button type="submit" id="btn-submit-user" class="w-full h-10 px-3 rounded-xl bg-primary-container hover:bg-primary text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition-all cursor-pointer">
+                  <span class="material-symbols-outlined text-[16px]" id="icon-submit-user">save</span>
+                  <span id="lbl-submit-user">Simpan</span>
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Tabel Daftar Pengguna -->
+          <div id="admin-users-list" class="overflow-x-auto rounded-2xl border border-outline-variant/40 bg-white shadow-xs"></div>
         </div>
 
         <!-- TAB: PENGATURAN DISPLAY TV & VIDEO ANTREAN RUANG TUNGGU -->
