@@ -250,14 +250,23 @@ window.AppUI = (function () {
   }
 
   // ==========================================================================
-  // HELPER PERAN PETURGAS & MODE TATA LETAK (DUAL-MODE)
-  // - Admin, Petugas PTSP, Petugas Sidang (Panitera), Satpam => Menu Samping (Sidebar) di SEMUA halaman
+  // HELPER PERAN PETUGAS & MODE TATA LETAK (DUAL-MODE)
+  // - Admin, Petugas PTSP, Petugas Sidang, Satpam => Menu Samping (Sidebar) di SEMUA halaman
   // - Pengunjung Publik (Belum Login / Kiosk) => Menu Atas (Horizontal Navbar)
   // ==========================================================================
+  function getRoleLabel(role) {
+    if (!role) return '';
+    if (role === 'Panitera' || role === 'Sidang') return 'Petugas Sidang';
+    if (role === 'PTSP') return 'Petugas PTSP';
+    if (role === 'Satpam') return 'Petugas Satpam';
+    if (role === 'Admin') return 'Administrator';
+    return role;
+  }
+
   function isStaffLoggedIn() {
     const u = window.ApiClient.getUser();
     if (!u) return false;
-    const staffRoles = ['Admin', 'PTSP', 'Panitera', 'Satpam'];
+    const staffRoles = ['Admin', 'PTSP', 'Panitera', 'Sidang', 'Satpam'];
     return staffRoles.indexOf(u.role) > -1 || u.username === 'admin' || !!u.role;
   }
 
@@ -434,7 +443,7 @@ window.AppUI = (function () {
       initEl.textContent = (u.nama || u.username || 'P').charAt(0).toUpperCase();
       nameEl.textContent = u.nama || u.username;
       if (roleEl) {
-        roleEl.textContent = u.role + ' (Aktif)';
+        roleEl.textContent = getRoleLabel(u.role) + ' (Aktif)';
         roleEl.classList.remove('hidden');
       }
       iconEl.textContent = 'expand_more';
@@ -442,7 +451,7 @@ window.AppUI = (function () {
       const ddName = document.getElementById('dd-user-name');
       const ddRole = document.getElementById('dd-user-role');
       if (ddName) ddName.textContent = u.nama || u.username;
-      if (ddRole) ddRole.textContent = '@' + u.username + ' • ' + u.role;
+      if (ddRole) ddRole.textContent = '@' + u.username + ' • ' + getRoleLabel(u.role);
     } else {
       initEl.textContent = 'T';
       nameEl.textContent = 'Login';
@@ -988,7 +997,7 @@ window.AppUI = (function () {
 
     // Default tab sesuai role
     if (!state.pantau && user.role) {
-      if (user.role === 'Panitera') state.pantauMode = 'SIDANG';
+      if (user.role === 'Panitera' || user.role === 'Sidang') state.pantauMode = 'SIDANG';
       else if (user.role === 'Satpam') state.pantauMode = 'SATPAM';
       else state.pantauMode = 'PTSP';
     }
@@ -1630,7 +1639,7 @@ window.AppUI = (function () {
       pengaturan: { title: 'Pengaturan Sistem, Printer & Footer', icon: 'tune', desc: 'Konfigurasi nama satker, logo, alamat kantor, template struk thermal, dan footer resmi.' },
       ruang: { title: 'Pengaturan Kelola Ruang Sidang', icon: 'meeting_room', desc: 'Manajemen daftar ruang sidang aktif untuk pemanggilan pihak dan rol persidangan.' },
       jadwal: { title: 'Pengaturan Kelola Jadwal Sidang', icon: 'calendar_month', desc: 'Kelola agenda sidang harian, sinkronisasi perkara, dan data jadwal persidangan.' },
-      users: { title: 'Pengaturan Manajemen Pengguna (RBAC)', icon: 'group', desc: 'Manajemen akun petugas, peran hak akses (Admin/PTSP/Panitera/Satpam), dan PIN keamanan.' },
+      users: { title: 'Pengaturan Manajemen Pengguna (RBAC)', icon: 'group', desc: 'Manajemen akun petugas, peran hak akses (Admin/PTSP/Petugas Sidang/Satpam), dan PIN keamanan.' },
       crm: { title: 'Pengaturan WhatsApp CRM & Blast', icon: 'forum', desc: 'Integrasi WhatsApp gateway Fonnte, template notifikasi otomatis, dan siaran massal.' },
       migrasi: { title: 'Pengaturan Rahasia & Migrasi Database', icon: 'database', desc: 'Script Properties aman, token gateway, dan backup/migrasi struktur spreadsheet.' }
     };
@@ -2828,7 +2837,7 @@ window.AppUI = (function () {
     const box = document.getElementById('admin-users-list');
     box.innerHTML = '<table class="w-full text-left text-sm"><thead><tr class="text-xs uppercase text-outline border-b"><th class="py-2">Username</th><th class="py-2">Nama</th><th class="py-2">Role</th><th class="py-2">Status</th><th class="py-2 text-right">Sesi</th></tr></thead><tbody class="divide-y">' +
       users.map(function (u) {
-        return '<tr><td class="py-2.5 font-mono font-bold">' + esc(u.Username) + '</td><td class="py-2.5">' + esc(u.Nama_Petugas) + '</td><td class="py-2.5"><span class="px-2 py-0.5 rounded bg-surface-container text-xs font-bold">' + esc(u.Role) + '</span></td><td class="py-2.5">' + esc(u.Status_Aktif) + '</td><td class="py-2.5 text-right"><button type="button" data-rev="' + esc(u.Username) + '" class="px-2.5 py-1 rounded border border-outline-variant text-xs font-semibold hover:bg-error-container/40">Cabut Sesi</button></td></tr>';
+        return '<tr><td class="py-2.5 font-mono font-bold">' + esc(u.Username) + '</td><td class="py-2.5">' + esc(u.Nama_Petugas) + '</td><td class="py-2.5"><span class="px-2 py-0.5 rounded bg-surface-container text-xs font-bold">' + esc(getRoleLabel(u.Role)) + '</span></td><td class="py-2.5">' + esc(u.Status_Aktif) + '</td><td class="py-2.5 text-right"><button type="button" data-rev="' + esc(u.Username) + '" class="px-2.5 py-1 rounded border border-outline-variant text-xs font-semibold hover:bg-error-container/40">Cabut Sesi</button></td></tr>';
       }).join('') + '</tbody></table>';
     box.querySelectorAll('[data-rev]').forEach(function (b) {
       b.onclick = async function () {
@@ -3929,7 +3938,7 @@ window.AppUI = (function () {
     if (!u) return openLoginModal();
     document.getElementById('form-profil').reset();
     document.getElementById('profil-err').classList.add('hidden');
-    document.getElementById('profil-sub-info').textContent = '@' + u.username + ' • ' + u.role + (u.darurat ? ' (Akses Darurat)' : '');
+    document.getElementById('profil-sub-info').textContent = '@' + u.username + ' • ' + getRoleLabel(u.role) + (u.darurat ? ' (Akses Darurat)' : '');
     const namaWrap = document.getElementById('profil-nama-wrap');
     const namaInp = document.getElementById('profil-nama');
     if (namaWrap && namaInp) {
@@ -4116,7 +4125,8 @@ window.AppUI = (function () {
         if (inpPin) {
           inpPin.focus();
         }
-        toast('Akun ' + role.toUpperCase() + ' dipilih. Silakan masukkan PIN.', 'info');
+        const label = (role === 'sidang' || role === 'panitera') ? 'PETUGAS SIDANG' : role.toUpperCase();
+        toast('Akun ' + label + ' dipilih. Silakan masukkan PIN.', 'info');
       };
     });
 
@@ -4124,7 +4134,7 @@ window.AppUI = (function () {
     const btnLoginHelp = document.getElementById('btn-login-help');
     if (btnLoginHelp) {
       btnLoginHelp.onclick = function () {
-        alert('BANTUAN AKSES & PEMULIHAN PIN PETUGAS:\n\n1. Petugas PTSP / Panitera / Satpam: Silakan hubungi Administrator Satker untuk mereset atau menerbitkan PIN baru.\n2. Administrator / Pimpinan: Jika lupa sandi, gunakan akun Darurat (Username: admin) dan Sandi Darurat dari Script Properties.');
+        alert('BANTUAN AKSES & PEMULIHAN PIN PETUGAS:\n\n1. Petugas PTSP / Petugas Sidang / Satpam: Silakan hubungi Administrator Satker untuk mereset atau menerbitkan PIN baru.\n2. Administrator / Pimpinan: Jika lupa sandi, gunakan akun Darurat (Username: admin) dan Sandi Darurat dari Script Properties.');
       };
     }
 

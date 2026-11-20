@@ -848,7 +848,7 @@
 
           <div>
             <h1 class="font-display text-2xl sm:text-3xl font-bold text-on-surface">Formulir Kehadiran Sidang</h1>
-            <p class="text-sm text-on-surface-variant mt-1">Konfirmasi kehadiran para pihak perkara untuk Panitera Pengganti &amp; Majelis Hakim sebelum persidangan dibuka.</p>
+            <p class="text-sm text-on-surface-variant mt-1">Konfirmasi kehadiran para pihak perkara untuk Petugas Sidang &amp; Majelis Hakim sebelum persidangan dibuka.</p>
           </div>
 
           <form id="form-sidang" class="flex flex-col gap-5" novalidate>
@@ -1047,7 +1047,7 @@
             <span class="material-symbols-outlined text-[18px]">support_agent</span> Petugas PTSP
           </button>
           <button type="button" data-pview="SIDANG" class="pview-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 text-on-surface-variant hover:bg-surface-container-low">
-            <span class="material-symbols-outlined text-[18px]">gavel</span> Panitera Pengganti (Sidang)
+            <span class="material-symbols-outlined text-[18px]">gavel</span> Petugas Sidang
           </button>
           <button type="button" data-pview="SATPAM" class="pview-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 text-on-surface-variant hover:bg-surface-container-low">
             <span class="material-symbols-outlined text-[18px]">shield</span> Pos Keamanan / Satpam
@@ -1392,7 +1392,7 @@
             <input id="usr-nama" type="text" required placeholder="Nama Petugas" class="h-10 px-3 rounded-lg border border-outline-variant bg-white text-sm" />
             <select id="usr-role" class="h-10 px-3 rounded-lg border border-outline-variant bg-white text-sm">
               <option value="PTSP">Petugas PTSP</option>
-              <option value="Panitera">Panitera Pengganti</option>
+              <option value="Panitera">Petugas Sidang</option>
               <option value="Satpam">Satpam / Resepsionis</option>
               <option value="Admin">Admin / Pimpinan</option>
             </select>
@@ -2534,9 +2534,9 @@
               <span class="material-symbols-outlined text-[18px] text-primary-container group-hover:scale-110 transition-transform">support_agent</span>
               <span>Masuk sebagai <strong>Petugas PTSP</strong></span>
             </button>
-            <button type="button" class="btn-quick-login-role w-full h-10 px-3.5 rounded-xl border border-outline-variant hover:border-amber-600 bg-surface-container-lowest hover:bg-surface-container-low text-on-surface text-xs font-semibold flex items-center justify-center gap-2.5 transition-all shadow-2xs group cursor-pointer" data-role="panitera">
+            <button type="button" class="btn-quick-login-role w-full h-10 px-3.5 rounded-xl border border-outline-variant hover:border-amber-600 bg-surface-container-lowest hover:bg-surface-container-low text-on-surface text-xs font-semibold flex items-center justify-center gap-2.5 transition-all shadow-2xs group cursor-pointer" data-role="sidang">
               <span class="material-symbols-outlined text-[18px] text-amber-800 group-hover:scale-110 transition-transform">gavel</span>
-              <span>Masuk sebagai <strong>Panitera Pengganti</strong></span>
+              <span>Masuk sebagai <strong>Petugas Sidang</strong></span>
             </button>
           </div>
 
@@ -2558,7 +2558,7 @@
                   id="login-username"
                   type="text"
                   required
-                  placeholder="admin / ptsp / panitera / satpam"
+                  placeholder="admin / ptsp / sidang / satpam"
                   class="w-full h-10 pl-10 pr-3.5 rounded-xl border border-outline-variant bg-surface-container-lowest text-xs font-semibold text-on-surface placeholder:text-outline/70 focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-all"
                 />
               </div>
@@ -2708,7 +2708,7 @@
         <div>
           <label for="mps-select-ruang" class="block text-xs font-bold text-outline uppercase mb-1.5">Tentukan Ruang Sidang <span class="text-error">*</span></label>
           <select id="mps-select-ruang" class="w-full h-11 px-3 rounded-xl border border-outline-variant bg-white text-sm font-semibold focus:border-primary-container focus:ring-1 focus:ring-primary-container"></select>
-          <p class="text-[11px] text-on-surface-variant mt-1.5">Dipilih langsung oleh Petugas PTSP / Panitera / Admin saat perkara siap disidangkan.</p>
+          <p class="text-[11px] text-on-surface-variant mt-1.5">Dipilih langsung oleh Petugas PTSP / Petugas Sidang / Admin saat perkara siap disidangkan.</p>
         </div>
 
         <!-- Checkbox Pengumuman Suara Otomatis -->

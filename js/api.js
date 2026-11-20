@@ -202,7 +202,17 @@ window.ApiClient = (function () {
     function initDb() {
       const saved = localStorage.getItem(DEMO_DB_KEY);
       if (saved) {
-        try { return JSON.parse(saved); } catch (e) {}
+        try {
+          const parsed = JSON.parse(saved);
+          if (parsed && Array.isArray(parsed.users)) {
+            const hasSidang = parsed.users.some(function (u) { return String(u.Username).toLowerCase() === 'sidang'; });
+            if (!hasSidang) {
+              parsed.users.push({ Username: 'sidang', Nama_Petugas: 'Ahmad Faisal, S.H. (Petugas Sidang)', Role: 'Panitera', Status_Aktif: 'Aktif' });
+              localStorage.setItem(DEMO_DB_KEY, JSON.stringify(parsed));
+            }
+          }
+          return parsed;
+        } catch (e) {}
       }
       const now = Date.now();
       const ymd = todayYmd();
@@ -349,7 +359,8 @@ window.ApiClient = (function () {
         users: [
           { Username: 'admin', Nama_Petugas: 'Administrator PTUN', Role: 'Admin', Status_Aktif: 'Aktif' },
           { Username: 'ptsp', Nama_Petugas: 'Sri Mulyani (PTSP)', Role: 'PTSP', Status_Aktif: 'Aktif' },
-          { Username: 'panitera', Nama_Petugas: 'Irwan Santoso, S.H. (PP)', Role: 'Panitera', Status_Aktif: 'Aktif' },
+          { Username: 'sidang', Nama_Petugas: 'Ahmad Faisal, S.H. (Petugas Sidang)', Role: 'Panitera', Status_Aktif: 'Aktif' },
+          { Username: 'panitera', Nama_Petugas: 'Irwan Santoso, S.H. (Petugas Sidang)', Role: 'Panitera', Status_Aktif: 'Aktif' },
           { Username: 'satpam', Nama_Petugas: 'Dedi Kurniawan (Satpam)', Role: 'Satpam', Status_Aktif: 'Aktif' }
         ],
         templates: [
@@ -527,9 +538,21 @@ window.ApiClient = (function () {
 
       if (action === 'auth.login') {
         const u = String(data.username || '').trim().toLowerCase();
-        const found = db.users.find(function (x) { return x.Username === u && x.Status_Aktif === 'Aktif'; });
+        let found = db.users.find(function (x) { return String(x.Username).toLowerCase() === u && x.Status_Aktif === 'Aktif'; });
+        // Dukungan alias jika user login 'sidang' atau 'panitera'
+        if (!found && (u === 'sidang' || u === 'petugassidang')) {
+          found = db.users.find(function (x) { return String(x.Username).toLowerCase() === 'panitera' && x.Status_Aktif === 'Aktif'; });
+          if (!found) {
+            found = { Username: 'sidang', Nama_Petugas: 'Petugas Sidang', Role: 'Panitera', Status_Aktif: 'Aktif' };
+            db.users.push(found);
+            saveDb(db);
+          }
+        }
+        if (!found && u === 'panitera') {
+          found = db.users.find(function (x) { return String(x.Username).toLowerCase() === 'sidang' && x.Status_Aktif === 'Aktif'; });
+        }
         if (!found || !data.pin) {
-          return { success: false, message: 'Username tidak ditemukan atau PIN kosong (Mode Pratinjau: gunakan username admin / ptsp / panitera / satpam dengan PIN apa saja).' };
+          return { success: false, message: 'Username tidak ditemukan atau PIN kosong (Mode Pratinjau: gunakan username admin / ptsp / sidang / satpam dengan PIN apa saja).' };
         }
         return {
           success: true,
