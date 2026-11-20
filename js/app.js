@@ -1001,16 +1001,38 @@ window.AppUI = (function () {
     return '<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-secondary-fixed text-on-secondary-fixed-variant">● ' + esc(st) + '</span>';
   }
 
-  function panggilSuara(teks) {
+  function panggilSuara(teks, onEndCallback) {
     try {
       if ('speechSynthesis' in window) {
         window.speechSynthesis.cancel();
         const utt = new SpeechSynthesisUtterance(teks);
         utt.lang = 'id-ID';
         utt.rate = 0.95;
+
+        let callbackFired = false;
+        const fireCallback = function () {
+          if (!callbackFired) {
+            callbackFired = true;
+            if (typeof onEndCallback === 'function') onEndCallback();
+          }
+        };
+
+        utt.onend = fireCallback;
+        utt.onerror = fireCallback;
+
+        // Fallback durasi aman jika event onend tidak terpicu
+        const estimatedDuration = Math.max(3500, (String(teks || '').length * 85));
+        setTimeout(fireCallback, estimatedDuration);
+
         window.speechSynthesis.speak(utt);
+      } else {
+        if (typeof onEndCallback === 'function') {
+          setTimeout(onEndCallback, 3000);
+        }
       }
-    } catch (e) {}
+    } catch (e) {
+      if (typeof onEndCallback === 'function') onEndCallback();
+    }
     toast('Memanggil: ' + teks, 'info');
   }
 
@@ -1186,14 +1208,13 @@ window.AppUI = (function () {
     if (!item) return;
 
     if (act === 'panggil') {
-      panggilSuara('Nomor antrean ' + item.Nomor_Antrean + ', ' + item.Nama_Lengkap + ', silakan menuju Loket ' + item.Loket_Tujuan);
       updateLiveDisplayQueue({
         nomor: item.Nomor_Antrean,
         loket: item.Loket_Tujuan ? ('Loket ' + item.Loket_Tujuan) : 'Loket Layanan PTSP',
         nama: item.Nama_Lengkap,
         jalur: 'PTSP',
         status: 'Dipanggil ke Loket'
-      });
+      }, true);
       return;
     }
 
@@ -1229,14 +1250,13 @@ window.AppUI = (function () {
     renderPantau();
 
     if (act === 'layani') {
-      panggilSuara('Nomor antrean ' + item.Nomor_Antrean + ', silakan menuju Loket ' + item.Loket_Tujuan);
       updateLiveDisplayQueue({
         nomor: item.Nomor_Antrean,
         loket: item.Loket_Tujuan ? ('Loket ' + item.Loket_Tujuan) : 'Loket Layanan PTSP',
         nama: item.Nama_Lengkap,
         jalur: 'PTSP',
         status: 'Sedang Dilayani'
-      });
+      }, true);
     }
 
     const res = await window.ApiClient.call('tamu.ubahStatus', {
@@ -1332,17 +1352,13 @@ window.AppUI = (function () {
     item.Status_Kehadiran = 'Masuk Ruang Sidang';
     renderPantau();
 
-    if (withSuara) {
-      panggilSuara('Para pihak nomor perkara ' + item.Nomor_Perkara + ', ' + item.Nama_Lengkap + ', dipersilakan memasuki ' + item.Ruang_Sidang);
-    }
-
     updateLiveDisplayQueue({
       nomor: item.Nomor_Antrean,
       loket: ruang || 'Ruang Sidang Utama',
       nama: item.Nama_Lengkap + (item.Nomor_Perkara ? ' (' + item.Nomor_Perkara + ')' : ''),
       jalur: 'SIDANG',
       status: 'Masuk Ruang Sidang'
-    });
+    }, withSuara);
 
     const res = await window.ApiClient.call('tamu.ubahStatus', {
       idTiket: item.ID_Tiket,
@@ -2074,17 +2090,45 @@ window.AppUI = (function () {
         const rawYt = (document.getElementById('admin-disp-yt').value || '').trim();
         const rawMarq = (document.getElementById('admin-disp-marquee').value || '').trim();
         const audioOn = document.getElementById('admin-disp-audio-toggle').checked;
+        const videoSoundEl = document.getElementById('admin-disp-videosound');
+        const autoMuteEl = document.getElementById('admin-disp-automute');
+        const videoSound = videoSoundEl ? videoSoundEl.checked : false;
+        const autoMute = autoMuteEl ? autoMuteEl.checked : true;
         const ytId = extractYouTubeId(rawYt) || DEFAULT_DISPLAY_SETTINGS.ytId;
 
         const nextSettings = {
           ytId: ytId,
           marquee: rawMarq || DEFAULT_DISPLAY_SETTINGS.marquee,
-          audioEnabled: audioOn
+          audioEnabled: audioOn,
+          videoSound: videoSound,
+          autoMuteOnCall: autoMute
         };
         saveDisplaySettings(nextSettings);
-        initDisplayView();
+        applyYouTubePlayer(ytId);
+
+        if (videoSound) {
+          sendYouTubeCommand('unMute', []);
+          sendYouTubeCommand('setVolume', [80]);
+          sendYouTubeCommand('playVideo', []);
+        } else {
+          sendYouTubeCommand('mute', []);
+        }
+
+        const kMarq = document.getElementById('kiosk-marquee-content');
+        if (kMarq) kMarq.textContent = nextSettings.marquee;
+        const dMarq = document.getElementById('display-marquee-content');
+        if (dMarq) dMarq.textContent = nextSettings.marquee;
+
+        updateDisplayAudioButton(nextSettings);
+        updateKioskAudioButton(nextSettings);
         toast('Pengaturan Display & Video Antrean berhasil disimpan!', 'success');
       };
+    }
+
+    // Tombol buka pop-up modal pengaturan cepat dari Admin Dashboard
+    const btnAdminOpenModal = document.getElementById('btn-admin-disp-open-modal');
+    if (btnAdminOpenModal) {
+      btnAdminOpenModal.onclick = openDisplaySettingsModal;
     }
 
     // Preset Video Cepat di Admin Dashboard
@@ -2125,14 +2169,11 @@ window.AppUI = (function () {
       };
     }
 
-    // Test Bunyi Bel & Panggilan di Admin Dashboard
+    // Test Bunyi Bel & Panggilan di Admin Dashboard (lengkap dengan auto-mute)
     const btnTestAudio = document.getElementById('btn-admin-disp-test-audio');
     if (btnTestAudio) {
       btnTestAudio.onclick = function () {
-        playQueueChime();
-        setTimeout(function () {
-          panggilSuara('Nomor antrean P-001, silakan menuju Loket 1');
-        }, 450);
+        panggilSuaraDisplay('Nomor antrean P-001, silakan menuju Loket 1');
       };
     }
   }
@@ -2551,9 +2592,13 @@ window.AppUI = (function () {
     const inAdminYt = document.getElementById('admin-disp-yt');
     const inAdminMarq = document.getElementById('admin-disp-marquee');
     const inAdminAudio = document.getElementById('admin-disp-audio-toggle');
+    const inAdminVideo = document.getElementById('admin-disp-videosound');
+    const inAdminAutoMute = document.getElementById('admin-disp-automute');
     if (inAdminYt) inAdminYt.value = dispSt.ytId || DEFAULT_DISPLAY_SETTINGS.ytId;
     if (inAdminMarq) inAdminMarq.value = dispSt.marquee || DEFAULT_DISPLAY_SETTINGS.marquee;
     if (inAdminAudio) inAdminAudio.checked = (dispSt.audioEnabled !== false);
+    if (inAdminVideo) inAdminVideo.checked = (dispSt.videoSound === true);
+    if (inAdminAutoMute) inAdminAutoMute.checked = (dispSt.autoMuteOnCall !== false);
 
     applyMaskedSecrets(res.data.rahasia || {});
     loadWaStatus();
@@ -2989,8 +3034,10 @@ window.AppUI = (function () {
   // ==========================================================================
   const DEFAULT_DISPLAY_SETTINGS = {
     ytId: 'r72fG0644_k',
-    marquee: 'Selamat Datang di Pengadilan Tata Usaha Negara Palembang • Jam Pelayanan PTSP: Senin - Kamis 08.00 - 15.00 WIB, Jumat 08.00 - 15.30 WIB • Wujudkan Peradilan Bersih, Transparan, Bebas dari Pungli & Korupsi • Perhatikan nomor antrean yang dipanggil pada layar monitor • Terima kasih atas kunjungan Anda.',
-    audioEnabled: true
+    marquee: 'Selamat Datang di Pengadilan Tata Usaha Negara Palembang • Pelayanan Terpadu Satu Pintu (PTSP) melayani dengan Tulus, Cepat, Akuntabel, dan Transparan • Seluruh layanan peradilan bebas dari pungutan liar, gratifikasi, dan korupsi.',
+    audioEnabled: true,       // Suara Bel & Panggilan Antrean
+    videoSound: false,        // Suara Video YouTube (default mute agar autoplay diizinkan browser)
+    autoMuteOnCall: true      // Mute suara video otomatis saat pemanggilan nomor antrean
   };
 
   function getDisplaySettings() {
@@ -3019,8 +3066,27 @@ window.AppUI = (function () {
     return match ? match[1] : '';
   }
 
+  // Kirim perintah langsung ke YouTube IFrame API via window.postMessage
+  function sendYouTubeCommand(funcName, args) {
+    const safeArgs = Array.isArray(args) ? args : (args !== undefined ? [args] : []);
+    const payload = JSON.stringify({
+      event: 'command',
+      func: funcName,
+      args: safeArgs
+    });
+    ['display-yt-iframe', 'kiosk-yt-iframe'].forEach(function (id) {
+      const iframe = document.getElementById(id);
+      if (iframe && iframe.contentWindow) {
+        try {
+          iframe.contentWindow.postMessage(payload, '*');
+        } catch (err) {}
+      }
+    });
+  }
+
   function applyYouTubePlayer(videoId) {
-    const vid = videoId || getDisplaySettings().ytId || DEFAULT_DISPLAY_SETTINGS.ytId;
+    const st = getDisplaySettings();
+    const vid = videoId || st.ytId || DEFAULT_DISPLAY_SETTINGS.ytId;
     const targetSrc = 'https://www.youtube-nocookie.com/embed/' + encodeURIComponent(vid) +
       '?autoplay=1&mute=1&loop=1&playlist=' + encodeURIComponent(vid) +
       '&controls=1&rel=0&modestbranding=1&playsinline=1&enablejsapi=1';
@@ -3031,6 +3097,14 @@ window.AppUI = (function () {
         const currentSrc = iframe.getAttribute('src') || '';
         if (currentSrc.indexOf(vid) === -1) {
           iframe.setAttribute('src', targetSrc);
+        }
+        // Jika suara video aktif, kirim unMute setelah iframe termuat
+        if (st.videoSound === true) {
+          setTimeout(function () {
+            sendYouTubeCommand('unMute');
+            sendYouTubeCommand('setVolume', [80]);
+            sendYouTubeCommand('playVideo');
+          }, 1500);
         }
       }
     });
@@ -3069,13 +3143,62 @@ window.AppUI = (function () {
     } catch (e) {}
   }
 
+  let isCallAudioActive = false;
+
   function panggilSuaraDisplay(teks) {
     const st = getDisplaySettings();
     if (st.audioEnabled === false) return;
+
+    // Saat pemanggilan nomor antrean: suara video YouTube tidak aktif (Mute otomatis)
+    const shouldMuteVideo = (st.autoMuteOnCall !== false) && (st.videoSound === true);
+    if (shouldMuteVideo) {
+      isCallAudioActive = true;
+      sendYouTubeCommand('mute');
+    }
+
+    // Bunyikan nada bel chime (Ding-dong)
     playQueueChime();
+
+    // Panggil suara Text-to-Speech setelah nada bel selesai (450ms)
     setTimeout(function () {
-      panggilSuara(teks);
+      panggilSuara(teks, function onSpeechEnd() {
+        // Saat suara panggilan selesai, pulihkan suara video jika sebelumnya bersuara
+        if (shouldMuteVideo && isCallAudioActive) {
+          isCallAudioActive = false;
+          setTimeout(function () {
+            const curSt = getDisplaySettings();
+            if (curSt.videoSound === true) {
+              sendYouTubeCommand('unMute');
+              sendYouTubeCommand('setVolume', [80]);
+            }
+          }, 600);
+        }
+      });
     }, 450);
+  }
+
+  function toggleDisplayAudio() {
+    const st = getDisplaySettings();
+    const nextSound = !(st.videoSound === true);
+    st.videoSound = nextSound;
+    if (nextSound) {
+      st.audioEnabled = true;
+    }
+    saveDisplaySettings(st);
+
+    if (nextSound) {
+      sendYouTubeCommand('unMute');
+      sendYouTubeCommand('setVolume', [80]);
+      sendYouTubeCommand('playVideo');
+      playQueueChime();
+      toast('Suara TV & Video diaktifkan', 'success');
+    } else {
+      sendYouTubeCommand('mute');
+      toast('Suara TV & Video dimatikan (Mute)', 'info');
+    }
+
+    updateDisplayAudioButton(st);
+    updateKioskAudioButton(st);
   }
 
   function getLiveQueueState() {
@@ -3109,7 +3232,7 @@ window.AppUI = (function () {
     ];
   }
 
-  function updateLiveDisplayQueue(data) {
+  function updateLiveDisplayQueue(data, triggerSpeech) {
     const current = getLiveQueueState();
     const d = new Date();
     const jam = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
@@ -3133,7 +3256,8 @@ window.AppUI = (function () {
       localStorage.setItem('ETAMU_LIVE_QUEUE', JSON.stringify(data));
     } catch (e) {}
 
-    renderDisplayQueue(true);
+    const shouldSpeak = (triggerSpeech !== false);
+    renderDisplayQueue(shouldSpeak);
   }
 
   function renderDisplayQueue(isNewCall) {
@@ -3183,7 +3307,10 @@ window.AppUI = (function () {
     });
 
     if (isNewCall) {
-      panggilSuaraDisplay('Nomor antrean ' + (data.nomor || '') + ', silakan menuju ' + (data.loket || ''));
+      const teksPanggil = (data.jalur === 'SIDANG')
+        ? ('Para pihak ' + (data.nama || '') + ', dipersilakan memasuki ' + (data.loket || 'Ruang Sidang'))
+        : ('Nomor antrean ' + (data.nomor || '') + ', silakan menuju ' + (data.loket || ''));
+      panggilSuaraDisplay(teksPanggil);
     }
 
     // 2. Next Queue Panel (Both Kiosk & Display)
@@ -3238,22 +3365,62 @@ window.AppUI = (function () {
     const dMarq = document.getElementById('display-marquee-content');
     if (dMarq) dMarq.textContent = st.marquee || DEFAULT_DISPLAY_SETTINGS.marquee;
 
-    updateKioskAudioButton(st.audioEnabled !== false);
-    updateDisplayAudioButton(st.audioEnabled !== false);
+    updateKioskAudioButton(st);
+    updateDisplayAudioButton(st);
   }
 
-  function updateKioskAudioButton(enabled) {
+  function updateKioskAudioButton(settings) {
+    const st = settings || getDisplaySettings();
+    const isSoundOn = (st.videoSound === true);
+    const btn = document.getElementById('btn-kiosk-toggle-audio');
     const icon = document.getElementById('kiosk-audio-icon');
     const label = document.getElementById('kiosk-audio-label');
-    if (icon) icon.textContent = enabled ? 'volume_up' : 'volume_off';
-    if (label) label.textContent = enabled ? 'Suara: Aktif' : 'Suara: Mute';
+    if (icon) icon.textContent = isSoundOn ? 'volume_up' : 'volume_off';
+    if (label) label.textContent = isSoundOn ? 'Suara: Aktif' : 'Suara: Mute';
+    if (btn) {
+      btn.className = isSoundOn
+        ? 'h-9 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 border border-emerald-400 shadow-sm transition-all'
+        : 'h-9 px-3 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold flex items-center gap-1.5 border border-white/15 transition-all';
+    }
   }
 
-  function updateDisplayAudioButton(enabled) {
+  function updateDisplayAudioButton(settings) {
+    const st = settings || getDisplaySettings();
+    const isSoundOn = (st.videoSound === true);
+    const btn = document.getElementById('btn-display-toggle-audio');
     const icon = document.getElementById('display-audio-icon');
     const label = document.getElementById('display-audio-label');
-    if (icon) icon.textContent = enabled ? 'volume_up' : 'volume_off';
-    if (label) label.textContent = enabled ? 'Suara TV: Aktif' : 'Suara TV: Mute';
+    if (icon) icon.textContent = isSoundOn ? 'volume_up' : 'volume_off';
+    if (label) label.textContent = isSoundOn ? 'Suara TV: Aktif' : 'Suara TV: Mute';
+    if (btn) {
+      btn.className = isSoundOn
+        ? 'h-10 px-3 sm:px-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold flex items-center gap-1.5 border border-emerald-400 shadow-md transition-all'
+        : 'h-10 px-3 sm:px-3.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold flex items-center gap-1.5 border border-white/15 transition-all';
+    }
+  }
+
+  function openDisplaySettingsModal() {
+    const st = getDisplaySettings();
+    const inYt = document.getElementById('modal-disp-yt');
+    const inMarq = document.getElementById('modal-disp-marquee');
+    const chkVideo = document.getElementById('modal-disp-videosound');
+    const chkCall = document.getElementById('modal-disp-callsound');
+    const chkAutoMute = document.getElementById('modal-disp-automute');
+
+    if (inYt) inYt.value = st.ytId || DEFAULT_DISPLAY_SETTINGS.ytId;
+    if (inMarq) inMarq.value = st.marquee || DEFAULT_DISPLAY_SETTINGS.marquee;
+    if (chkVideo) chkVideo.checked = (st.videoSound === true);
+    if (chkCall) chkCall.checked = (st.audioEnabled !== false);
+    if (chkAutoMute) chkAutoMute.checked = (st.autoMuteOnCall !== false);
+
+    const modal = document.getElementById('modal-display-settings');
+    if (modal) modal.classList.remove('hidden');
+    if (inYt) inYt.focus();
+  }
+
+  function closeDisplaySettingsModal() {
+    const modal = document.getElementById('modal-display-settings');
+    if (modal) modal.classList.add('hidden');
   }
 
   function toggleTvFullscreen() {
@@ -3523,15 +3690,7 @@ window.AppUI = (function () {
 
     const btnKioskAudio = document.getElementById('btn-kiosk-toggle-audio');
     if (btnKioskAudio) {
-      btnKioskAudio.onclick = function () {
-        const st = getDisplaySettings();
-        const nextVal = !(st.audioEnabled !== false);
-        st.audioEnabled = nextVal;
-        saveDisplaySettings(st);
-        updateKioskAudioButton(nextVal);
-        updateDisplayAudioButton(nextVal);
-        toast(nextVal ? 'Suara panggilan diaktifkan.' : 'Suara panggilan dimatikan (Mute).', 'info');
-      };
+      btnKioskAudio.onclick = toggleDisplayAudio;
     }
 
     const btnKioskReplay = document.getElementById('btn-kiosk-replay-call');
@@ -3542,17 +3701,156 @@ window.AppUI = (function () {
       };
     }
 
-    // Toggle Audio TV Display
+    // Toggle Audio TV Display (Nyalakan / Matikan Suara Video & Panggilan)
     const btnToggleAudio = document.getElementById('btn-display-toggle-audio');
     if (btnToggleAudio) {
-      btnToggleAudio.onclick = function () {
+      btnToggleAudio.onclick = toggleDisplayAudio;
+    }
+
+    // Tombol Pembuka Modal Pengaturan Display TV (Sidebar, Header, Kiosk, Overlay Video & Marquee)
+    const navBtnDisp = document.getElementById('nav-btn-pengaturan-display');
+    if (navBtnDisp) {
+      navBtnDisp.onclick = function () {
+        closeSidebarMobile();
+        openDisplaySettingsModal();
+      };
+    }
+
+    const btnOpenDispTop = document.getElementById('btn-open-display-settings-top');
+    if (btnOpenDispTop) btnOpenDispTop.onclick = openDisplaySettingsModal;
+
+    const btnKioskSettings = document.getElementById('btn-kiosk-settings');
+    if (btnKioskSettings) btnKioskSettings.onclick = openDisplaySettingsModal;
+
+    const btnVidQuickChange = document.getElementById('btn-video-quick-change');
+    if (btnVidQuickChange) btnVidQuickChange.onclick = openDisplaySettingsModal;
+
+    const btnQuickEditMarq = document.getElementById('btn-quick-edit-marquee');
+    if (btnQuickEditMarq) btnQuickEditMarq.onclick = openDisplaySettingsModal;
+
+    // Reload Video YouTube Cepat
+    const btnVidQuickReload = document.getElementById('btn-video-quick-reload');
+    if (btnVidQuickReload) {
+      btnVidQuickReload.onclick = function () {
         const st = getDisplaySettings();
-        const nextVal = !(st.audioEnabled !== false);
-        st.audioEnabled = nextVal;
-        saveDisplaySettings(st);
-        updateKioskAudioButton(nextVal);
-        updateDisplayAudioButton(nextVal);
-        toast(nextVal ? 'Suara TV panggilan aktif' : 'Suara TV dimatikan (Mute)', 'info');
+        const vid = st.ytId || DEFAULT_DISPLAY_SETTINGS.ytId;
+        const targetSrc = 'https://www.youtube-nocookie.com/embed/' + encodeURIComponent(vid) +
+          '?autoplay=1&mute=1&loop=1&playlist=' + encodeURIComponent(vid) +
+          '&controls=1&rel=0&modestbranding=1&playsinline=1&enablejsapi=1';
+        ['display-yt-iframe', 'kiosk-yt-iframe'].forEach(function (id) {
+          const iframe = document.getElementById(id);
+          if (iframe) iframe.src = targetSrc;
+        });
+        toast('Memuat ulang tayangan video YouTube...', 'info');
+      };
+    }
+
+    // Modal Display Settings: Tutup Dialog
+    const btnCloseDisp = document.getElementById('btn-close-display-settings');
+    if (btnCloseDisp) btnCloseDisp.onclick = closeDisplaySettingsModal;
+
+    const btnCancelDisp = document.getElementById('btn-modal-disp-cancel');
+    if (btnCancelDisp) btnCancelDisp.onclick = closeDisplaySettingsModal;
+
+    const modalDisp = document.getElementById('modal-display-settings');
+    if (modalDisp) {
+      modalDisp.onclick = function (e) {
+        if (e.target === modalDisp) closeDisplaySettingsModal();
+      };
+    }
+
+    // Modal Display Settings: Preset Video Cepat
+    document.querySelectorAll('.btn-modal-preset').forEach(function (btn) {
+      btn.onclick = function () {
+        const vid = btn.getAttribute('data-video-id');
+        const inYt = document.getElementById('modal-disp-yt');
+        if (inYt && vid) {
+          inYt.value = vid;
+          toast('Preset video dipilih: ' + btn.textContent.trim(), 'info');
+        }
+      };
+    });
+
+    // Modal Display Settings: Pratinjau Video
+    const btnModalPrev = document.getElementById('btn-modal-disp-preview');
+    if (btnModalPrev) {
+      btnModalPrev.onclick = function () {
+        const inYt = document.getElementById('modal-disp-yt');
+        const vid = extractYouTubeId(inYt ? inYt.value.trim() : '');
+        if (vid) {
+          window.open('https://www.youtube.com/watch?v=' + encodeURIComponent(vid), '_blank');
+        } else {
+          toast('Masukkan URL atau Video ID YouTube yang valid.', 'warning');
+        }
+      };
+    }
+
+    // Modal Display Settings: Reset Marquee
+    const btnModalResetMarq = document.getElementById('btn-modal-disp-reset-marq');
+    if (btnModalResetMarq) {
+      btnModalResetMarq.onclick = function () {
+        const inMarq = document.getElementById('modal-disp-marquee');
+        if (inMarq) inMarq.value = DEFAULT_DISPLAY_SETTINGS.marquee;
+        toast('Teks pengumuman dikembalikan ke bawaan.', 'info');
+      };
+    }
+
+    // Modal Display Settings: Test Audio Panggilan (TTS & Chime + Auto-Mute)
+    const btnModalTestAudio = document.getElementById('btn-modal-disp-test-audio');
+    if (btnModalTestAudio) {
+      btnModalTestAudio.onclick = function () {
+        panggilSuaraDisplay('Nomor antrean P-001, silakan menuju Loket 1');
+      };
+    }
+
+    // Modal Display Settings: Submit Form Simpan & Terapkan
+    const formModalDisp = document.getElementById('form-modal-display');
+    if (formModalDisp) {
+      formModalDisp.onsubmit = function (e) {
+        e.preventDefault();
+        const inYt = document.getElementById('modal-disp-yt');
+        const inMarq = document.getElementById('modal-disp-marquee');
+        const chkVideo = document.getElementById('modal-disp-videosound');
+        const chkCall = document.getElementById('modal-disp-callsound');
+        const chkAutoMute = document.getElementById('modal-disp-automute');
+
+        const rawYt = inYt ? inYt.value.trim() : '';
+        const rawMarq = inMarq ? inMarq.value.trim() : '';
+        const ytId = extractYouTubeId(rawYt) || DEFAULT_DISPLAY_SETTINGS.ytId;
+        const isVideoSound = chkVideo ? chkVideo.checked : false;
+        const isCallSound = chkCall ? chkCall.checked : true;
+        const isAutoMute = chkAutoMute ? chkAutoMute.checked : true;
+
+        const nextSettings = {
+          ytId: ytId,
+          marquee: rawMarq || DEFAULT_DISPLAY_SETTINGS.marquee,
+          audioEnabled: isCallSound,
+          videoSound: isVideoSound,
+          autoMuteOnCall: isAutoMute
+        };
+
+        saveDisplaySettings(nextSettings);
+        applyYouTubePlayer(ytId);
+
+        // Kontrol audio video YouTube seketika
+        if (isVideoSound) {
+          sendYouTubeCommand('unMute', []);
+          sendYouTubeCommand('setVolume', [80]);
+          sendYouTubeCommand('playVideo', []);
+        } else {
+          sendYouTubeCommand('mute', []);
+        }
+
+        // Sinkronkan teks marquee
+        const kMarq = document.getElementById('kiosk-marquee-content');
+        if (kMarq) kMarq.textContent = nextSettings.marquee;
+        const dMarq = document.getElementById('display-marquee-content');
+        if (dMarq) dMarq.textContent = nextSettings.marquee;
+
+        updateDisplayAudioButton(nextSettings);
+        updateKioskAudioButton(nextSettings);
+        closeDisplaySettingsModal();
+        toast('Pengaturan Display Video TV berhasil diterapkan!', 'success');
       };
     }
 

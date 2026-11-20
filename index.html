@@ -154,6 +154,13 @@
         <span class="material-symbols-outlined text-[20px] text-secondary-fixed group-hover:scale-110 transition-transform">analytics</span>
         <span class="flex-1 font-medium text-xs sm:text-sm">Dashboard &amp; Laporan</span>
       </button>
+
+      <!-- 7. Pengaturan Display TV -->
+      <button type="button" id="nav-btn-pengaturan-display" class="nav-side-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-primary-fixed-dim hover:text-white hover:bg-white/10 transition-all text-left group">
+        <span class="material-symbols-outlined text-[20px] text-secondary-fixed group-hover:scale-110 transition-transform">tune</span>
+        <span class="flex-1 font-medium text-xs sm:text-sm">Pengaturan Display TV</span>
+        <span class="text-[9px] px-1.5 py-0.5 rounded bg-secondary-container text-on-secondary-fixed font-bold">Menu</span>
+      </button>
     </div>
 
     <!-- Footer Sidebar -->
@@ -331,11 +338,15 @@
             </div>
           </div>
 
-          <!-- Quick Actions: Toggle Audio & Fullscreen TV -->
+          <!-- Quick Actions: Toggle Audio, Atur Layar & Fullscreen TV -->
           <div class="flex items-center gap-2 ml-auto">
-            <button type="button" id="btn-kiosk-toggle-audio" class="h-9 px-3 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold flex items-center gap-1.5 border border-white/15 transition-all" title="Nyalakan / Matikan Suara Panggilan">
+            <button type="button" id="btn-kiosk-toggle-audio" class="h-9 px-3 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold flex items-center gap-1.5 border border-white/15 transition-all" title="Nyalakan / Matikan Suara TV & Video">
               <span class="material-symbols-outlined text-[17px]" id="kiosk-audio-icon">volume_up</span>
               <span class="hidden sm:inline" id="kiosk-audio-label">Suara: Aktif</span>
+            </button>
+            <button type="button" id="btn-kiosk-settings" class="h-9 px-3 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold flex items-center gap-1.5 border border-white/15 transition-all" title="Pengaturan Display Video & Teks">
+              <span class="material-symbols-outlined text-[17px] text-secondary-fixed">tune</span>
+              <span class="hidden sm:inline">Atur Layar</span>
             </button>
             <button type="button" id="btn-kiosk-fullscreen" class="h-9 px-3.5 rounded-xl bg-secondary-container hover:bg-secondary-fixed-dim text-on-secondary-fixed text-xs font-bold flex items-center gap-1.5 shadow-md transition-all" title="Layar Penuh TV Monitor">
               <span class="material-symbols-outlined text-[17px]">fullscreen</span>
@@ -1426,16 +1437,30 @@
                 <p class="text-[11px] text-on-surface-variant">Teks ini akan terus berjalan halus di bawah video player pada halaman publik dan TV monitor.</p>
               </div>
 
-              <!-- Row 3: Audio Toggle & Save Button -->
-              <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-outline-variant/40">
+              <!-- Row 3: Audio & Sound Toggles -->
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-outline-variant/40">
                 <label class="inline-flex items-center gap-2 cursor-pointer select-none">
                   <input type="checkbox" id="admin-disp-audio-toggle" class="w-4 h-4 rounded text-primary-container focus:ring-primary-container border-outline-variant" checked />
-                  <span class="text-xs font-semibold text-on-surface">Aktifkan Suara Panggilan Antrean (Audio Bell Chime &amp; Suara Otomatis)</span>
+                  <span class="text-xs font-semibold text-on-surface">Suara Panggilan Antrean (Bel &amp; TTS)</span>
                 </label>
+                <label class="inline-flex items-center gap-2 cursor-pointer select-none">
+                  <input type="checkbox" id="admin-disp-videosound" class="w-4 h-4 rounded text-primary-container focus:ring-primary-container border-outline-variant" />
+                  <span class="text-xs font-semibold text-on-surface">Suara Video YouTube Aktif</span>
+                </label>
+                <label class="inline-flex items-center gap-2 cursor-pointer select-none">
+                  <input type="checkbox" id="admin-disp-automute" class="w-4 h-4 rounded text-primary-container focus:ring-primary-container border-outline-variant" checked />
+                  <span class="text-xs font-semibold text-on-surface">Auto-Mute Video saat Antrean Dipanggil</span>
+                </label>
+              </div>
 
-                <div class="flex items-center gap-2">
+              <!-- Row 4: Action Buttons -->
+              <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-outline-variant/20">
+                <button type="button" id="btn-admin-disp-open-modal" class="text-xs text-primary-container font-semibold hover:underline flex items-center gap-1">
+                  <span class="material-symbols-outlined text-[16px]">tune</span> Buka Jendela Pengaturan Cepat
+                </button>
+                <div class="flex items-center gap-2 ml-auto">
                   <button type="button" id="btn-admin-disp-test-audio" class="h-9 px-3 rounded-lg border border-outline-variant hover:bg-surface-container text-xs font-semibold flex items-center gap-1.5">
-                    <span class="material-symbols-outlined text-[16px] text-primary-container">volume_up</span> Test Bunyi Bel
+                    <span class="material-symbols-outlined text-[16px] text-primary-container">volume_up</span> Test Panggilan Suara
                   </button>
                   <button type="submit" id="btn-admin-disp-save" class="h-9 px-5 rounded-lg bg-primary-container hover:bg-primary text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all">
                     <span class="material-symbols-outlined text-[16px]">save</span> Simpan Pengaturan Layar
@@ -1960,10 +1985,16 @@
             <span id="display-clock-jumbo" class="text-lg sm:text-xl font-bold font-mono text-secondary-fixed leading-tight">--:--:-- WIB</span>
           </div>
 
-          <!-- Toggle Audio Bell Display -->
-          <button type="button" id="btn-display-toggle-audio" class="h-10 px-3 sm:px-3.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold flex items-center gap-1.5 border border-white/15 transition-all" title="Nyalakan / Matikan Suara TV Panggilan">
+          <!-- Toggle Audio Bell & Video Display -->
+          <button type="button" id="btn-display-toggle-audio" class="h-10 px-3 sm:px-3.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-semibold flex items-center gap-1.5 border border-white/15 transition-all" title="Nyalakan / Matikan Suara TV & Video">
             <span class="material-symbols-outlined text-[18px]" id="display-audio-icon">volume_up</span>
             <span class="hidden sm:inline" id="display-audio-label">Suara TV: Aktif</span>
+          </button>
+
+          <!-- Menu Pengaturan Display Video TV -->
+          <button type="button" id="btn-open-display-settings-top" class="h-10 px-3.5 sm:px-4 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-bold flex items-center gap-1.5 border border-white/20 shadow-sm transition-all" title="Buka Pengaturan Video & Teks Display TV">
+            <span class="material-symbols-outlined text-[18px] text-secondary-fixed">tune</span>
+            <span class="hidden sm:inline">Pengaturan Layar</span>
           </button>
 
           <!-- Layar Penuh TV (Fullscreen) -->
@@ -2317,6 +2348,147 @@
         <button type="button" id="btn-close-info" class="p-1 rounded-lg hover:bg-white/10"><span class="material-symbols-outlined">close</span></button>
       </div>
       <div id="modal-info-body" class="p-5 text-sm"></div>
+    </div>
+  </div>
+
+  <!-- MODAL PENGATURAN DISPLAY TV (YOUTUBE, RUNNING TEXT & SUARA) -->
+  <div id="modal-display-settings" class="hidden fixed inset-0 z-[96] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 no-print overflow-y-auto">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden border border-outline-variant/40 my-8">
+      <!-- Modal Header -->
+      <div class="bg-gradient-to-r from-primary-container via-primary to-primary-container text-white px-6 py-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center border border-secondary-fixed/40 shadow-inner">
+            <span class="material-symbols-outlined text-secondary-fixed text-[22px]">smart_display</span>
+          </div>
+          <div>
+            <h3 class="font-display font-bold text-base sm:text-lg">Pengaturan Display Video TV</h3>
+            <p class="text-xs text-secondary-fixed-dim">Kustomisasi siaran video YouTube, running text, dan kontrol suara TV ruang tunggu.</p>
+          </div>
+        </div>
+        <button type="button" id="btn-close-display-settings" class="p-1.5 rounded-lg text-white/70 hover:text-white hover:bg-white/10 transition-colors" title="Tutup">
+          <span class="material-symbols-outlined text-[20px]">close</span>
+        </button>
+      </div>
+
+      <!-- Modal Body / Form -->
+      <form id="form-modal-display" class="p-6 flex flex-col gap-4 text-xs">
+        <!-- 1. Video YouTube Section -->
+        <div class="flex flex-col gap-1.5">
+          <div class="flex items-center justify-between">
+            <label class="font-bold text-on-surface text-xs uppercase tracking-wider text-outline">
+              Video YouTube (URL Lengkap atau Video ID)
+            </label>
+            <button type="button" id="btn-modal-disp-preview" class="text-[11px] text-primary-container font-semibold hover:underline flex items-center gap-1">
+              <span class="material-symbols-outlined text-[14px]">open_in_new</span> Cek Video
+            </button>
+          </div>
+          <div class="relative">
+            <span class="material-symbols-outlined absolute left-3 top-2.5 text-outline text-[18px]">play_circle</span>
+            <input
+              type="text"
+              id="modal-disp-yt"
+              required
+              placeholder="Contoh: r72fG0644_k atau https://www.youtube.com/watch?v=..."
+              class="w-full h-10 pl-9 pr-3 rounded-xl border border-outline-variant bg-surface-container-lowest text-xs font-mono focus:border-primary-container focus:ring-1 focus:ring-primary-container"
+            />
+          </div>
+          <!-- Preset Video Cepat -->
+          <div class="flex flex-wrap items-center gap-1.5 pt-1">
+            <span class="text-[11px] text-outline font-medium mr-1">Preset Cepat:</span>
+            <button type="button" class="btn-modal-preset px-2.5 py-1 rounded-lg bg-surface-container hover:bg-surface-container-high text-[11px] font-semibold text-primary-container transition-colors" data-modal-yt="r72fG0644_k">
+              Profil MA-RI
+            </button>
+            <button type="button" class="btn-modal-preset px-2.5 py-1 rounded-lg bg-surface-container hover:bg-surface-container-high text-[11px] font-semibold text-primary-container transition-colors" data-modal-yt="cT66G4e8U3c">
+              Hymne MA-RI
+            </button>
+            <button type="button" class="btn-modal-preset px-2.5 py-1 rounded-lg bg-surface-container hover:bg-surface-container-high text-[11px] font-semibold text-primary-container transition-colors" data-modal-yt="_cW6_0-y7lI">
+              Mars MA-RI
+            </button>
+            <button type="button" class="btn-modal-preset px-2.5 py-1 rounded-lg bg-surface-container hover:bg-surface-container-high text-[11px] font-semibold text-primary-container transition-colors" data-modal-yt="hQ0k8jL9A0U">
+              Edukasi PTSP
+            </button>
+            <button type="button" class="btn-modal-preset px-2.5 py-1 rounded-lg bg-surface-container hover:bg-surface-container-high text-[11px] font-semibold text-primary-container transition-colors" data-modal-yt="dQw4w9WgXcQ">
+              Profil PTUN
+            </button>
+          </div>
+        </div>
+
+        <!-- 2. Running Text / Marquee Section -->
+        <div class="flex flex-col gap-1.5">
+          <div class="flex items-center justify-between">
+            <label class="font-bold text-on-surface text-xs uppercase tracking-wider text-outline">
+              Teks Running Text / Pengumuman Resmi
+            </label>
+            <button type="button" id="btn-modal-disp-reset-marq" class="text-[11px] text-primary-container font-semibold hover:underline">
+              Reset Teks Resmi
+            </button>
+          </div>
+          <textarea
+            id="modal-disp-marquee"
+            rows="3"
+            required
+            placeholder="Tuliskan pengumuman yang akan terus berjalan di bawah video..."
+            class="w-full p-3 rounded-xl border border-outline-variant bg-surface-container-lowest text-xs leading-relaxed focus:border-primary-container focus:ring-1 focus:ring-primary-container"
+          ></textarea>
+        </div>
+
+        <!-- 3. Kontrol Audio & Mute Otomatis Saat Pemanggilan Antrean -->
+        <div class="p-4 rounded-xl bg-surface-container-low border border-outline-variant/40 flex flex-col gap-3">
+          <span class="font-bold text-on-surface block text-xs uppercase tracking-wider text-primary-container">
+            Pengaturan Suara TV &amp; Panggilan Antrean
+          </span>
+
+          <!-- Saklar 1: Suara Video YouTube -->
+          <label class="flex items-start justify-between gap-3 cursor-pointer select-none">
+            <div>
+              <span class="font-semibold text-on-surface block">Suara Video YouTube Aktif (Unmute)</span>
+              <span class="text-[11px] text-on-surface-variant">Bunyikan audio video siaran YouTube melalui speaker TV.</span>
+            </div>
+            <input type="checkbox" id="modal-disp-videosound" class="w-4 h-4 mt-0.5 rounded text-primary-container focus:ring-primary-container border-outline-variant" />
+          </label>
+
+          <div class="border-t border-outline-variant/30"></div>
+
+          <!-- Saklar 2: Suara Panggilan Antrean -->
+          <label class="flex items-start justify-between gap-3 cursor-pointer select-none">
+            <div>
+              <span class="font-semibold text-on-surface block">Suara Panggilan Antrean Aktif</span>
+              <span class="text-[11px] text-on-surface-variant">Bunyikan bel nada (chime) dan suara otomatis saat nomor antrean dipanggil.</span>
+            </div>
+            <input type="checkbox" id="modal-disp-callsound" class="w-4 h-4 mt-0.5 rounded text-primary-container focus:ring-primary-container border-outline-variant" checked />
+          </label>
+
+          <div class="border-t border-outline-variant/30"></div>
+
+          <!-- Saklar 3: MUTE VIDEO OTOMATIS SAAT PEMANGGILAN ANTREAN -->
+          <label class="flex items-start justify-between gap-3 cursor-pointer select-none">
+            <div>
+              <span class="font-bold text-primary-container block flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[16px]">volume_off</span>
+                Mute Suara Video Saat Nomor Antrean Dipanggil
+              </span>
+              <span class="text-[11px] text-on-surface-variant">Suara video YouTube otomatis mati/hening saat panggilan antrean berbunyi, dan aktif kembali setelah panggilan selesai.</span>
+            </div>
+            <input type="checkbox" id="modal-disp-automute" class="w-4 h-4 mt-0.5 rounded text-primary-container focus:ring-primary-container border-outline-variant" checked />
+          </label>
+        </div>
+
+        <!-- 4. Footer Buttons -->
+        <div class="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-outline-variant/40">
+          <button type="button" id="btn-modal-disp-test-audio" class="h-10 px-3.5 rounded-xl border border-outline-variant hover:bg-surface-container text-xs font-semibold flex items-center gap-1.5 transition-colors">
+            <span class="material-symbols-outlined text-[16px] text-primary-container">hearing</span> Test Panggilan Suara
+          </button>
+          <div class="flex items-center gap-2 ml-auto">
+            <button type="button" id="btn-modal-disp-cancel" class="h-10 px-4 rounded-xl border border-outline-variant hover:bg-surface-container-low font-semibold text-on-surface transition-colors">
+              Batal
+            </button>
+            <button type="submit" class="h-10 px-5 rounded-xl bg-primary-container hover:bg-primary text-white font-bold flex items-center gap-1.5 shadow-md transition-all">
+              <span class="material-symbols-outlined text-[16px]">save</span>
+              <span>Simpan &amp; Terapkan</span>
+            </button>
+          </div>
+        </div>
+      </form>
     </div>
   </div>
 
