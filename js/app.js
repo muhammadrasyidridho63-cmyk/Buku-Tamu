@@ -945,15 +945,18 @@ window.AppUI = (function () {
     };
 
     document.getElementById('btn-tkt-cetak').onclick = openStruk;
-    document.getElementById('btn-tkt-wa').onclick = function () {
-      const dict = window.StrukEngine.dataTiketStruk(t, cfg);
-      const tpl = window.StrukPrinter.getTemplateByJenis(isPtsp ? 'PTSP' : 'SIDANG');
-      const lines = window.StrukEngine.parseLines((tpl && tpl.Isi_Direktif) || '', dict, 58);
-      const msg = window.StrukEngine.renderWaText(lines);
-      const hp = String(t.No_HP || '').replace(/[^\d]/g, '');
-      const waHp = hp.indexOf('0') === 0 ? '62' + hp.slice(1) : hp;
-      window.open(waHp ? 'https://wa.me/' + waHp + '?text=' + encodeURIComponent(msg) : 'https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
-    };
+    const btnWa = document.getElementById('btn-tkt-wa');
+    if (btnWa) {
+      btnWa.onclick = function () {
+        const dict = window.StrukEngine.dataTiketStruk(t, cfg);
+        const tpl = window.StrukPrinter.getTemplateByJenis(isPtsp ? 'PTSP' : 'SIDANG');
+        const lines = window.StrukEngine.parseLines((tpl && tpl.Isi_Direktif) || '', dict, 58);
+        const msg = window.StrukEngine.renderWaText(lines);
+        const hp = String(t.No_HP || '').replace(/[^\d]/g, '');
+        const waHp = hp.indexOf('0') === 0 ? '62' + hp.slice(1) : hp;
+        window.open(waHp ? 'https://wa.me/' + waHp + '?text=' + encodeURIComponent(msg) : 'https://wa.me/?text=' + encodeURIComponent(msg), '_blank');
+      };
+    }
     document.getElementById('btn-tkt-selesai').onclick = function () { goView('kiosk'); };
 
     // Countdown kembali ke Kiosk jika mode Kiosk publik
