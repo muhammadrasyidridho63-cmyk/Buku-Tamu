@@ -1698,13 +1698,27 @@ window.AppUI = (function () {
       }
     };
 
-    document.getElementById('btn-ke-pengaturan-lengkap').onclick = function () {
-      const tabBtn = document.querySelector('.atab-btn[data-atab="pengaturan"]');
-      if (tabBtn) {
-        tabBtn.click();
-        tabBtn.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    };
+    const btnKePengaturan = document.getElementById('btn-ke-pengaturan-lengkap');
+    if (btnKePengaturan) {
+      btnKePengaturan.onclick = function () {
+        const tabBtn = document.querySelector('.atab-btn[data-atab="pengaturan"]');
+        if (tabBtn) {
+          tabBtn.click();
+          tabBtn.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      };
+    }
+
+    const navBtnPengaturanLengkap = document.getElementById('nav-btn-pengaturan-lengkap');
+    if (navBtnPengaturanLengkap) {
+      navBtnPengaturanLengkap.onclick = function () {
+        closeSidebarMobile();
+        goView('dashboard');
+        openAdminTab('pengaturan');
+        const tabBtn = document.querySelector('.atab-btn[data-atab="pengaturan"]');
+        if (tabBtn) tabBtn.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      };
+    }
 
     // Simpan Pengaturan
     document.getElementById('form-pengaturan').onsubmit = async function (e) {
@@ -3731,6 +3745,18 @@ window.AppUI = (function () {
     const btnToggleAudio = document.getElementById('btn-display-toggle-audio');
     if (btnToggleAudio) {
       btnToggleAudio.onclick = toggleDisplayAudio;
+    }
+
+    // Tombol Pengaturan Lengkap dari Navigasi Petugas di Sidebar
+    const navBtnPengaturanLengkapModal = document.getElementById('nav-btn-pengaturan-lengkap');
+    if (navBtnPengaturanLengkapModal) {
+      navBtnPengaturanLengkapModal.onclick = function () {
+        closeSidebarMobile();
+        goView('dashboard');
+        openAdminTab('pengaturan');
+        const tabBtn = document.querySelector('.atab-btn[data-atab="pengaturan"]');
+        if (tabBtn) tabBtn.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      };
     }
 
     // Tombol Pengaturan Display TV dari Navigasi Petugas
