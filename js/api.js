@@ -199,6 +199,14 @@ window.ApiClient = (function () {
       return todayYmd().replace(/-/g, '');
     }
 
+    function isSameLocalDay(iso, targetYmd) {
+      if (!iso) return false;
+      const d = new Date(iso);
+      if (isNaN(d.getTime())) return String(iso).slice(0, 10) === targetYmd;
+      const y = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+      return y === targetYmd;
+    }
+
     function initDb() {
       const saved = localStorage.getItem(DEMO_DB_KEY);
       if (saved) {
@@ -450,8 +458,8 @@ window.ApiClient = (function () {
       }
 
       if (action === 'bootPublic') {
-        const ptspToday = db.ptsp.filter(function (r) { return r.Waktu_Masuk.slice(0, 10) === ymd; });
-        const sidangToday = db.sidang.filter(function (r) { return r.Waktu_Masuk.slice(0, 10) === ymd; });
+        const ptspToday = db.ptsp.filter(function (r) { return isSameLocalDay(r.Waktu_Masuk, ymd); });
+        const sidangToday = db.sidang.filter(function (r) { return isSameLocalDay(r.Waktu_Masuk, ymd); });
         const dilayani = ptspToday.filter(function (r) { return r.Status_Layanan === 'Dilayani'; });
         return {
           success: true,
@@ -479,7 +487,7 @@ window.ApiClient = (function () {
 
       if (action === 'daftarPtsp' || action === 'ptsp.daftarPetugas') {
         if (!data.nama || !data.instansi) return { success: false, message: 'Nama dan Instansi wajib diisi.' };
-        const todayCount = db.ptsp.filter(function (r) { return r.Waktu_Masuk.slice(0, 10) === ymd; }).length;
+        const todayCount = db.ptsp.filter(function (r) { return isSameLocalDay(r.Waktu_Masuk, ymd); }).length;
         const seq = todayCount + 1;
         const pad = String(seq).padStart(3, '0');
         const noAntrean = (db.pengaturan.PREFIX_PTSP || 'P-') + pad;
@@ -498,7 +506,7 @@ window.ApiClient = (function () {
           Status_Layanan: 'Menunggu',
           Link_Foto: data.fotoBase64 || '',
           Petugas_Input: action === 'ptsp.daftarPetugas' ? 'Petugas' : 'Mandiri',
-          Antrean_Depan: db.ptsp.filter(function (r) { return r.Waktu_Masuk.slice(0, 10) === ymd && r.Status_Layanan === 'Menunggu'; }).length,
+          Antrean_Depan: db.ptsp.filter(function (r) { return isSameLocalDay(r.Waktu_Masuk, ymd) && r.Status_Layanan === 'Menunggu'; }).length,
           Estimasi_Menit: 6,
           Sig: 'DEMO' + pad
         };
@@ -509,7 +517,7 @@ window.ApiClient = (function () {
 
       if (action === 'daftarSidang' || action === 'sidang.daftarPetugas') {
         if (!data.nama || !data.nomorPerkara || !data.agenda) return { success: false, message: 'Nama, Nomor Perkara, dan Agenda Sidang wajib diisi.' };
-        const todayCount = db.sidang.filter(function (r) { return r.Waktu_Masuk.slice(0, 10) === ymd; }).length;
+        const todayCount = db.sidang.filter(function (r) { return isSameLocalDay(r.Waktu_Masuk, ymd); }).length;
         const seq = todayCount + 1;
         const pad = String(seq).padStart(3, '0');
         const noAntrean = (db.pengaturan.PREFIX_SIDANG || 'S-') + pad;
@@ -611,8 +619,8 @@ window.ApiClient = (function () {
           success: true,
           data: {
             tanggal: ymd,
-            ptsp: db.ptsp.filter(function (r) { return r.Waktu_Masuk.slice(0, 10) === ymd; }).map(function (r) { return Object.assign({ jalur: 'PTSP' }, r); }),
-            sidang: db.sidang.filter(function (r) { return r.Waktu_Masuk.slice(0, 10) === ymd; }).map(function (r) { return Object.assign({ jalur: 'SIDANG' }, r); }),
+            ptsp: db.ptsp.filter(function (r) { return isSameLocalDay(r.Waktu_Masuk, ymd); }).map(function (r) { return Object.assign({ jalur: 'PTSP' }, r); }),
+            sidang: db.sidang.filter(function (r) { return isSameLocalDay(r.Waktu_Masuk, ymd); }).map(function (r) { return Object.assign({ jalur: 'SIDANG' }, r); }),
             jadwal: db.jadwal.filter(function (j) { return j.Tanggal === ymd && j.Status_Jadwal !== 'Dihapus'; }),
             serverWib: new Date().toISOString()
           }

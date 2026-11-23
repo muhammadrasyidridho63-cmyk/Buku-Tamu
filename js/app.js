@@ -412,6 +412,7 @@ window.AppUI = (function () {
   // BOOTSTRAP & LIVE CLOCK
   // ==========================================================================
   function startClock() {
+    let lastActiveDate = todayYmd();
     const tick = function () {
       const d = new Date();
       const jam = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0') + ':' + String(d.getSeconds()).padStart(2, '0');
@@ -427,6 +428,20 @@ window.AppUI = (function () {
 
       const dDate = document.getElementById('display-date-label');
       if (dDate) dDate.textContent = HARI[d.getDay()] + ', ' + tgl;
+
+      // Reset otomatis antrean kembali ke nol saat berganti hari (00:00)
+      const nowYmd = todayYmd();
+      if (nowYmd !== lastActiveDate) {
+        lastActiveDate = nowYmd;
+        try {
+          localStorage.removeItem('ETAMU_LIVE_QUEUE');
+          localStorage.removeItem('ETAMU_QUEUE_HISTORY');
+        } catch (e) {}
+        state.pantau = null;
+        renderDisplayQueue(false);
+        loadBootPublic(false);
+        if (state.view === 'pantau') loadPantauData(false);
+      }
     };
     tick();
     setInterval(tick, 1000);
@@ -476,7 +491,7 @@ window.AppUI = (function () {
   async function loadBootPublic(useCacheFirst) {
     if (useCacheFirst) {
       const cached = window.ApiClient.swrGet('bootPublic', 3600000);
-      if (cached) applyBootData(cached);
+      if (cached && cached.ringkasan && cached.ringkasan.tanggal === todayYmd()) applyBootData(cached);
     }
     const res = await window.ApiClient.call('bootPublic', {}, { swrKey: 'bootPublic' });
     if (res && res.success && res.data) {
@@ -1003,7 +1018,7 @@ window.AppUI = (function () {
     }
 
     const cached = window.ApiClient.swrGet('pantau_boot', 120000);
-    if (cached && !state.pantau) {
+    if (cached && cached.tanggal === todayYmd() && !state.pantau) {
       state.pantau = cached;
       renderPantau();
     } else if (showSkeletonIfEmpty && !state.pantau) {
@@ -3716,46 +3731,77 @@ window.AppUI = (function () {
   }
 
   function getLiveQueueState() {
+    const today = todayYmd();
     try {
       const raw = localStorage.getItem('ETAMU_LIVE_QUEUE');
-      if (raw) return JSON.parse(raw);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && parsed.tanggal === today) {
+          return parsed;
+        }
+        // Data antrean dari hari sebelumnya -> reset otomatis ke nol
+        localStorage.removeItem('ETAMU_LIVE_QUEUE');
+        localStorage.removeItem('ETAMU_QUEUE_HISTORY');
+      }
     } catch (e) {}
-    const ring = (state.boot && state.boot.ringkasan) ? state.boot.ringkasan : {};
+
+    const ring = (state.boot && state.boot.ringkasan && state.boot.ringkasan.tanggal === today)
+      ? state.boot.ringkasan
+      : {};
+    if (ring.ptspTotal > 0 && ring.ptspBerjalan && ring.ptspBerjalan !== 'P-000') {
+      return {
+        tanggal: today,
+        nomor: ring.ptspBerjalan,
+        loket: 'LOKET PELAYANAN PTSP',
+        nama: 'Pengunjung PTSP',
+        jalur: 'PTSP',
+        status: 'Sedang Dilayani',
+        waktu: 'Hari Ini'
+      };
+    }
     return {
-      nomor: ring.ptspBerjalan || 'P-001',
-      loket: 'LOKET 1 - KEPANITERAAN PERKARA',
-      nama: 'Pengunjung PTSP',
+      tanggal: today,
+      nomor: 'P-000',
+      loket: 'BELUM ADA ANTREAN',
+      nama: 'Menunggu Panggilan Hari Ini',
       jalur: 'PTSP',
-      status: 'Sedang Dilayani',
-      waktu: 'Pukul 08.30 WIB'
+      status: 'Menunggu Antrean',
+      waktu: 'Hari Ini'
     };
   }
 
   function getQueueHistory() {
+    const today = todayYmd();
     try {
       const raw = localStorage.getItem('ETAMU_QUEUE_HISTORY');
       if (raw) {
         const arr = JSON.parse(raw);
-        if (Array.isArray(arr) && arr.length) return arr;
+        if (Array.isArray(arr)) {
+          const validToday = arr.filter(function (item) { return item && item.tanggal === today; });
+          if (validToday.length !== arr.length) {
+            if (validToday.length) localStorage.setItem('ETAMU_QUEUE_HISTORY', JSON.stringify(validToday));
+            else localStorage.removeItem('ETAMU_QUEUE_HISTORY');
+          }
+          return validToday;
+        }
       }
     } catch (e) {}
-    return [
-      { nomor: 'P-001', loket: 'Loket 1 - PTSP', waktu: '08:30 WIB', status: 'Dilayani' },
-      { nomor: 'S-001', loket: 'Ruang Sidang Utama', waktu: '08:15 WIB', status: 'Masuk Sidang' },
-      { nomor: 'P-000', loket: 'Loket 2 - Informasi', waktu: '08:00 WIB', status: 'Selesai' }
-    ];
+    return [];
   }
 
   function updateLiveDisplayQueue(data, triggerSpeech) {
+    const today = todayYmd();
     const current = getLiveQueueState();
     const d = new Date();
     const jam = String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
     data.waktu = 'Pukul ' + jam + ' WIB';
+    data.tanggal = today;
 
-    // Masukkan antrean sebelumnya ke riwayat (maksimal 4 riwayat)
-    if (current && current.nomor && current.nomor !== data.nomor) {
+    // Masukkan antrean sebelumnya ke riwayat hari ini (maksimal 4 riwayat)
+    if (current && current.nomor && current.nomor !== 'P-000' && current.nomor !== 'S-000' && current.nomor !== data.nomor) {
       const hist = getQueueHistory().filter(function (h) { return h.nomor !== current.nomor; });
       hist.unshift({
+        tanggal: today,
         nomor: current.nomor,
         loket: current.loket,
         waktu: current.waktu ? current.waktu.replace('Pukul ', '') : (jam + ' WIB'),
@@ -3775,12 +3821,15 @@ window.AppUI = (function () {
   }
 
   function getNextQueueNumbers() {
-    const ring = (state.boot && state.boot.ringkasan) ? state.boot.ringkasan : {};
+    const today = todayYmd();
+    const ring = (state.boot && state.boot.ringkasan && state.boot.ringkasan.tanggal === today)
+      ? state.boot.ringkasan
+      : {};
     let nextPtsp = '';
     let nextSidang = '';
 
-    // 1. Cek dari state pantau (jika data live tersedia dari backend)
-    if (state.pantau) {
+    // 1. Cek dari state pantau hari ini (jika data live tersedia dari backend)
+    if (state.pantau && (!state.pantau.tanggal || state.pantau.tanggal === today)) {
       const ptspWait = (state.pantau.ptsp || []).filter(function (r) {
         return r.Status_Layanan === 'Menunggu';
       });
@@ -3796,29 +3845,37 @@ window.AppUI = (function () {
       }
     }
 
-    // 2. Fallback cerdas berdasarkan live queue saat ini
+    // 2. Fallback cerdas berdasarkan data hari ini (reset ke P-000 / S-000 jika belum ada antrean hari ini)
     const live = getLiveQueueState();
     if (!nextPtsp) {
       if (live && live.nomor && live.nomor.startsWith('P-')) {
         const num = parseInt(live.nomor.replace('P-', ''), 10);
-        nextPtsp = (!isNaN(num) && num >= 1) ? ('P-' + String(num + 1).padStart(3, '0')) : (ring.ptspBerikutnya || 'P-002');
+        if (!isNaN(num) && num >= 1) {
+          nextPtsp = 'P-' + String(num + 1).padStart(3, '0');
+        } else {
+          nextPtsp = (ring.ptspTotal > 0 && ring.ptspBerikutnya) ? ring.ptspBerikutnya : 'P-000';
+        }
       } else {
-        nextPtsp = ring.ptspBerikutnya || 'P-002';
+        nextPtsp = (ring.ptspTotal > 0 && ring.ptspBerikutnya) ? ring.ptspBerikutnya : 'P-000';
       }
     }
 
     if (!nextSidang) {
       if (live && live.nomor && live.nomor.startsWith('S-')) {
         const num = parseInt(live.nomor.replace('S-', ''), 10);
-        nextSidang = (!isNaN(num) && num >= 1) ? ('S-' + String(num + 1).padStart(3, '0')) : (ring.sidangBerikutnya || 'S-002');
+        if (!isNaN(num) && num >= 1) {
+          nextSidang = 'S-' + String(num + 1).padStart(3, '0');
+        } else {
+          nextSidang = (ring.sidangTotal > 0 && ring.sidangBerikutnya) ? ring.sidangBerikutnya : 'S-000';
+        }
       } else {
-        nextSidang = ring.sidangBerikutnya || 'S-001';
+        nextSidang = (ring.sidangTotal > 0 && ring.sidangBerikutnya) ? ring.sidangBerikutnya : 'S-000';
       }
     }
 
     return {
-      nextPtsp: nextPtsp || 'P-002',
-      nextSidang: nextSidang || 'S-001'
+      nextPtsp: nextPtsp || 'P-000',
+      nextSidang: nextSidang || 'S-000'
     };
   }
 
@@ -3845,10 +3902,10 @@ window.AppUI = (function () {
     ];
 
     targets.forEach(function (t) {
-      if (t.nomor) t.nomor.textContent = data.nomor || 'P-001';
-      if (t.loket) t.loket.textContent = data.loket || 'LOKET 1 - KEPANITERAAN PERKARA';
-      if (t.tamu) t.tamu.textContent = data.nama || 'Pengunjung Pengadilan';
-      if (t.badge) t.badge.textContent = data.status ? data.status.toUpperCase() : 'SEDANG DIPANGGIL';
+      if (t.nomor) t.nomor.textContent = data.nomor || 'P-000';
+      if (t.loket) t.loket.textContent = data.loket || 'BELUM ADA ANTREAN';
+      if (t.tamu) t.tamu.textContent = data.nama || 'Menunggu Panggilan Hari Ini';
+      if (t.badge) t.badge.textContent = data.status ? data.status.toUpperCase() : 'MENUNGGU ANTREAN';
 
       // Highlight / Pulse Animasi Halus saat nomor antrean berganti
       if (isNewCall) {
