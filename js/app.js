@@ -1839,9 +1839,11 @@ window.AppUI = (function () {
         }
 
         try {
+          const emailInp = document.getElementById('usr-email');
           const res = await window.ApiClient.call('users.simpan', {
             Username: document.getElementById('usr-username').value,
             Nama_Petugas: document.getElementById('usr-nama').value,
+            Email: emailInp ? emailInp.value : '',
             Role: document.getElementById('usr-role').value,
             pinBaru: document.getElementById('usr-pin').value,
             Status_Aktif: 'Aktif'
@@ -2900,6 +2902,7 @@ window.AppUI = (function () {
     if (!u) return;
     const inpUser = document.getElementById('usr-username');
     const inpNama = document.getElementById('usr-nama');
+    const inpEmail = document.getElementById('usr-email');
     const selRole = document.getElementById('usr-role');
     const inpPin = document.getElementById('usr-pin');
     const lblTitle = document.getElementById('lbl-form-user-title');
@@ -2913,6 +2916,9 @@ window.AppUI = (function () {
     if (inpNama) {
       inpNama.value = u.Nama_Petugas || '';
       inpNama.focus();
+    }
+    if (inpEmail) {
+      inpEmail.value = u.Email || '';
     }
     if (selRole) {
       selRole.value = u.Role || 'PTSP';
@@ -2977,9 +2983,13 @@ window.AppUI = (function () {
           delBtnHtml = '<button type="button" data-del-usr="' + esc(u.Username) + '" data-nama="' + esc(u.Nama_Petugas) + '" class="px-2.5 py-1 rounded-lg border border-red-200 bg-red-50 hover:bg-red-100 text-red-700 text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer" title="Hapus Akun Pengguna"><span class="material-symbols-outlined text-[14px]">delete</span><span>Hapus</span></button>';
         }
 
+        const emailLine = u.Email
+          ? '<div class="text-[11px] text-outline font-normal mt-0.5 flex items-center gap-1"><span class="material-symbols-outlined text-[13px] text-primary-container">mail</span><span>' + esc(u.Email) + '</span></div>'
+          : '';
+
         return '<tr class="hover:bg-surface-container-low/40 transition-colors">' +
           '<td class="py-3 px-4 font-mono font-bold text-xs text-primary-container">@' + esc(u.Username) + '</td>' +
-          '<td class="py-3 px-4 font-semibold text-xs text-on-surface">' + esc(u.Nama_Petugas) + '</td>' +
+          '<td class="py-3 px-4 font-semibold text-xs text-on-surface">' + esc(u.Nama_Petugas) + emailLine + '</td>' +
           '<td class="py-3 px-4"><span class="px-2.5 py-1 rounded-lg text-[11px] font-bold ' + roleBadgeStyle + '">' + esc(roleLabel) + '</span></td>' +
           '<td class="py-3 px-4">' + statusBadge + '</td>' +
           '<td class="py-3 px-4 text-right"><div class="flex items-center justify-end gap-1.5">' +
@@ -4153,11 +4163,101 @@ window.AppUI = (function () {
   }
 
   // ==========================================================================
-  // LOGIN / LOGOUT, BANTUAN & VERIFIKASI QR
+  // LOGIN / LOGOUT (PIN & GOOGLE OAUTH 2.0), BANTUAN & VERIFIKASI QR
   // ==========================================================================
+  let googleOAuthInitialized = false;
+
+  async function handleGoogleCredentialResponse(response) {
+    const errEl = document.getElementById('login-err');
+    if (errEl) errEl.classList.add('hidden');
+    if (!response || !response.credential) {
+      if (errEl) {
+        errEl.textContent = 'Gagal menerima kredensial dari Google.';
+        errEl.classList.remove('hidden');
+      }
+      return;
+    }
+
+    toast('Memverifikasi akun Google...', 'info');
+    try {
+      const res = await window.ApiClient.call('auth.loginGoogle', { idToken: response.credential });
+      if (!res || !res.success || !res.data) {
+        const msg = (res && res.message) || 'Login Google gagal. Pastikan email Anda sudah terdaftar oleh Admin.';
+        if (errEl) {
+          errEl.textContent = msg;
+          errEl.classList.remove('hidden');
+        }
+        toast(msg, 'error');
+        return;
+      }
+
+      window.ApiClient.setSession(res.data.token, res.data.user);
+      updateAuthChip();
+      const redirect = state.pendingRedirectView;
+      closeLoginModal();
+      const fLogin = document.getElementById('form-login');
+      if (fLogin) fLogin.reset();
+      toast('Selamat datang, ' + (res.data.user.nama || res.data.user.username) + '!', 'success');
+
+      if (redirect) goView(redirect);
+      else if (res.data.user.role === 'Admin') goView('dashboard');
+      else goView('pantau');
+    } catch (err) {
+      const msg = 'Gagal verifikasi login Google: ' + (err.message || err);
+      if (errEl) {
+        errEl.textContent = msg;
+        errEl.classList.remove('hidden');
+      }
+      toast(msg, 'error');
+    }
+  }
+
+  function initGoogleOAuthButton(attempt) {
+    const clientId = window.APP_CONFIG && window.APP_CONFIG.GOOGLE_CLIENT_ID;
+    const wrap = document.getElementById('google-signin-wrap');
+    const container = document.getElementById('btn-google-signin-container');
+    if (!clientId || !container) {
+      if (wrap) wrap.classList.add('hidden');
+      return;
+    }
+    if (wrap) wrap.classList.remove('hidden');
+
+    if (!(window.google && window.google.accounts && window.google.accounts.id)) {
+      const tries = attempt || 0;
+      if (tries < 12) {
+        setTimeout(function () { initGoogleOAuthButton(tries + 1); }, 400);
+      }
+      return;
+    }
+
+    if (!googleOAuthInitialized) {
+      window.google.accounts.id.initialize({
+        client_id: clientId,
+        callback: handleGoogleCredentialResponse,
+        auto_select: false,
+        cancel_on_tap_outside: true
+      });
+      googleOAuthInitialized = true;
+    }
+
+    container.innerHTML = '';
+    const targetWidth = Math.min(340, Math.max(240, container.offsetWidth || 300));
+    window.google.accounts.id.renderButton(container, {
+      type: 'standard',
+      theme: 'outline',
+      size: 'large',
+      text: 'signin_with',
+      shape: 'rectangular',
+      logo_alignment: 'center',
+      locale: 'id',
+      width: targetWidth
+    });
+  }
+
   function openLoginModal() {
     document.getElementById('login-err').classList.add('hidden');
     document.getElementById('modal-login').classList.remove('hidden');
+    initGoogleOAuthButton(0);
     document.getElementById('login-username').focus();
   }
 

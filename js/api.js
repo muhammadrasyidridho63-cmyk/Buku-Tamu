@@ -571,6 +571,38 @@ window.ApiClient = (function () {
         };
       }
 
+      if (action === 'auth.loginGoogle') {
+        const idToken = String(data.idToken || '').trim();
+        if (!idToken) return { success: false, message: 'Token Google tidak valid.' };
+        let email = '';
+        try {
+          const parts = idToken.split('.');
+          if (parts.length >= 2) {
+            const b64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+            const payload = JSON.parse(atob(b64));
+            email = String(payload.email || '').trim().toLowerCase();
+          }
+        } catch (e) {}
+        if (!email) return { success: false, message: 'Gagal membaca email dari token Google.' };
+        const found = db.users.find(function (x) {
+          return x.Status_Aktif === 'Aktif' && (
+            String(x.Email || '').trim().toLowerCase() === email ||
+            String(x.Username || '').trim().toLowerCase() === email
+          );
+        });
+        if (!found) {
+          return { success: false, message: 'Email ' + email + ' belum terdaftar pada akun Admin / Petugas. Silakan minta Administrator mendaftarkan email ini di Manajemen Pengguna.' };
+        }
+        return {
+          success: true,
+          data: {
+            token: 'DEMO_TOKEN_' + found.Username,
+            user: { username: found.Username, role: found.Role, nama: found.Nama_Petugas, email: email, darurat: false }
+          },
+          message: 'Login Google berhasil.'
+        };
+      }
+
       if (action === 'auth.logout') return { success: true, data: null };
       if (action === 'auth.gantiSandi') {
         if (!data.pinLama || !data.pinBaru || String(data.pinBaru).length < 4) {
@@ -732,6 +764,7 @@ window.ApiClient = (function () {
         const obj = {
           Username: u,
           Nama_Petugas: String(data.Nama_Petugas).trim(),
+          Email: String(data.Email || '').trim().toLowerCase(),
           Role: data.Role || 'PTSP',
           Status_Aktif: data.Status_Aktif || 'Aktif'
         };

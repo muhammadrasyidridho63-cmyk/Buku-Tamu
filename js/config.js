@@ -5,6 +5,8 @@
  */
 window.APP_CONFIG = {
   GAS_URL: 'https://script.google.com/macros/s/AKfycbyVppk0J1cLbVfVib39hJm1qnGqqqWPqd2Smd2iwNQ_3oQDXUC1D-7wK4fKUah40Vjo/exec',
+  // Google OAuth 2.0 Client ID (Google Identity Services - Admin & Petugas)
+  GOOGLE_CLIENT_ID: '869904597283-92flulpt9phhqqn8clgm14ib8b97rfu3.apps.googleusercontent.com',
   // Video YouTube default untuk Kiosk & Display TV di seluruh perangkat & HP (Alur Perkara PTUN Palembang)
   DEFAULT_YT_ID: '8dup11sZtq8',
   // Teks pengumuman berjalan bawaan (Marquee / Running Text)
