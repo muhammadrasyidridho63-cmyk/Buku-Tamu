@@ -1467,11 +1467,17 @@ window.AppUI = (function () {
 
     try {
       const jalur = jalurEl ? jalurEl.value : 'ALL';
+      const swrKey = 'admin_dash_' + startEl.value + '_' + endEl.value + '_' + jalur;
+      const cachedDash = !showFeedback ? window.ApiClient.swrGet(swrKey, 180000) : null;
+      if (cachedDash) {
+        state.dash = cachedDash;
+        renderDashboard();
+      }
       const res = await window.ApiClient.call('admin.dashboard', {
         start: startEl.value,
         end: endEl.value,
         jalur: jalur
-      });
+      }, { swrKey: swrKey });
 
       if (res && res.success && res.data) {
         state.dash = res.data;
@@ -1480,7 +1486,7 @@ window.AppUI = (function () {
           const jml = (res.data.riwayat && res.data.riwayat.length) || 0;
           toast('Filter berhasil diterapkan (' + jml + ' data kunjungan ditemukan).', 'success');
         }
-      } else {
+      } else if (!cachedDash) {
         toast((res && res.message) || 'Gagal memuat data dashboard.', 'error');
       }
     } catch (err) {
@@ -1517,48 +1523,67 @@ window.AppUI = (function () {
     if (typeof window.Chart !== 'function' || !state.dash) return;
     const tren = state.dash.trenHarian || [];
     const dist = state.dash.loketDist || {};
+    const trenLabels = tren.map(function (t) { return t.tanggal; });
+    const trenPtsp = tren.map(function (t) { return t.ptsp; });
+    const trenSidang = tren.map(function (t) { return t.sidang; });
 
-    if (state.charts.tren) state.charts.tren.destroy();
-    const ctxTren = document.getElementById('chart-tren').getContext('2d');
-    state.charts.tren = new window.Chart(ctxTren, {
-      type: 'bar',
-      data: {
-        labels: tren.map(function (t) { return t.tanggal; }),
-        datasets: [
-          { label: 'Tamu PTSP', data: tren.map(function (t) { return t.ptsp; }), backgroundColor: '#1b4332', borderRadius: 6 },
-          { label: 'Tamu Sidang', data: tren.map(function (t) { return t.sidang; }), backgroundColor: '#ffc641', borderRadius: 6 }
-        ]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { position: 'top' } },
-        scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
-      }
-    });
+    // GAS Scale Turbo: update Chart in-place tanpa destroy() untuk mencegah flicker & beban GC
+    if (state.charts.tren) {
+      state.charts.tren.data.labels = trenLabels;
+      state.charts.tren.data.datasets[0].data = trenPtsp;
+      state.charts.tren.data.datasets[1].data = trenSidang;
+      state.charts.tren.update('none');
+    } else {
+      const ctxTren = document.getElementById('chart-tren').getContext('2d');
+      state.charts.tren = new window.Chart(ctxTren, {
+        type: 'bar',
+        data: {
+          labels: trenLabels,
+          datasets: [
+            { label: 'Tamu PTSP', data: trenPtsp, backgroundColor: '#1b4332', borderRadius: 6 },
+            { label: 'Tamu Sidang', data: trenSidang, backgroundColor: '#ffc641', borderRadius: 6 }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: 'top' } },
+          scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+        }
+      });
+    }
 
-    if (state.charts.dist) state.charts.dist.destroy();
-    const ctxDist = document.getElementById('chart-distribusi').getContext('2d');
     const keys = Object.keys(dist);
+    const distVals = keys.map(function (k) { return dist[k]; });
     const palette = ['#012d1d', '#1b4332', '#d4a017', '#a5d0b9', '#0039b5', '#795900', '#3f6653', '#64748b'];
-    state.charts.dist = new window.Chart(ctxDist, {
-      type: 'doughnut',
-      data: {
-        labels: keys,
-        datasets: [{
-          data: keys.map(function (k) { return dist[k]; }),
-          backgroundColor: keys.map(function (_, i) { return palette[i % palette.length]; }),
-          borderWidth: 2,
-          borderColor: '#ffffff'
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        cutout: '62%',
-        plugins: { legend: { position: 'bottom' } }
-      }
-    });
+    const distColors = keys.map(function (_, i) { return palette[i % palette.length]; });
+
+    if (state.charts.dist) {
+      state.charts.dist.data.labels = keys;
+      state.charts.dist.data.datasets[0].data = distVals;
+      state.charts.dist.data.datasets[0].backgroundColor = distColors;
+      state.charts.dist.update('none');
+    } else {
+      const ctxDist = document.getElementById('chart-distribusi').getContext('2d');
+      state.charts.dist = new window.Chart(ctxDist, {
+        type: 'doughnut',
+        data: {
+          labels: keys,
+          datasets: [{
+            data: distVals,
+            backgroundColor: distColors,
+            borderWidth: 2,
+            borderColor: '#ffffff'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '62%',
+          plugins: { legend: { position: 'bottom' } }
+        }
+      });
+    }
   }
 
   function renderRiwayatTable() {
@@ -3114,7 +3139,7 @@ window.AppUI = (function () {
     }
   }
 
-  async function loadWaStatus() {
+  async function loadWaStatus(useBatch) {
     const badge = document.getElementById('wa-status-badge');
     const deviceEl = document.getElementById('wa-device-num');
     const quotaEl = document.getElementById('wa-quota-info');
@@ -3126,7 +3151,9 @@ window.AppUI = (function () {
     badge.textContent = 'Memeriksa...';
     if (diagEl) diagEl.textContent = 'Menghubungi Fonnte Gateway...';
 
-    const res = await window.ApiClient.call('wa.cekStatus', {});
+    const res = useBatch
+      ? await window.ApiClient.callBatched('wa.cekStatus', {})
+      : await window.ApiClient.call('wa.cekStatus', {});
     badge.classList.remove('animate-pulse');
     if (res && res.success && res.data) {
       const d = res.data;
@@ -3164,17 +3191,27 @@ window.AppUI = (function () {
 
   // ==========================================================================
   // MODUL GAS-NOTIFIKASI-WA-CRM (WhatsApp Gateway, CRM Kontak & Blast WA)
+  // GAS Scale Turbo: 3 request read digabung jadi 1x POST batch via Promise.all
   // ==========================================================================
   async function loadNotifCrmTab() {
-    await loadWaStatus();
-    await loadNotifConfig();
-    loadCrmKontakList();
+    await Promise.all([
+      loadWaStatus(true),
+      loadNotifConfig(true),
+      loadCrmKontakList(true)
+    ]);
   }
 
-  async function loadNotifConfig() {
-    const res = await window.ApiClient.call('notif.config.get', {});
+  async function loadNotifConfig(useBatch) {
+    const cached = window.ApiClient.swrGet('notif_config', 300000);
+    if (cached) applyNotifConfigToForm(cached);
+    const res = useBatch
+      ? await window.ApiClient.callBatched('notif.config.get', {}, { swrKey: 'notif_config' })
+      : await window.ApiClient.call('notif.config.get', {}, { swrKey: 'notif_config' });
     if (!res || !res.success || !res.data) return;
-    const d = res.data;
+    applyNotifConfigToForm(res.data);
+  }
+
+  function applyNotifConfigToForm(d) {
     const chkGlobal = document.getElementById('notif-global-toggle');
     if (chkGlobal) chkGlobal.checked = d.waAktif !== false;
 
@@ -3226,16 +3263,22 @@ window.AppUI = (function () {
     }
   }
 
-  async function loadCrmKontakList() {
+  async function loadCrmKontakList(useBatch) {
     const tbody = document.getElementById('crm-kontak-tbody');
-    if (tbody && (!state.crmKontakList || !state.crmKontakList.length)) {
+    const cached = window.ApiClient.swrGet('crm_kontak', 300000);
+    if (cached && Array.isArray(cached)) {
+      state.crmKontakList = cached;
+      renderCrmKontakTable();
+    } else if (tbody && (!state.crmKontakList || !state.crmKontakList.length)) {
       tbody.innerHTML = '<tr><td colspan="8" class="p-6 text-center text-on-surface-variant">Memuat data kontak...</td></tr>';
     }
-    const res = await window.ApiClient.call('crm.list', {});
+    const res = useBatch
+      ? await window.ApiClient.callBatched('crm.list', {}, { swrKey: 'crm_kontak' })
+      : await window.ApiClient.call('crm.list', {}, { swrKey: 'crm_kontak' });
     if (res && res.success && Array.isArray(res.data)) {
       state.crmKontakList = res.data;
       renderCrmKontakTable();
-    } else {
+    } else if (!cached) {
       if (tbody) {
         tbody.innerHTML = '<tr><td colspan="8" class="p-6 text-center text-rose-600">Gagal memuat kontak: ' + esc((res && res.message) || 'Koneksi error') + '</td></tr>';
       }
@@ -4694,14 +4737,25 @@ window.AppUI = (function () {
       window.addEventListener(ev, function () { state.lastActivity = Date.now(); }, { passive: true });
     });
 
+    const refreshCurrentView = async function () {
+      if (document.visibilityState !== 'visible' || !navigator.onLine) return;
+      if (state.view === 'kiosk' || state.view === 'display') await loadBootPublic(false);
+      else if (state.view === 'pantau') await loadPantauData(false);
+    };
+
+    // Segarkan segera saat user kembali membuka tab setelah lama ditinggalkan
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'visible') {
+        state.lastActivity = Date.now();
+        refreshCurrentView();
+      }
+    });
+
     const schedule = function () {
       const idleMs = Date.now() - state.lastActivity;
       const delay = idleMs > 60000 ? 60000 : 15000;
       state.pollTimer = setTimeout(async function () {
-        if (document.visibilityState === 'visible') {
-          if (state.view === 'kiosk' || state.view === 'display') await loadBootPublic(false);
-          else if (state.view === 'pantau') await loadPantauData(false);
-        }
+        await refreshCurrentView();
         schedule();
       }, delay);
     };

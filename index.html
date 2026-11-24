@@ -4,7 +4,13 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SI-BUKU TAMU (E-Tamu PTUN) — Sistem Buku Tamu Digital Terpadu</title>
-  <link rel="icon" type="image/svg+xml" href="img/logo-mahkamah-agung.svg" />
+  <link rel="manifest" href="./manifest.json" />
+  <meta name="theme-color" content="#012d1d" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="E-Tamu PTUN" />
+  <link rel="apple-touch-icon" href="./icon-192.png" />
+  <link rel="icon" type="image/svg+xml" href="./img/logo-mahkamah-agung.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
@@ -63,15 +69,16 @@
       }
     };
   </script>
-  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="./css/style.css" />
   <script defer src="https://cdn.jsdelivr.net/npm/qrcode-generator@2.0.4/dist/qrcode.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
-  <script defer src="js/config.js"></script>
-  <script defer src="js/api.js"></script>
-  <script defer src="js/struk-engine.js"></script>
-  <script defer src="js/struk-printer.js"></script>
-  <script defer src="js/struk-ui.js"></script>
-  <script defer src="js/app.js"></script>
+  <script defer src="./js/config.js"></script>
+  <script defer src="./js/api.js"></script>
+  <script defer src="./js/pwa.js"></script>
+  <script defer src="./js/struk-engine.js"></script>
+  <script defer src="./js/struk-printer.js"></script>
+  <script defer src="./js/struk-ui.js"></script>
+  <script defer src="./js/app.js"></script>
 </head>
 <body class="bg-surface font-sans text-on-surface antialiased selection:bg-secondary-fixed selection:text-on-secondary-fixed min-h-screen flex flex-col">
 
@@ -200,13 +207,17 @@
     </div>
 
     <!-- Footer Sidebar -->
-    <div class="p-3 border-t border-white/10 bg-primary/70 shrink-0">
+    <div class="p-3 border-t border-white/10 bg-primary/70 shrink-0 flex flex-col gap-2">
+      <button type="button" id="btn-pwa-install-sidebar" class="hidden w-full py-2 px-3 rounded-xl bg-secondary-container hover:bg-secondary-fixed-dim text-on-secondary-fixed text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition-colors">
+        <span class="material-symbols-outlined text-[16px]">install_mobile</span>
+        <span>Pasang Aplikasi (PWA)</span>
+      </button>
       <div class="p-2.5 rounded-xl bg-white/5 border border-white/10 flex items-center justify-between text-xs">
         <div class="flex items-center gap-2">
           <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
           <span class="text-[11px] text-primary-fixed-dim font-medium">Sistem Online</span>
         </div>
-        <span class="text-[10px] text-secondary-fixed font-mono font-bold">v2.0 Turbo</span>
+        <span class="text-[10px] text-secondary-fixed font-mono font-bold">v2.1 Turbo PWA</span>
       </div>
     </div>
   </aside>
@@ -248,8 +259,12 @@
         <button type="button" data-nav="display" class="nav-pill px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1"><span class="material-symbols-outlined text-[15px]">desktop_windows</span>Display TV</button>
       </nav>
 
-      <!-- 3. Right: Live Sync + User Profile Session -->
+      <!-- 3. Right: PWA Install + Live Sync + User Profile Session -->
       <div class="flex items-center gap-3 shrink-0">
+        <button type="button" id="btn-pwa-install" class="hidden items-center gap-1.5 px-3 py-1.5 rounded-xl bg-secondary-container hover:bg-secondary-fixed-dim text-on-secondary-fixed text-xs font-bold shadow-sm transition-colors" title="Pasang Aplikasi ke Layar Utama">
+          <span class="material-symbols-outlined text-[16px]">install_mobile</span>
+          <span class="hidden sm:inline">Pasang App</span>
+        </button>
         <div class="hidden md:flex flex-col items-end pr-2 border-r border-white/15">
           <div class="flex items-center gap-1.5">
             <span class="relative flex h-2 w-2">
@@ -304,6 +319,11 @@
 
   <!-- MAIN WORKSPACE -->
   <main id="main-content" class="w-full pt-20 flex-1 bg-surface transition-all duration-300">
+    <!-- Banner Mode Offline PWA -->
+    <div id="pwa-offline-banner" class="hidden bg-error-container border-b border-error/30 px-4 py-2 text-xs text-on-error-container flex items-center justify-center gap-2 no-print">
+      <span class="material-symbols-outlined text-[16px]">wifi_off</span>
+      <span><strong>Mode Offline</strong> — Menampilkan data cache terakhir. Pengiriman data baru akan aktif kembali saat internet tersambung.</span>
+    </div>
     <!-- Banner Mode Simulasi Lokal (hanya tampil bila GAS_URL masih placeholder) -->
     <div id="demo-banner" class="hidden bg-secondary-fixed/60 border-b border-secondary-fixed-dim px-4 py-2 text-xs text-on-secondary-fixed flex items-center justify-center gap-2 no-print">
       <span class="material-symbols-outlined text-[16px]">science</span>

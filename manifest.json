@@ -1,0 +1,27 @@
+{
+  "name": "SI-BUKU TAMU (E-Tamu PTUN)",
+  "short_name": "E-Tamu PTUN",
+  "description": "Sistem Buku Tamu Digital Terpadu PTSP & Persidangan Pengadilan Tata Usaha Negara",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#012d1d",
+  "theme_color": "#012d1d",
+  "orientation": "any",
+  "lang": "id",
+  "categories": ["government", "productivity", "utilities"],
+  "icons": [
+    {
+      "src": "./icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -80,7 +80,42 @@ window.ApiClient = (function () {
   }
 
   function isReadAction(action) {
-    return /^(boot|pantau\.boot|admin\.|jadwal\.list|users\.list|pengaturan\.get|struk\.list|struk\.semua|struk\.detail|printer\.get|verifikasi|auth\.me)/i.test(action);
+    return /^(boot|pantau\.boot|admin\.|jadwal\.list|users\.list|pengaturan\.get|struk\.list|struk\.semua|struk\.detail|printer\.get|verifikasi|auth\.me|crm\.list|blast\.list|notif\.config\.get|notif\.antrian\.list|wa\.cekStatus)/i.test(action);
+  }
+
+  /**
+   * Invalidasi SWR terarah sesuai scope mutasi (GAS Scale Turbo)
+   * Mencegah 1 aksi tulis menghapus seluruh cache SWR milik tab/modul lain.
+   */
+  function invalidateSwrForAction(action) {
+    if (/^(daftarPtsp|daftarSidang|ptsp\.|sidang\.|tamu\.)/i.test(action)) {
+      swrClearPrefix('bootPublic');
+      swrClearPrefix('pantau_boot');
+      swrClearPrefix('admin_dash_');
+      return;
+    }
+    if (/^jadwal\./i.test(action)) {
+      swrClearPrefix('bootPublic');
+      swrClearPrefix('pantau_boot');
+      swrClearPrefix('admin_jadwal');
+      return;
+    }
+    if (/^users\./i.test(action)) {
+      swrClearPrefix('admin_users');
+      return;
+    }
+    if (/^(pengaturan|loket|peran|ruang|logo|rahasia|struk|printer)\./i.test(action)) {
+      swrClearPrefix('bootPublic');
+      swrClearPrefix('admin_pengaturan');
+      return;
+    }
+    if (/^(notif|crm|blast|wa)\./i.test(action)) {
+      swrClearPrefix('crm_');
+      swrClearPrefix('notif_');
+      swrClearPrefix('blast_');
+      return;
+    }
+    swrClearPrefix('');
   }
 
   async function rawPost(action, data) {
@@ -119,7 +154,7 @@ window.ApiClient = (function () {
 
     if (!read) {
       _writeEpoch++;
-      swrClearPrefix(''); // Segarkan cache SWR setelah mutasi data
+      invalidateSwrForAction(action); // Invalidasi SWR terarah sesuai scope
       const res = await rawPost(action, data);
       if (res && res.code === 'UNAUTHORIZED') {
         setSession('', null);
@@ -152,10 +187,12 @@ window.ApiClient = (function () {
 
   /**
    * Batcher otomatis: menggabungkan beberapa request read dalam satu tick
+   * Mendukung SWR key opsional agar hasil batch langsung disimpan ke cache lokal.
    */
-  function callBatched(action, data) {
+  function callBatched(action, data, opts) {
+    opts = opts || {};
     return new Promise(function (resolve, reject) {
-      _batchPending.push({ action: action, data: data || {}, resolve: resolve, reject: reject });
+      _batchPending.push({ action: action, data: data || {}, opts: opts, resolve: resolve, reject: reject });
       if (!_batchTimer) {
         _batchTimer = setTimeout(async function () {
           const batch = _batchPending.slice();
@@ -163,7 +200,7 @@ window.ApiClient = (function () {
           _batchTimer = null;
           if (batch.length === 1) {
             try {
-              batch[0].resolve(await call(batch[0].action, batch[0].data));
+              batch[0].resolve(await call(batch[0].action, batch[0].data, batch[0].opts));
             } catch (e) {
               batch[0].reject(e);
             }
@@ -174,7 +211,17 @@ window.ApiClient = (function () {
               calls: batch.map(function (b) { return { action: b.action, data: b.data }; })
             });
             if (res && res.success && Array.isArray(res.data)) {
-              batch.forEach(function (b, idx) { b.resolve(res.data[idx]); });
+              batch.forEach(function (b, idx) {
+                const itemRes = res.data[idx];
+                if (itemRes && itemRes.success && b.opts && b.opts.swrKey) {
+                  swrSet(b.opts.swrKey, itemRes.data);
+                }
+                if (itemRes && itemRes.code === 'UNAUTHORIZED') {
+                  setSession('', null);
+                  window.dispatchEvent(new CustomEvent('etamu:unauthorized'));
+                }
+                b.resolve(itemRes);
+              });
             } else {
               batch.forEach(function (b) { b.resolve(res); });
             }
