@@ -336,29 +336,33 @@ window.AppUI = (function () {
     // Update active state nav pills
     document.querySelectorAll('.nav-pill').forEach(function (b) {
       const active = b.getAttribute('data-nav') === target;
+      const isDisplay = b.getAttribute('data-nav') === 'display';
+      const extra = isDisplay ? ' flex items-center gap-1.5' : '';
       b.className = active
-        ? 'nav-pill px-3 py-1.5 rounded-lg text-xs font-bold bg-primary text-secondary-fixed shadow-inner transition-all'
-        : 'nav-pill px-3 py-1.5 rounded-lg text-xs font-semibold text-primary-fixed-dim hover:text-white hover:bg-primary/50 transition-all';
+        ? 'nav-pill px-3 h-9 rounded-lg text-sm font-medium bg-white/15 text-white transition-colors' + extra
+        : 'nav-pill px-3 h-9 rounded-lg text-sm font-medium text-primary-fixed-dim hover:text-white hover:bg-white/10 transition-colors' + extra;
     });
     document.querySelectorAll('.nav-pill-mob').forEach(function (b) {
       const active = b.getAttribute('data-nav') === target;
+      const isDisplay = b.getAttribute('data-nav') === 'display';
+      const extra = isDisplay ? ' flex items-center gap-1.5' : '';
       b.className = active
-        ? 'nav-pill-mob shrink-0 px-3 py-1 rounded-lg text-xs font-bold bg-secondary-container text-on-secondary-fixed'
-        : 'nav-pill-mob shrink-0 px-3 py-1 rounded-lg text-xs font-semibold text-primary-fixed-dim';
+        ? 'nav-pill-mob shrink-0 px-3 h-8 rounded-lg text-xs font-medium bg-secondary-container text-on-secondary-fixed transition-colors' + extra
+        : 'nav-pill-mob shrink-0 px-3 h-8 rounded-lg text-xs font-medium text-primary-fixed-dim hover:text-white transition-colors' + extra;
     });
 
     // Update active state nav side buttons (Sidebar / Menu ke samping)
     document.querySelectorAll('.nav-side-btn').forEach(function (b) {
       const active = b.getAttribute('data-nav') === target;
       b.className = active
-        ? 'nav-side-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-secondary-container text-on-secondary-fixed shadow-md transition-all text-left'
-        : 'nav-side-btn w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-primary-fixed-dim hover:text-white hover:bg-white/10 transition-all text-left group';
+        ? 'nav-side-btn w-full h-9 flex items-center gap-2.5 px-3 rounded-lg text-sm font-medium bg-white/15 text-white transition-colors text-left'
+        : 'nav-side-btn w-full h-9 flex items-center gap-2.5 px-3 rounded-lg text-sm font-medium text-primary-fixed-dim hover:text-white hover:bg-white/10 transition-colors text-left';
 
       const icon = b.querySelector('.material-symbols-outlined');
       if (icon) {
         icon.className = active
-          ? 'material-symbols-outlined text-[20px] text-on-secondary-fixed'
-          : 'material-symbols-outlined text-[20px] text-secondary-fixed group-hover:scale-110 transition-transform';
+          ? 'material-symbols-outlined text-[18px] w-5 text-center text-secondary-fixed'
+          : 'material-symbols-outlined text-[18px] w-5 text-center opacity-80';
       }
     });
 
