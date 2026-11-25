@@ -13,8 +13,8 @@
   <link rel="icon" type="image/svg+xml" href="./img/logo-mahkamah-agung.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400,0..1,0" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -22,44 +22,53 @@
       theme: {
         extend: {
           colors: {
-            "background": "#f7f5f0",
-            "surface": "#f7f5f0",
-            "surface-bright": "#fbfaf7",
-            "surface-dim": "#e2ddd2",
-            "surface-variant": "#e6e1d6",
+            "background": "#f9f9ff",
+            "surface": "#f9f9ff",
+            "surface-bright": "#f9f9ff",
+            "surface-dim": "#d3daef",
+            "surface-variant": "#dce2f7",
             "surface-container-lowest": "#ffffff",
-            "surface-container-low": "#f1eee7",
-            "surface-container": "#eae6dd",
-            "surface-container-high": "#e2ddd2",
-            "surface-container-highest": "#d8d2c5",
-            "on-surface": "#1a1917",
-            "on-surface-variant": "#55524b",
-            "on-background": "#1a1917",
-            "outline": "#757067",
-            "outline-variant": "#dcd7cc",
+            "surface-container-low": "#f1f3ff",
+            "surface-container": "#e9edff",
+            "surface-container-high": "#e1e8fd",
+            "surface-container-highest": "#dce2f7",
+            "surface-tint": "#3f6653",
+            "on-surface": "#141b2b",
+            "on-surface-variant": "#414844",
+            "on-background": "#141b2b",
+            "inverse-surface": "#293040",
+            "inverse-on-surface": "#edf0ff",
+            "outline": "#717973",
+            "outline-variant": "#c1c8c2",
             "primary": "#012d1d",
             "on-primary": "#ffffff",
-            "primary-container": "#143d2c",
-            "on-primary-container": "#9cc1ae",
-            "primary-fixed": "#d4e8dc",
-            "primary-fixed-dim": "#b7d5c4",
-            "on-primary-fixed": "#062619",
-            "on-primary-fixed-variant": "#234a39",
-            "secondary": "#7a5900",
+            "primary-container": "#1b4332",
+            "on-primary-container": "#86af99",
+            "inverse-primary": "#a5d0b9",
+            "primary-fixed": "#c1ecd4",
+            "primary-fixed-dim": "#a5d0b9",
+            "on-primary-fixed": "#002114",
+            "on-primary-fixed-variant": "#274e3d",
+            "secondary": "#795900",
             "on-secondary": "#ffffff",
-            "secondary-container": "#e8b538",
-            "on-secondary-container": "#4a3600",
-            "secondary-fixed": "#f5e3b3",
-            "secondary-fixed-dim": "#dfaa2b",
-            "on-secondary-fixed": "#1f1600",
+            "secondary-container": "#ffc641",
+            "on-secondary-container": "#715300",
+            "secondary-fixed": "#ffdfa0",
+            "secondary-fixed-dim": "#f6be39",
+            "on-secondary-fixed": "#261a00",
             "on-secondary-fixed-variant": "#5c4300",
-            "tertiary": "#1f3a5f",
+            "tertiary": "#001e6a",
             "on-tertiary": "#ffffff",
-            "tertiary-fixed": "#dde6f2",
-            "on-tertiary-fixed-variant": "#1f3a5f",
-            "error": "#b42318",
-            "error-container": "#fee4e2",
-            "on-error-container": "#7a271a"
+            "tertiary-container": "#00309d",
+            "on-tertiary-container": "#8aa2ff",
+            "tertiary-fixed": "#dce1ff",
+            "tertiary-fixed-dim": "#b7c4ff",
+            "on-tertiary-fixed": "#001551",
+            "on-tertiary-fixed-variant": "#0039b5",
+            "error": "#ba1a1a",
+            "on-error": "#ffffff",
+            "error-container": "#ffdad6",
+            "on-error-container": "#93000a"
           },
           fontFamily: {
             "sans": ["Inter", "sans-serif"],
@@ -220,20 +229,21 @@
     </div>
   </aside>
 
-  <!-- TOP STICKY NAVBAR -->
-  <header class="fixed top-0 left-0 right-0 w-full z-30 bg-primary-container border-b border-white/10 no-print">
+  <!-- TOP STICKY NAVBAR (STITCH GOVTECH DESIGN) -->
+  <header class="fixed top-0 left-0 right-0 w-full z-30 bg-primary-container shadow-[0_4px_20px_rgba(1,45,29,0.18)] no-print">
     <div class="h-16 w-full max-w-[1440px] mx-auto px-4 sm:px-6 flex items-center justify-between gap-4">
       
       <!-- 1A. Mode Publik: Brand Logo Penuh -->
       <button type="button" id="public-brand-wrap" data-nav="kiosk" class="flex items-center gap-3 shrink-0 text-left">
-        <div id="nav-logo-box" class="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center overflow-hidden shrink-0">
+        <div id="nav-logo-box" class="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center overflow-hidden shrink-0 ring-1 ring-white/15">
           <img src="img/logo-mahkamah-agung.svg" alt="Logo Mahkamah Agung" class="w-full h-full object-contain p-0.5" />
         </div>
         <div class="flex flex-col">
-          <span class="font-display text-base text-white font-semibold tracking-tight leading-tight">
-            SI-Buku Tamu
+          <span class="font-display text-base sm:text-[18px] text-white font-bold tracking-tight leading-tight flex items-center gap-1.5">
+            <span>SI-BUKU TAMU</span>
+            <span class="text-[10px] uppercase font-bold tracking-wider px-1.5 py-0.5 rounded-full bg-secondary text-on-secondary">E-TAMU</span>
           </span>
-          <span id="nav-satker-subtitle" class="text-xs text-primary-fixed-dim leading-tight">Pengadilan Tata Usaha Negara</span>
+          <span id="nav-satker-subtitle" class="text-xs text-secondary-fixed font-medium leading-none tracking-wide mt-0.5">Pengadilan Tata Usaha Negara</span>
         </div>
       </button>
 
@@ -242,48 +252,54 @@
         <button type="button" id="btn-toggle-sidebar" class="w-9 h-9 rounded-lg bg-white/10 hover:bg-white/15 text-white transition-colors flex items-center justify-center" title="Buka / Tutup Menu Samping">
           <span class="material-symbols-outlined text-[20px]">menu</span>
         </button>
-        <span id="topbar-view-title" class="font-display text-base font-semibold text-white tracking-tight leading-tight">
+        <span id="topbar-view-title" class="font-display text-base font-bold text-white tracking-tight leading-tight">
           Beranda
         </span>
       </div>
 
       <!-- 2. Desktop Navigation Tabs (Khusus Mode Publik) -->
-      <nav id="top-main-nav" class="hidden lg:flex items-center gap-1">
-        <button type="button" data-nav="kiosk" class="nav-pill px-3 h-9 rounded-lg text-sm font-medium transition-colors">Beranda</button>
-        <button type="button" data-nav="ptsp" class="nav-pill px-3 h-9 rounded-lg text-sm font-medium transition-colors">PTSP</button>
-        <button type="button" data-nav="sidang" class="nav-pill px-3 h-9 rounded-lg text-sm font-medium transition-colors">Sidang</button>
-        <button type="button" data-nav="tiket" class="nav-pill px-3 h-9 rounded-lg text-sm font-medium transition-colors">Tiket</button>
-        <button type="button" data-nav="display" class="nav-pill px-3 h-9 rounded-lg text-sm font-medium transition-colors flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px]">desktop_windows</span>Display TV</button>
+      <nav id="top-main-nav" class="hidden lg:flex items-center gap-1 bg-primary/40 p-1 rounded-xl shrink-0">
+        <button type="button" data-nav="kiosk" class="nav-pill px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all">Beranda</button>
+        <button type="button" data-nav="ptsp" class="nav-pill px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all">Registrasi PTSP</button>
+        <button type="button" data-nav="sidang" class="nav-pill px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all">Registrasi Sidang</button>
+        <button type="button" data-nav="tiket" class="nav-pill px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all">Tiket Digital</button>
+        <button type="button" data-nav="display" class="nav-pill px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-all flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px]">desktop_windows</span>Display TV</button>
       </nav>
 
       <!-- 3. Right: PWA Install + Live Sync + User Profile Session -->
       <div class="flex items-center gap-3 shrink-0">
-        <button type="button" id="btn-pwa-install" class="hidden items-center gap-1.5 px-3 h-9 rounded-lg bg-secondary-container hover:bg-secondary-fixed-dim text-on-secondary-fixed text-xs font-semibold transition-colors" title="Pasang Aplikasi ke Layar Utama">
+        <button type="button" id="btn-pwa-install" class="hidden items-center gap-1.5 px-3 h-9 rounded-lg bg-secondary-container hover:bg-secondary-fixed-dim text-on-secondary-fixed text-xs font-bold shadow-sm transition-colors" title="Pasang Aplikasi ke Layar Utama">
           <span class="material-symbols-outlined text-[16px]">install_mobile</span>
           <span class="hidden sm:inline">Pasang App</span>
         </button>
         <div class="hidden xl:flex flex-col items-end pr-3 border-r border-white/15">
           <div class="flex items-center gap-1.5">
-            <span class="inline-flex rounded-full h-1.5 w-1.5 bg-secondary-fixed"></span>
-            <span id="sync-status-label" class="text-xs text-primary-fixed-dim font-medium leading-none">Sinkron WIB</span>
+            <span class="relative flex h-2 w-2">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary-fixed-dim opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-secondary-fixed"></span>
+            </span>
+            <span id="sync-status-label" class="text-[11px] text-secondary-fixed tracking-wide uppercase font-semibold leading-none">Live Sync WIB</span>
           </div>
-          <span id="live-clock" class="text-xs font-mono tabular-nums text-white/90 leading-none mt-1">--:--:-- WIB</span>
+          <span id="live-clock" class="text-xs font-mono tabular-nums text-white/90 font-medium leading-none mt-1">--:--:-- WIB</span>
         </div>
 
         <div class="relative" id="user-menu-wrap">
-          <button type="button" id="btn-auth-chip" class="flex items-center gap-2 pl-1.5 pr-3 h-9 rounded-lg bg-white/10 hover:bg-white/15 text-white transition-colors border border-white/10">
-            <span class="w-6 h-6 rounded-md bg-secondary-container text-on-secondary-fixed flex items-center justify-center font-semibold text-xs" id="user-avatar-initials">T</span>
-            <div class="hidden sm:flex flex-col text-left">
-              <span id="user-chip-name" class="text-xs font-medium leading-tight">Masuk</span>
-              <span id="user-chip-role" class="text-xs text-primary-fixed-dim leading-none hidden">Publik</span>
+          <button type="button" id="btn-auth-chip" class="flex items-center gap-2 pl-1.5 pr-3 h-9 rounded-lg bg-primary/40 hover:bg-primary/60 text-white transition-colors border border-white/10">
+            <div class="relative">
+              <span class="w-7 h-7 rounded-full bg-secondary-container text-on-secondary-fixed ring-2 ring-secondary-fixed/50 flex items-center justify-center font-bold text-xs shadow-sm" id="user-avatar-initials">T</span>
+              <span class="absolute bottom-0 right-0 w-2 h-2 bg-primary-fixed rounded-full ring-2 ring-primary-container"></span>
             </div>
-            <span class="material-symbols-outlined text-[16px] text-primary-fixed-dim" id="user-chip-icon">lock</span>
+            <div class="hidden sm:flex flex-col text-left">
+              <span id="user-chip-name" class="text-xs font-semibold leading-tight text-white">Login</span>
+              <span id="user-chip-role" class="text-[11px] text-primary-fixed-dim leading-none hidden">Publik</span>
+            </div>
+            <span class="material-symbols-outlined text-[18px] text-primary-fixed-dim" id="user-chip-icon">lock</span>
           </button>
 
           <!-- Dropdown Menu Profil (Muncul saat sudah login) -->
-          <div id="user-dropdown-menu" class="hidden absolute right-0 mt-2 w-56 rounded-xl bg-white shadow-[0_8px_24px_rgba(26,25,23,0.10)] border border-outline-variant py-1.5 z-[80] text-on-surface">
-            <div class="px-4 py-2.5 border-b border-outline-variant">
-              <div id="dd-user-name" class="text-sm font-medium text-on-surface truncate">-</div>
+          <div id="user-dropdown-menu" class="hidden absolute right-0 mt-2 w-56 rounded-xl bg-white shadow-[0_10px_25px_rgba(1,45,29,0.14)] border border-outline-variant/40 py-1.5 z-[80] text-on-surface">
+            <div class="px-4 py-2.5 border-b border-outline-variant/40">
+              <div id="dd-user-name" class="text-sm font-bold text-on-surface truncate">-</div>
               <div id="dd-user-role" class="text-xs text-on-surface-variant truncate">-</div>
             </div>
             <div class="p-1.5 flex flex-col gap-0.5">
@@ -303,11 +319,11 @@
 
     <!-- 4. Mobile Quick Nav Strip (Khusus Mode Publik di HP/Tablet) -->
     <div id="top-mobile-nav" class="hidden bg-primary border-t border-white/10 px-4 py-2 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-      <button type="button" data-nav="kiosk" class="nav-pill-mob shrink-0 px-3 h-8 rounded-lg text-xs font-medium transition-colors">Beranda</button>
-      <button type="button" data-nav="ptsp" class="nav-pill-mob shrink-0 px-3 h-8 rounded-lg text-xs font-medium transition-colors">PTSP</button>
-      <button type="button" data-nav="sidang" class="nav-pill-mob shrink-0 px-3 h-8 rounded-lg text-xs font-medium transition-colors">Sidang</button>
-      <button type="button" data-nav="tiket" class="nav-pill-mob shrink-0 px-3 h-8 rounded-lg text-xs font-medium transition-colors">Tiket</button>
-      <button type="button" data-nav="display" class="nav-pill-mob shrink-0 px-3 h-8 rounded-lg text-xs font-medium transition-colors flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px]">desktop_windows</span>Display TV</button>
+      <button type="button" data-nav="kiosk" class="nav-pill-mob shrink-0 px-3 h-8 rounded-lg text-xs font-semibold transition-colors">Beranda</button>
+      <button type="button" data-nav="ptsp" class="nav-pill-mob shrink-0 px-3 h-8 rounded-lg text-xs font-semibold transition-colors">PTSP</button>
+      <button type="button" data-nav="sidang" class="nav-pill-mob shrink-0 px-3 h-8 rounded-lg text-xs font-semibold transition-colors">Sidang</button>
+      <button type="button" data-nav="tiket" class="nav-pill-mob shrink-0 px-3 h-8 rounded-lg text-xs font-semibold transition-colors">Tiket</button>
+      <button type="button" data-nav="display" class="nav-pill-mob shrink-0 px-3 h-8 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5"><span class="material-symbols-outlined text-[16px]">desktop_windows</span>Display TV</button>
     </div>
   </header>
 
@@ -326,129 +342,219 @@
     </div>
 
     <!-- ================================================================== -->
-    <!-- VIEW 1: LAYAR KIOSK 2 JALUR                                        -->
+    <!-- VIEW 1: LAYAR KIOSK 2 JALUR (STITCH DESIGN)                        -->
     <!-- ================================================================== -->
-    <section id="view-kiosk" class="view-panel max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 flex flex-col gap-6">
-      <!-- Page Header + Live Status Strip -->
-      <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-4 pb-6 border-b border-outline-variant">
-        <div class="max-w-2xl">
-          <p class="text-xs font-medium text-secondary mb-1">Buku tamu &amp; antrean digital</p>
-          <h1 id="hero-satker-name" class="font-display text-2xl sm:text-3xl text-on-surface font-semibold tracking-tight leading-tight">
-            Pengadilan Tata Usaha Negara
+    <section id="view-kiosk" class="view-panel max-w-7xl mx-auto px-4 sm:px-8 py-8 flex flex-col gap-10">
+      <!-- Centered Institutional Hero Header + Floating Status Strip -->
+      <div class="flex flex-col items-center text-center gap-4 max-w-4xl mx-auto w-full">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-surface-container-high shadow-sm">
+          <span class="material-symbols-outlined text-secondary text-[18px] icon-filled">auto_awesome</span>
+          <span class="text-xs text-secondary tracking-widest uppercase font-bold">Sistem Buku Tamu Digital Terpadu</span>
+        </div>
+
+        <div class="flex flex-col gap-2">
+          <h1 class="font-display text-3xl sm:text-5xl text-on-surface tracking-tight font-extrabold leading-tight">
+            Selamat Datang di <span id="hero-satker-name">Pengadilan Tata Usaha Negara</span>
           </h1>
-          <p class="text-sm text-on-surface-variant mt-1.5">
-            Pilih jalur kunjungan untuk registrasi mandiri dan mendapatkan nomor antrean digital
+          <p class="text-base sm:text-lg text-on-surface-variant max-w-2xl mx-auto leading-relaxed">
+            Silakan pilih jalur layanan tujuan Anda untuk registrasi mandiri dan mendapatkan nomor antrean digital.
           </p>
         </div>
 
-        <!-- Compact Info Strip -->
-        <div class="bg-white rounded-xl px-4 py-3 border border-outline-variant flex flex-wrap items-center gap-y-2 gap-x-5 text-xs text-on-surface-variant shrink-0">
-          <div class="flex items-center gap-1.5">
-            <span class="material-symbols-outlined text-outline text-[16px]">calendar_today</span>
-            <strong id="kiosk-date-label" class="text-on-surface font-medium">-</strong>
+        <!-- Floating Compact Info Strip -->
+        <div class="w-full mt-2 bg-surface-container-lowest rounded-xl p-3 sm:p-4 shadow-sm border border-outline-variant/25 flex flex-wrap items-center justify-center gap-y-2 gap-x-6 text-on-surface-variant text-sm">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary text-[20px]">calendar_today</span>
+            <span class="font-medium">Hari ini: <strong id="kiosk-date-label" class="text-on-surface font-semibold">-</strong></span>
           </div>
-          <div class="flex items-center gap-1.5">
-            <span class="material-symbols-outlined text-outline text-[16px]">schedule</span>
-            <span>PTSP <strong id="kiosk-jam-layanan" class="text-on-surface font-medium tabular-nums">08.00 - 15.00 WIB</strong></span>
+          <div class="hidden sm:block w-1.5 h-1.5 rounded-full bg-outline-variant"></div>
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary text-[20px]">schedule</span>
+            <span class="font-medium">Jam Pelayanan PTSP: <strong id="kiosk-jam-layanan" class="text-on-surface font-semibold tabular-nums">08.00 - 15.00 WIB</strong></span>
           </div>
-          <div class="flex items-center gap-1.5">
-            <span class="inline-block w-2 h-2 rounded-full bg-emerald-600"></span>
-            <span class="text-on-primary-fixed font-medium">Layanan aktif</span>
+          <div class="hidden sm:block w-1.5 h-1.5 rounded-full bg-outline-variant"></div>
+          <div class="flex items-center gap-2">
+            <span class="inline-flex relative h-2.5 w-2.5">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary-fixed-dim opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-secondary"></span>
+            </span>
+            <span class="font-medium">Status Layanan: <span class="px-2.5 py-0.5 rounded-full text-xs bg-primary-fixed text-on-primary-fixed font-bold">Aktif Berjalan</span></span>
           </div>
         </div>
       </div>
 
-      <!-- 2 Track Selection Cards (Above the Fold untuk Kiosk) -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+      <!-- 2 Track Selection Cards (Exact Stitch Kiosk 2-Jalur Cards) -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
         <!-- JALUR 01: PTSP -->
-        <div class="relative flex flex-col justify-between bg-white rounded-2xl p-6 border border-outline-variant shadow-[0_1px_2px_rgba(26,25,23,0.05)] overflow-hidden">
-          <div class="absolute top-0 left-0 right-0 h-0.5 bg-primary-container"></div>
-          <div class="flex flex-col gap-4">
+        <div class="group relative flex flex-col justify-between bg-surface-container-lowest rounded-xl p-6 sm:p-8 shadow-md border border-outline-variant/20 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl overflow-hidden">
+          <div class="absolute top-0 left-0 right-0 h-2 bg-primary"></div>
+          <div class="flex flex-col gap-6">
             <div class="flex items-center justify-between">
-              <div class="w-11 h-11 rounded-xl bg-primary-container text-white flex items-center justify-center">
-                <span class="material-symbols-outlined text-[22px]">account_balance</span>
+              <div class="w-16 h-16 rounded-full bg-primary flex items-center justify-center text-on-primary shadow-inner">
+                <span class="material-symbols-outlined text-[36px] icon-filled">account_balance</span>
               </div>
-              <span class="text-xs font-mono text-outline">Jalur 01</span>
+              <span class="text-xs px-3.5 py-1 rounded-full font-bold uppercase tracking-wider bg-surface-container text-on-primary-fixed-variant">
+                Jalur 01
+              </span>
             </div>
-            <div>
-              <h2 class="font-display text-xl font-semibold text-on-surface">Tamu Pelayanan PTSP</h2>
-              <p class="mt-1 text-sm text-on-surface-variant leading-relaxed">
-                Administrasi perkara, pendaftaran e-Court, legalisasi produk pengadilan, dan permohonan informasi publik (PPID)
+            <div class="flex flex-col gap-2">
+              <h2 class="font-display text-2xl font-bold text-on-surface group-hover:text-primary transition-colors">
+                Tamu Pelayanan PTSP
+              </h2>
+              <p class="text-[15px] text-on-surface-variant leading-normal">
+                Untuk administrasi perkara, pendaftaran e-Court, legalisasi produk pengadilan, dan permohonan informasi publik (PPID).
               </p>
             </div>
-            <div>
-              <span class="text-xs font-medium text-outline">Layanan meja terbuka</span>
-              <div id="kiosk-loket-pills" class="mt-2 flex flex-wrap gap-1.5">
-                <span class="px-2.5 py-1 rounded-md bg-surface-container-low text-xs font-medium text-on-surface">Loket e-Court</span>
-                <span class="px-2.5 py-1 rounded-md bg-surface-container-low text-xs font-medium text-on-surface">Informasi / Posbakum</span>
-                <span class="px-2.5 py-1 rounded-md bg-surface-container-low text-xs font-medium text-on-surface">Kepaniteraan Hukum</span>
-                <span class="px-2.5 py-1 rounded-md bg-surface-container-low text-xs font-medium text-on-surface">Umum &amp; Kesekretariatan</span>
+            <div class="flex flex-col gap-2">
+              <span class="text-xs uppercase tracking-wider font-semibold text-outline">Layanan Meja Terbuka:</span>
+              <div id="kiosk-loket-pills" class="flex flex-wrap gap-2">
+                <span class="px-3 py-1.5 rounded-lg bg-surface-container-low text-xs font-medium text-on-surface">Loket e-Court</span>
+                <span class="px-3 py-1.5 rounded-lg bg-surface-container-low text-xs font-medium text-on-surface">Informasi / Posbakum</span>
+                <span class="px-3 py-1.5 rounded-lg bg-surface-container-low text-xs font-medium text-on-surface">Kepaniteraan Hukum</span>
+                <span class="px-3 py-1.5 rounded-lg bg-surface-container-low text-xs font-medium text-on-surface">Umum &amp; Kesekretariatan</span>
               </div>
             </div>
             <div class="bg-surface-container-low rounded-xl p-4 flex items-center justify-between">
-              <div>
-                <span class="block text-xs text-outline">Antrean berjalan</span>
-                <span id="kiosk-ptsp-berjalan" class="font-mono tabular-nums text-xl text-primary-container font-semibold">P-000</span>
+              <div class="flex items-center gap-3">
+                <div class="p-2.5 rounded-lg bg-surface-container-lowest text-primary shadow-sm">
+                  <span class="material-symbols-outlined text-[24px]">confirmation_number</span>
+                </div>
+                <div class="flex flex-col">
+                  <span class="text-[11px] text-outline uppercase font-semibold tracking-wider">Antrean Berjalan</span>
+                  <span id="kiosk-ptsp-berjalan" class="font-display tabular-nums text-xl text-primary font-bold tracking-tight">P-000</span>
+                </div>
               </div>
               <div class="text-right">
-                <span class="block text-xs text-outline">Menunggu</span>
-                <span id="kiosk-ptsp-menunggu" class="text-sm font-medium tabular-nums text-on-surface">0 Orang</span>
+                <span class="text-[11px] text-outline uppercase font-semibold tracking-wider block">Menunggu</span>
+                <div class="flex items-center justify-end gap-1.5 mt-0.5">
+                  <span class="w-2 h-2 rounded-full bg-secondary"></span>
+                  <span id="kiosk-ptsp-menunggu" class="font-display text-base font-bold tabular-nums text-on-surface">0 Orang</span>
+                </div>
               </div>
             </div>
           </div>
-          <button type="button" data-nav="ptsp" class="mt-6 w-full h-12 rounded-lg bg-primary-container hover:bg-primary active:scale-[0.99] text-white font-medium text-sm flex items-center justify-between px-5 transition-[background-color,transform] duration-150">
-            <span class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-[18px]">person_add</span>
-              Daftar Tamu PTSP
-            </span>
-            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
-          </button>
+          <div class="pt-7">
+            <button type="button" data-nav="ptsp" class="w-full h-14 sm:h-16 px-6 rounded-lg bg-primary hover:bg-primary-container active:scale-[0.99] text-on-primary font-semibold text-base flex items-center justify-between shadow-md transition-all">
+              <span class="flex items-center gap-2.5">
+                <span class="material-symbols-outlined text-[22px]">how_to_reg</span>
+                Daftar Tamu PTSP
+              </span>
+              <span class="material-symbols-outlined text-[24px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+            </button>
+          </div>
         </div>
 
         <!-- JALUR 02: PERSIDANGAN -->
-        <div class="relative flex flex-col justify-between bg-white rounded-2xl p-6 border border-outline-variant shadow-[0_1px_2px_rgba(26,25,23,0.05)] overflow-hidden">
-          <div class="absolute top-0 left-0 right-0 h-0.5 bg-secondary-container"></div>
-          <div class="flex flex-col gap-4">
+        <div class="group relative flex flex-col justify-between bg-surface-container-lowest rounded-xl p-6 sm:p-8 shadow-md border border-outline-variant/20 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl overflow-hidden">
+          <div class="absolute top-0 left-0 right-0 h-2 bg-secondary-container"></div>
+          <div class="flex flex-col gap-6">
             <div class="flex items-center justify-between">
-              <div class="w-11 h-11 rounded-xl bg-secondary-container text-on-secondary-fixed flex items-center justify-center">
-                <span class="material-symbols-outlined text-[22px]">gavel</span>
+              <div class="w-16 h-16 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container shadow-inner">
+                <span class="material-symbols-outlined text-[36px] icon-filled">gavel</span>
               </div>
-              <span class="text-xs font-mono text-outline">Jalur 02</span>
+              <span class="text-xs px-3.5 py-1 rounded-full font-bold uppercase tracking-wider bg-secondary-fixed text-on-secondary-fixed-variant">
+                Jalur 02
+              </span>
             </div>
-            <div>
-              <h2 class="font-display text-xl font-semibold text-on-surface">Tamu Persidangan</h2>
-              <p class="mt-1 text-sm text-on-surface-variant leading-relaxed">
-                Para pihak berperkara, kuasa hukum, saksi, dan ahli yang menghadiri agenda persidangan hari ini
+            <div class="flex flex-col gap-2">
+              <h2 class="font-display text-2xl font-bold text-on-surface group-hover:text-secondary transition-colors">
+                Tamu Persidangan
+              </h2>
+              <p class="text-[15px] text-on-surface-variant leading-normal">
+                Untuk para pihak berperkara, kuasa hukum, saksi, dan ahli yang menghadiri agenda persidangan tata usaha negara hari ini.
               </p>
             </div>
-            <div>
-              <span class="text-xs font-medium text-outline">Kategori kehadiran</span>
-              <div id="kiosk-peran-pills" class="mt-2 flex flex-wrap gap-1.5">
-                <span class="px-2.5 py-1 rounded-md bg-surface-container-low text-xs font-medium text-on-surface">Penggugat</span>
-                <span class="px-2.5 py-1 rounded-md bg-surface-container-low text-xs font-medium text-on-surface">Tergugat</span>
-                <span class="px-2.5 py-1 rounded-md bg-surface-container-low text-xs font-medium text-on-surface">Turut Tergugat</span>
-                <span class="px-2.5 py-1 rounded-md bg-surface-container-low text-xs font-medium text-on-surface">Kuasa Hukum</span>
-                <span class="px-2.5 py-1 rounded-md bg-surface-container-low text-xs font-medium text-on-surface">Saksi / Ahli</span>
+            <div class="flex flex-col gap-2">
+              <span class="text-xs uppercase tracking-wider font-semibold text-outline">Kategori Kehadiran:</span>
+              <div id="kiosk-peran-pills" class="flex flex-wrap gap-2">
+                <span class="px-3 py-1.5 rounded-lg bg-surface-container-low text-xs font-medium text-on-surface">Penggugat</span>
+                <span class="px-3 py-1.5 rounded-lg bg-surface-container-low text-xs font-medium text-on-surface">Tergugat</span>
+                <span class="px-3 py-1.5 rounded-lg bg-surface-container-low text-xs font-medium text-on-surface">Turut Tergugat</span>
+                <span class="px-3 py-1.5 rounded-lg bg-surface-container-low text-xs font-medium text-on-surface">Kuasa Hukum</span>
+                <span class="px-3 py-1.5 rounded-lg bg-surface-container-low text-xs font-medium text-on-surface">Saksi / Ahli</span>
               </div>
             </div>
             <div class="bg-surface-container-low rounded-xl p-4 flex items-center justify-between">
-              <div>
-                <span class="block text-xs text-outline">Sidang terjadwal hari ini</span>
-                <span id="kiosk-sidang-count" class="font-mono tabular-nums text-xl text-on-surface font-semibold">0 Perkara</span>
+              <div class="flex items-center gap-3">
+                <div class="p-2.5 rounded-lg bg-surface-container-lowest text-secondary shadow-sm">
+                  <span class="material-symbols-outlined text-[24px]">meeting_room</span>
+                </div>
+                <div class="flex flex-col">
+                  <span class="text-[11px] text-outline uppercase font-semibold tracking-wider">Sidang Terjadwal</span>
+                  <span id="kiosk-sidang-count" class="font-display tabular-nums text-xl text-on-surface font-bold tracking-tight">0 Perkara</span>
+                </div>
               </div>
               <div class="text-right">
-                <span class="block text-xs text-outline">Antrean berikutnya</span>
-                <span id="kiosk-sidang-next" class="font-mono tabular-nums text-sm font-semibold text-secondary">S-001</span>
+                <span class="text-[11px] text-outline uppercase font-semibold tracking-wider block">Antrean Berikutnya</span>
+                <span id="kiosk-sidang-next" class="font-mono tabular-nums text-base font-bold text-primary block mt-0.5">S-001</span>
               </div>
             </div>
           </div>
-          <button type="button" data-nav="sidang" class="mt-6 w-full h-12 rounded-lg bg-secondary-container hover:bg-secondary-fixed-dim active:scale-[0.99] text-on-secondary-fixed font-medium text-sm flex items-center justify-between px-5 transition-[background-color,transform] duration-150">
-            <span class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-[18px]">badge</span>
-              Daftar Tamu Sidang
-            </span>
-            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+          <div class="pt-7">
+            <button type="button" data-nav="sidang" class="w-full h-14 sm:h-16 px-6 rounded-lg bg-secondary-container hover:bg-secondary-fixed-dim active:scale-[0.99] text-on-secondary-container font-bold text-base flex items-center justify-between shadow-md transition-all">
+              <span class="flex items-center gap-2.5">
+                <span class="material-symbols-outlined text-[22px]">badge</span>
+                Daftar Tamu Sidang
+              </span>
+              <span class="material-symbols-outlined text-[24px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Help Bar (Exact Stitch Style) -->
+      <div class="w-full bg-surface-container-low rounded-xl p-5 sm:p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-sm border border-outline-variant/20">
+        <div class="flex items-center gap-4 text-left min-w-0">
+          <div class="w-12 h-12 rounded-full bg-surface-container-lowest flex items-center justify-center shrink-0 text-primary shadow-sm">
+            <span class="material-symbols-outlined text-[26px]">support_agent</span>
+          </div>
+          <div class="flex flex-col min-w-0">
+            <h3 class="font-display font-bold text-base text-on-surface leading-tight">Butuh Bantuan Langsung?</h3>
+            <p class="text-xs sm:text-[13px] text-on-surface-variant mt-0.5">Silakan hubungi Petugas Resepsionis / Satpam di meja depan untuk panduan pendaftaran manual atau verifikasi tiket.</p>
+          </div>
+        </div>
+        <div class="flex flex-wrap items-center gap-2.5 shrink-0 w-full md:w-auto">
+          <button type="button" id="btn-cek-qr-manual" class="flex-1 md:flex-none h-11 px-4 rounded-lg bg-surface-container-lowest hover:bg-surface text-primary text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 shadow-sm border border-outline-variant/25 whitespace-nowrap transition-all">
+            <span class="material-symbols-outlined text-[18px]">qr_code_scanner</span>
+            <span>Cek Tiket</span>
           </button>
+          <button type="button" id="btn-panduan" class="flex-1 md:flex-none h-11 px-5 rounded-lg bg-surface-container-lowest hover:bg-surface text-primary text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 shadow-sm border border-outline-variant/25 whitespace-nowrap transition-all">
+            <span class="material-symbols-outlined text-[18px]">help_center</span>
+            <span>Panduan Penggunaan</span>
+          </button>
+          <button type="button" id="btn-panggil-petugas" class="flex-1 md:flex-none h-11 px-5 rounded-lg bg-primary hover:bg-primary-container text-on-primary text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-sm whitespace-nowrap transition-all">
+            <span class="material-symbols-outlined text-[18px]">notifications_active</span>
+            <span>Panggil Petugas</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Realtime Summary Strip (Exact Stitch Style) -->
+      <div class="flex flex-col gap-2.5">
+        <div class="flex items-center justify-between px-1">
+          <span class="text-xs text-outline font-semibold uppercase tracking-wider">Ringkasan Kunjungan Realtime Hari Ini</span>
+          <span class="font-mono text-xs text-primary font-semibold flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+            Tersinkronisasi
+          </span>
+        </div>
+        <div class="w-full bg-surface-container-lowest rounded-xl p-4 sm:p-5 grid grid-cols-2 sm:grid-cols-4 gap-4 shadow-sm border border-outline-variant/20">
+          <div class="flex flex-col gap-1">
+            <span class="text-xs text-on-surface-variant font-medium">Buku Tamu Hari Ini</span>
+            <div id="kiosk-stat-total" class="font-mono tabular-nums text-base sm:text-lg font-bold text-on-surface">0 Terdaftar</div>
+          </div>
+          <div class="flex flex-col gap-1">
+            <span class="text-xs text-on-surface-variant font-medium">Tamu Pelayanan PTSP</span>
+            <div id="kiosk-stat-ptsp" class="font-mono tabular-nums text-base sm:text-lg font-bold text-primary">0 Orang</div>
+          </div>
+          <div class="flex flex-col gap-1">
+            <span class="text-xs text-on-surface-variant font-medium">Tamu Persidangan</span>
+            <div id="kiosk-stat-sidang" class="font-mono tabular-nums text-base sm:text-lg font-bold text-secondary">0 Orang</div>
+          </div>
+          <div class="flex flex-col gap-1">
+            <span class="text-xs text-on-surface-variant font-medium">Selesai Dilayani</span>
+            <div id="kiosk-stat-selesai" class="font-mono tabular-nums text-base sm:text-lg font-bold text-[#166534]">0 Orang</div>
+          </div>
         </div>
       </div>
 
@@ -457,21 +563,24 @@
       <!-- ================================================================== -->
       <div id="kiosk-display-container" class="w-full flex flex-col gap-4">
         <!-- Top Sub-bar Display Header -->
-        <div class="bg-primary-container text-white rounded-xl px-5 py-3.5 border border-white/10 flex flex-wrap items-center justify-between gap-4">
+        <div class="bg-primary-container text-white rounded-xl px-5 py-3.5 shadow-sm flex flex-wrap items-center justify-between gap-4">
           <div class="flex items-center gap-3">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 shrink-0"></span>
+            <span class="relative flex h-2.5 w-2.5 shrink-0">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-secondary-fixed-dim opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-secondary-fixed"></span>
+            </span>
             <div>
               <div class="flex items-center gap-2">
-                <span class="font-display text-sm sm:text-base font-semibold leading-tight">Monitor antrean &amp; siaran ruang tunggu</span>
-                <span class="text-xs font-mono text-primary-fixed-dim">Live WIB</span>
+                <span class="font-display text-sm sm:text-base font-bold leading-tight">Monitor Antrean &amp; Siaran Ruang Tunggu</span>
+                <span class="text-[11px] font-mono px-2 py-0.5 rounded-full bg-primary/60 text-secondary-fixed font-semibold">Live WIB</span>
               </div>
-              <p class="text-xs text-primary-fixed-dim/80 mt-0.5">Pantauan antrean berjalan otomatis dan siaran informasi pelayanan publik</p>
+              <p class="text-xs text-primary-fixed-dim mt-0.5">Pantauan antrean berjalan otomatis dan siaran informasi pelayanan publik</p>
             </div>
           </div>
 
           <!-- Quick Action: Toggle Audio -->
           <div class="flex items-center gap-2 ml-auto">
-            <button type="button" id="btn-kiosk-toggle-audio" class="h-9 px-3 rounded-lg bg-white/10 hover:bg-white/15 text-white text-xs font-medium flex items-center gap-1.5 border border-white/15 transition-colors" title="Nyalakan / Matikan Suara TV & Video">
+            <button type="button" id="btn-kiosk-toggle-audio" class="h-9 px-3 rounded-lg bg-white/10 hover:bg-white/15 text-white text-xs font-semibold flex items-center gap-1.5 border border-white/15 transition-colors" title="Nyalakan / Matikan Suara TV &amp; Video">
               <span class="material-symbols-outlined text-[16px]" id="kiosk-audio-icon">volume_up</span>
               <span class="hidden sm:inline" id="kiosk-audio-label">Suara: Aktif</span>
             </button>
@@ -485,7 +594,7 @@
           <div class="lg:col-span-7 flex flex-col gap-3">
             
             <!-- Video Frame Container -->
-            <div class="relative w-full aspect-video rounded-xl overflow-hidden bg-neutral-950 border border-outline-variant group">
+            <div class="relative w-full aspect-video rounded-xl overflow-hidden bg-inverse-surface border border-outline-variant/30 shadow-md group">
               <iframe
                 id="kiosk-yt-iframe"
                 class="absolute inset-0 w-full h-full border-0"
@@ -504,8 +613,8 @@
             </div>
 
             <!-- Running Text / Marquee Pengumuman Resmi di Bawah Video -->
-            <div class="w-full rounded-xl bg-primary-container text-white px-3 py-2.5 flex items-center gap-3 overflow-hidden">
-              <div class="flex items-center gap-1.5 shrink-0 px-2.5 py-1 rounded-md bg-secondary-container text-on-secondary-fixed text-xs font-semibold">
+            <div class="w-full rounded-xl bg-primary-container text-white px-3 py-2.5 flex items-center gap-3 overflow-hidden shadow-sm">
+              <div class="flex items-center gap-1.5 shrink-0 px-2.5 py-1 rounded-md bg-secondary-container text-on-secondary-fixed text-xs font-bold">
                 <span class="material-symbols-outlined text-[16px]">campaign</span>
                 <span>Pengumuman</span>
               </div>
@@ -520,27 +629,27 @@
           <!-- KOMPONEN 2: QUEUE DISPLAY (MONITOR ANTRIAN BERJALAN) -->
           <div class="lg:col-span-5 flex flex-col h-full gap-4">
             
-            <!-- KARTU BESAR: NOMOR ANTREAN YANG SEDANG DIPANGGIL SAAT INI (MOMENT 1) -->
-            <div id="kiosk-current-card" class="relative flex-1 bg-white rounded-xl p-6 border border-outline-variant border-t-2 border-t-secondary-container shadow-[0_1px_2px_rgba(26,25,23,0.05)] flex flex-col justify-between overflow-hidden transition-colors duration-200">
+            <!-- KARTU BESAR: NOMOR ANTREAN YANG SEDANG DIPANGGIL SAAT INI -->
+            <div id="kiosk-current-card" class="relative flex-1 bg-surface-container-lowest rounded-xl p-6 border border-outline-variant/25 border-t-4 border-t-secondary-container shadow-md flex flex-col justify-between overflow-hidden transition-colors duration-200">
               <!-- Header Kartu: Status Panggilan -->
-              <div class="flex items-center justify-between pb-3 border-b border-outline-variant">
+              <div class="flex items-center justify-between pb-3 border-b border-outline-variant/30">
                 <div class="flex items-center gap-2">
-                  <span class="inline-block rounded-full h-2 w-2 bg-emerald-600"></span>
-                  <span class="text-xs font-medium text-on-primary-fixed" id="kiosk-curr-status-badge">Sedang dipanggil</span>
+                  <span class="inline-block rounded-full h-2.5 w-2.5 bg-emerald-600 animate-pulse"></span>
+                  <span class="text-xs font-bold uppercase tracking-wider text-on-primary-fixed" id="kiosk-curr-status-badge">Sedang dipanggil</span>
                 </div>
                 <span class="text-xs font-mono text-outline">Antrean aktif</span>
               </div>
 
               <!-- Main Section: Big Number & Destination -->
               <div class="my-auto py-4 text-center">
-                <span class="text-xs font-medium text-outline block">Nomor antrean</span>
-                <div id="kiosk-curr-nomor" class="font-mono tabular-nums text-5xl sm:text-6xl font-semibold text-primary-container tracking-tight my-2">
+                <span class="text-xs font-semibold uppercase tracking-widest text-outline block">Nomor Antrean</span>
+                <div id="kiosk-curr-nomor" class="font-display tabular-nums text-5xl sm:text-6xl font-extrabold text-primary tracking-tight my-2">
                   P-001
                 </div>
 
                 <!-- Loket / Ruang Tujuan -->
                 <div class="mt-3">
-                  <div id="kiosk-curr-loket" class="inline-block px-4 py-2 rounded-lg bg-secondary-container text-on-secondary-fixed font-display font-semibold text-sm sm:text-base">
+                  <div id="kiosk-curr-loket" class="inline-block px-4 py-2 rounded-full bg-secondary-container text-on-secondary-container font-display font-bold text-sm sm:text-base shadow-sm">
                     Loket 1 - Kepaniteraan Perkara
                   </div>
                 </div>
@@ -554,37 +663,37 @@
             </div>
 
             <!-- KARTU MENU ANTREAN SELANJUTNYA (PTSP & PERSIDANGAN) -->
-            <div class="bg-white rounded-xl p-4 border border-outline-variant flex flex-col gap-3 shrink-0">
-              <div class="flex items-center justify-between pb-2 border-b border-outline-variant">
-                <span class="text-xs font-medium text-on-surface flex items-center gap-1.5">
-                  <span class="material-symbols-outlined text-[16px] text-outline">update</span> Antrean selanjutnya
+            <div class="bg-surface-container-lowest rounded-xl p-4 border border-outline-variant/25 shadow-sm flex flex-col gap-3 shrink-0">
+              <div class="flex items-center justify-between pb-2 border-b border-outline-variant/30">
+                <span class="text-xs font-bold text-on-surface flex items-center gap-1.5">
+                  <span class="material-symbols-outlined text-[16px] text-primary">update</span> Antrean Selanjutnya
                 </span>
                 <span class="text-xs text-outline">Harap bersiap</span>
               </div>
 
               <div class="grid grid-cols-2 gap-3">
                 <!-- 1. Antrean PTSP Selanjutnya -->
-                <div class="p-3 rounded-lg bg-surface-container-low border border-outline-variant/60 flex flex-col justify-between">
+                <div class="p-3 rounded-lg bg-surface-container-low border border-outline-variant/20 flex flex-col justify-between">
                   <div class="flex items-center justify-between pb-1">
-                    <span class="text-xs font-medium text-primary-container">PTSP</span>
-                    <span class="text-xs text-outline">Loket</span>
+                    <span class="text-xs font-bold text-primary">PTSP</span>
+                    <span class="text-[11px] text-outline">Loket</span>
                   </div>
                   <div class="py-1 text-center">
-                    <span id="kiosk-next-ptsp" class="font-mono tabular-nums font-semibold text-2xl text-primary-container block">P-002</span>
+                    <span id="kiosk-next-ptsp" class="font-mono tabular-nums font-bold text-2xl text-primary block">P-002</span>
                   </div>
-                  <span class="text-xs text-on-surface-variant text-center truncate block">Pelayanan terpadu</span>
+                  <span class="text-[11px] text-on-surface-variant text-center truncate block">Pelayanan terpadu</span>
                 </div>
 
                 <!-- 2. Antrean Sidang Selanjutnya -->
-                <div class="p-3 rounded-lg bg-surface-container-low border border-outline-variant/60 flex flex-col justify-between">
+                <div class="p-3 rounded-lg bg-surface-container-low border border-outline-variant/20 flex flex-col justify-between">
                   <div class="flex items-center justify-between pb-1">
-                    <span class="text-xs font-medium text-secondary">Sidang</span>
-                    <span class="text-xs text-outline">Ruang</span>
+                    <span class="text-xs font-bold text-secondary">Sidang</span>
+                    <span class="text-[11px] text-outline">Ruang</span>
                   </div>
                   <div class="py-1 text-center">
-                    <span id="kiosk-next-sidang" class="font-mono tabular-nums font-semibold text-2xl text-secondary block">S-002</span>
+                    <span id="kiosk-next-sidang" class="font-mono tabular-nums font-bold text-2xl text-secondary block">S-002</span>
                   </div>
-                  <span class="text-xs text-on-surface-variant text-center truncate block">Persidangan perkara</span>
+                  <span class="text-[11px] text-on-surface-variant text-center truncate block">Persidangan perkara</span>
                 </div>
               </div>
             </div>
@@ -593,486 +702,716 @@
 
         </div>
 
-      </div>
-
-      <!-- Help Bar -->
-      <div class="bg-white rounded-xl p-4 sm:p-5 border border-outline-variant flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
-        <div class="flex items-center gap-3 min-w-0">
-          <div class="w-10 h-10 rounded-lg bg-surface-container-low flex items-center justify-center text-on-surface-variant shrink-0">
-            <span class="material-symbols-outlined text-[20px]">support_agent</span>
-          </div>
-          <div class="min-w-0">
-            <h3 class="font-display font-semibold text-sm text-on-surface leading-tight">Butuh bantuan langsung</h3>
-            <p class="text-xs text-on-surface-variant mt-0.5">Hubungi petugas resepsionis atau satpam di meja depan untuk panduan pendaftaran atau verifikasi tiket</p>
-          </div>
-        </div>
-        <div class="flex items-center gap-2 shrink-0 flex-nowrap w-full sm:w-auto overflow-x-auto no-scrollbar">
-          <button type="button" id="btn-cek-qr-manual" class="shrink-0 px-3.5 h-10 rounded-lg border border-outline-variant bg-white hover:bg-surface-container-low text-xs font-medium flex items-center justify-center gap-1.5 whitespace-nowrap transition-colors">
-            <span class="material-symbols-outlined text-[16px] text-on-surface-variant">qr_code_scanner</span>
-            <span>Cek Tiket</span>
-          </button>
-          <button type="button" id="btn-panduan" class="shrink-0 px-3.5 h-10 rounded-lg border border-outline-variant bg-white hover:bg-surface-container-low text-xs font-medium flex items-center justify-center gap-1.5 whitespace-nowrap transition-colors">
-            <span class="material-symbols-outlined text-[16px] text-on-surface-variant">help</span>
-            <span>Panduan</span>
-          </button>
-          <button type="button" id="btn-panggil-petugas" class="shrink-0 px-3.5 h-10 rounded-lg bg-primary-container hover:bg-primary text-white text-xs font-medium flex items-center justify-center gap-1.5 whitespace-nowrap transition-colors">
-            <span class="material-symbols-outlined text-[16px]">notifications_active</span>
-            <span>Panggil Petugas</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Realtime Summary Strip -->
-      <div class="bg-white rounded-xl p-5 border border-outline-variant">
-        <div class="flex items-center justify-between text-xs text-outline mb-4">
-          <span class="font-medium text-on-surface">Ringkasan kunjungan hari ini</span>
-          <span class="text-on-primary-fixed flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-600 inline-block"></span> Tersinkronisasi</span>
-        </div>
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div class="p-4 rounded-lg bg-surface-container-low">
-            <span class="text-xs text-on-surface-variant">Buku tamu hari ini</span>
-            <div id="kiosk-stat-total" class="font-mono tabular-nums text-xl font-semibold text-on-surface mt-1">0 Terdaftar</div>
-          </div>
-          <div class="p-4 rounded-lg bg-surface-container-low">
-            <span class="text-xs text-on-surface-variant">Tamu PTSP</span>
-            <div id="kiosk-stat-ptsp" class="font-mono tabular-nums text-xl font-semibold text-primary-container mt-1">0 Orang</div>
-          </div>
-          <div class="p-4 rounded-lg bg-surface-container-low">
-            <span class="text-xs text-on-surface-variant">Tamu persidangan</span>
-            <div id="kiosk-stat-sidang" class="font-mono tabular-nums text-xl font-semibold text-secondary mt-1">0 Orang</div>
-          </div>
-          <div class="p-4 rounded-lg bg-surface-container-low">
-            <span class="text-xs text-on-surface-variant">Selesai dilayani</span>
-            <div id="kiosk-stat-selesai" class="font-mono tabular-nums text-xl font-semibold text-emerald-700 mt-1">0 Orang</div>
-          </div>
-        </div>
       </div>
     </section>
 
     <!-- ================================================================== -->
-    <!-- VIEW 2: FORM REGISTRASI TAMU PTSP (TANPA KOLOM NIK)                -->
+    <!-- VIEW 2: FORM REGISTRASI TAMU PTSP (TANPA KOLOM NIK - STITCH UI)    -->
     <!-- ================================================================== -->
-    <section id="view-form-ptsp" class="view-panel hidden max-w-3xl mx-auto px-4 sm:px-6 py-8">
-      <div class="bg-white rounded-2xl shadow-[0_1px_2px_rgba(26,25,23,0.05)] border border-outline-variant overflow-hidden">
-        <div class="h-0.5 bg-primary-container"></div>
-        <div class="p-6 sm:p-8 flex flex-col gap-6">
-          <div class="flex items-center justify-between gap-2">
-            <button type="button" data-nav="kiosk" class="inline-flex items-center gap-1.5 text-sm font-medium text-on-surface-variant hover:text-primary-container transition-colors">
-              <span class="material-symbols-outlined text-[18px]">arrow_back</span> Kembali ke Beranda
-            </button>
-            <span class="px-2.5 py-1 rounded-md text-xs font-medium bg-primary-fixed text-on-primary-fixed">Jalur PTSP</span>
-          </div>
+    <section id="view-form-ptsp" class="view-panel hidden relative w-full py-8 px-4 sm:px-6 flex justify-center items-start overflow-hidden">
+      <div class="absolute top-10 left-1/2 -translate-x-1/2 w-full max-w-4xl h-96 bg-primary-fixed/30 rounded-full blur-3xl pointer-events-none -z-10"></div>
+      <div class="absolute top-72 -left-20 w-72 h-72 bg-secondary-fixed/40 rounded-full blur-2xl pointer-events-none -z-10"></div>
 
-          <div>
-            <h1 class="font-display text-2xl font-semibold text-on-surface">Formulir Registrasi Tamu PTSP</h1>
-            <p class="text-sm text-on-surface-variant mt-1">Isi data pengunjung untuk mendapatkan nomor tiket antrean loket (<strong id="ptsp-next-badge" class="font-mono tabular-nums text-on-surface">P-001</strong>)</p>
-          </div>
-
-          <form id="form-ptsp" class="flex flex-col gap-5" novalidate>
-            <div>
-              <div class="flex justify-between mb-1.5">
-                <label for="ptsp-nama" class="text-sm font-medium text-on-surface">Nama Lengkap Pengunjung <span class="text-error">*</span></label>
-                <span class="text-xs text-outline">Wajib</span>
-              </div>
-              <input id="ptsp-nama" type="text" required placeholder="Contoh: Dr. Hendra Wijaya, S.H." class="w-full h-11 px-4 rounded-lg border border-outline-variant bg-surface-container-low/40 focus:bg-white focus:border-primary-container text-sm transition-colors" />
-              <p id="err-ptsp-nama" class="hidden text-xs text-error mt-1"></p>
-            </div>
-
-            <div>
-              <div class="flex justify-between mb-1.5">
-                <label for="ptsp-instansi" class="text-sm font-medium text-on-surface">Asal Instansi / Kantor Hukum / Pribadi <span class="text-error">*</span></label>
-                <span class="text-xs text-outline">Wajib</span>
-              </div>
-              <input id="ptsp-instansi" type="text" required placeholder="Contoh: PT Maju Bersama / Kantor Hukum Hendra / Pribadi" class="w-full h-11 px-4 rounded-lg border border-outline-variant bg-surface-container-low/40 focus:bg-white focus:border-primary-container text-sm transition-colors" />
-              <p id="err-ptsp-instansi" class="hidden text-xs text-error mt-1"></p>
-            </div>
-
-            <div>
-              <label for="ptsp-hp" class="block text-sm font-medium text-on-surface mb-1.5">Nomor WhatsApp / HP</label>
-              <div class="flex items-stretch">
-                <span class="inline-flex items-center gap-1.5 px-3.5 h-11 rounded-l-lg border border-r-0 border-outline-variant bg-surface-container text-sm font-mono font-medium text-primary-container whitespace-nowrap shrink-0 select-none">
-                  <span class="text-xs text-on-surface-variant">ID</span>
-                  <span>+62</span>
-                </span>
-                <input id="ptsp-hp" type="tel" inputmode="tel" autocomplete="tel-national" maxlength="16" placeholder="812-3456-7890" class="flex-1 min-w-0 h-11 px-4 rounded-r-lg border border-outline-variant bg-surface-container-low/40 focus:bg-white focus:border-primary-container text-sm font-mono tabular-nums transition-colors" />
-              </div>
-            </div>
-
-            <div>
-              <div class="flex justify-between mb-2">
-                <label class="text-sm font-medium text-on-surface">Pilih Loket Layanan PTSP <span class="text-error">*</span></label>
-                <span id="ptsp-loket-terpilih" class="text-xs font-medium text-primary-container">e-Court Terpilih</span>
-              </div>
-              <div id="ptsp-loket-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <button type="button" data-loket="e-Court" class="loket-card text-left p-4 rounded-xl border transition-colors bg-primary-container text-white border-primary-container">
-                  <div class="flex items-center justify-between mb-1">
-                    <span class="font-display font-semibold text-sm">Loket e-Court</span>
-                    <span class="text-xs font-mono px-2 py-0.5 rounded bg-secondary-container text-on-secondary-fixed font-medium">Loket 1</span>
-                  </div>
-                  <p class="text-xs opacity-85">Pendaftaran perkara online, e-Filing &amp; aktivasi akun</p>
-                </button>
-                <button type="button" data-loket="Informasi" class="loket-card text-left p-4 rounded-xl border transition-colors bg-surface-container-low/60 text-on-surface border-outline-variant hover:border-primary-container/50">
-                  <div class="flex items-center justify-between mb-1">
-                    <span class="font-display font-semibold text-sm">Informasi &amp; Posbakum</span>
-                    <span class="text-xs font-mono px-2 py-0.5 rounded bg-white text-outline font-medium">Loket 2</span>
-                  </div>
-                  <p class="text-xs text-on-surface-variant">Informasi publik, PPID &amp; layanan konsultasi hukum</p>
-                </button>
-                <button type="button" data-loket="Hukum" class="loket-card text-left p-4 rounded-xl border transition-colors bg-surface-container-low/60 text-on-surface border-outline-variant hover:border-primary-container/50">
-                  <div class="flex items-center justify-between mb-1">
-                    <span class="font-display font-semibold text-sm">Kepaniteraan Hukum</span>
-                    <span class="text-xs font-mono px-2 py-0.5 rounded bg-white text-outline font-medium">Loket 3</span>
-                  </div>
-                  <p class="text-xs text-on-surface-variant">Legalisasi surat kuasa, surat keterangan &amp; salinan putusan</p>
-                </button>
-                <button type="button" data-loket="Umum" class="loket-card text-left p-4 rounded-xl border transition-colors bg-surface-container-low/60 text-on-surface border-outline-variant hover:border-primary-container/50">
-                  <div class="flex items-center justify-between mb-1">
-                    <span class="font-display font-semibold text-sm">Umum &amp; Kesekretariatan</span>
-                    <span class="text-xs font-mono px-2 py-0.5 rounded bg-white text-outline font-medium">Loket 4</span>
-                  </div>
-                  <p class="text-xs text-on-surface-variant">Surat masuk/keluar, kepegawaian &amp; audiensi kedinasan</p>
-                </button>
-              </div>
-            </div>
-
-            <div>
-              <div class="flex justify-between mb-1.5">
-                <label for="ptsp-keperluan" class="text-sm font-medium text-on-surface">Keperluan Singkat <span class="text-xs font-normal text-outline">(Opsional)</span></label>
-                <span class="text-xs text-outline">Maks. 200 karakter</span>
-              </div>
-              <textarea id="ptsp-keperluan" rows="2" maxlength="200" placeholder="Contoh: Mengambil salinan putusan perkara atau verifikasi akun advokat" class="w-full p-3 rounded-lg border border-outline-variant bg-surface-container-low/40 focus:bg-white focus:border-primary-container text-sm transition-colors"></textarea>
-            </div>
-
-            <!-- Opsional Foto Kamera -->
-            <div class="p-4 rounded-xl bg-surface-container-low/60 border border-dashed border-outline-variant flex flex-col sm:flex-row items-center justify-between gap-3">
-              <div class="flex items-center gap-3">
-                <div id="ptsp-foto-preview" class="w-12 h-12 rounded-lg bg-white border border-outline-variant flex items-center justify-center overflow-hidden shrink-0">
-                  <span class="material-symbols-outlined text-outline text-[20px]">photo_camera</span>
-                </div>
-                <div>
-                  <span class="block text-sm font-medium text-on-surface">Foto Pengunjung (Opsional)</span>
-                  <span class="text-xs text-on-surface-variant">Ambil potret cepat dari kamera Kiosk/HP untuk arsip</span>
-                </div>
-              </div>
-              <div class="flex items-center gap-2">
-                <button type="button" id="btn-ptsp-kamera" class="px-4 h-9 rounded-lg bg-white border border-outline-variant hover:border-primary-container text-xs font-medium transition-colors">Ambil Foto</button>
-                <button type="button" id="btn-ptsp-hapus-foto" class="hidden px-3 h-9 rounded-lg text-xs font-medium text-error hover:bg-error-container/40 transition-colors">Hapus</button>
-              </div>
-            </div>
-
-            <div class="pt-2 flex flex-col sm:flex-row gap-3">
-              <button type="button" id="btn-ptsp-reset" class="h-11 px-5 rounded-lg border border-outline-variant bg-surface-container-low hover:bg-surface-container text-sm font-medium flex items-center justify-center gap-2 transition-colors">
-                <span class="material-symbols-outlined text-[18px]">restart_alt</span> Reset Form
-              </button>
-              <button type="submit" id="btn-ptsp-submit" class="flex-1 h-11 px-5 rounded-lg bg-primary-container hover:bg-primary active:scale-[0.99] text-white font-medium text-sm flex items-center justify-center gap-2 transition-[background-color,transform] duration-150">
-                <span class="material-symbols-outlined text-[18px]">confirmation_number</span>
-                <span id="btn-ptsp-submit-label">Terbitkan Tiket Antrean</span>
-                <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================================================================== -->
-    <!-- VIEW 3: FORM REGISTRASI TAMU SIDANG (TANPA KOLOM NIK)              -->
-    <!-- ================================================================== -->
-    <section id="view-form-sidang" class="view-panel hidden max-w-3xl mx-auto px-4 sm:px-6 py-8">
-      <div class="bg-white rounded-2xl shadow-[0_1px_2px_rgba(26,25,23,0.05)] border border-outline-variant overflow-hidden">
-        <div class="h-0.5 bg-secondary-container"></div>
-        <div class="p-6 sm:p-8 flex flex-col gap-6">
-          <div class="flex items-center justify-between gap-2">
-            <button type="button" data-nav="kiosk" class="inline-flex items-center gap-1.5 text-sm font-medium text-on-surface-variant hover:text-primary-container transition-colors">
-              <span class="material-symbols-outlined text-[18px]">arrow_back</span> Kembali ke Beranda
-            </button>
-            <span class="px-2.5 py-1 rounded-md text-xs font-medium bg-secondary-fixed text-on-secondary-fixed-variant">Jalur Persidangan</span>
-          </div>
-
-          <div>
-            <h1 class="font-display text-2xl font-semibold text-on-surface">Formulir Kehadiran Sidang</h1>
-            <p class="text-sm text-on-surface-variant mt-1">Konfirmasi kehadiran para pihak perkara untuk Petugas Sidang dan Majelis Hakim sebelum persidangan dibuka</p>
-          </div>
-
-          <form id="form-sidang" class="flex flex-col gap-5" novalidate>
-            <div>
-              <div class="flex justify-between mb-2">
-                <label class="text-sm font-medium text-on-surface">Peran dalam Persidangan <span class="text-error">*</span></label>
-                <span class="text-xs text-outline">Pilih satu yang mewakili</span>
-              </div>
-              <div id="sidang-peran-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                <button type="button" data-peran="Penggugat" class="peran-card p-3 rounded-xl border text-left transition-colors bg-primary-container text-white border-primary-container">
-                  <span class="block font-display font-semibold text-sm">Penggugat</span>
-                  <span class="block text-xs opacity-80">Pihak Utama</span>
-                </button>
-                <button type="button" data-peran="Tergugat" class="peran-card p-3 rounded-xl border text-left transition-colors bg-surface-container-low/60 text-on-surface border-outline-variant hover:border-primary-container/50">
-                  <span class="block font-display font-semibold text-sm">Tergugat</span>
-                  <span class="block text-xs text-on-surface-variant">Instansi / Pejabat</span>
-                </button>
-                <button type="button" data-peran="Turut Tergugat" class="peran-card p-3 rounded-xl border text-left transition-colors bg-surface-container-low/60 text-on-surface border-outline-variant hover:border-primary-container/50">
-                  <span class="block font-display font-semibold text-sm">Turut Tergugat</span>
-                  <span class="block text-xs text-on-surface-variant">Pihak Terkait</span>
-                </button>
-                <button type="button" data-peran="Kuasa Hukum" class="peran-card p-3 rounded-xl border text-left transition-colors bg-surface-container-low/60 text-on-surface border-outline-variant hover:border-primary-container/50">
-                  <span class="block font-display font-semibold text-sm">Kuasa Hukum</span>
-                  <span class="block text-xs text-on-surface-variant">Advokat / Jaksa TUN</span>
-                </button>
-                <button type="button" data-peran="Saksi" class="peran-card p-3 rounded-xl border text-left transition-colors bg-surface-container-low/60 text-on-surface border-outline-variant hover:border-primary-container/50">
-                  <span class="block font-display font-semibold text-sm">Saksi</span>
-                  <span class="block text-xs text-on-surface-variant">Fakta / Kejadian</span>
-                </button>
-                <button type="button" data-peran="Ahli" class="peran-card p-3 rounded-xl border text-left transition-colors bg-surface-container-low/60 text-on-surface border-outline-variant hover:border-primary-container/50">
-                  <span class="block font-display font-semibold text-sm">Ahli</span>
-                  <span class="block text-xs text-on-surface-variant">Keterangan Khusus</span>
-                </button>
-              </div>
-            </div>
-
-            <div>
-              <label for="sidang-nama" class="block text-sm font-medium text-on-surface mb-1.5">Nama Lengkap Sesuai Identitas / Berita Acara <span class="text-error">*</span></label>
-              <input id="sidang-nama" type="text" required placeholder="Contoh: Muhammad Rizky Pratama, S.H." class="w-full h-11 px-4 rounded-lg border border-outline-variant bg-surface-container-low/40 focus:bg-white focus:border-primary-container text-sm transition-colors" />
-              <p id="err-sidang-nama" class="hidden text-xs text-error mt-1"></p>
-            </div>
-
-            <div>
-              <label for="sidang-hp" class="block text-sm font-medium text-on-surface mb-1.5">Nomor WhatsApp / HP Aktif</label>
-              <div class="flex items-stretch">
-                <span class="inline-flex items-center gap-1.5 px-3.5 h-11 rounded-l-lg border border-r-0 border-outline-variant bg-surface-container text-sm font-mono font-medium text-primary-container whitespace-nowrap shrink-0 select-none">
-                  <span class="text-xs text-on-surface-variant">ID</span>
-                  <span>+62</span>
-                </span>
-                <input id="sidang-hp" type="tel" inputmode="tel" autocomplete="tel-national" maxlength="16" placeholder="812-3456-7890" class="flex-1 min-w-0 h-11 px-4 rounded-r-lg border border-outline-variant bg-surface-container-low/40 focus:bg-white focus:border-primary-container text-sm font-mono tabular-nums transition-colors" />
-              </div>
-            </div>
-
-            <!-- Nomor Perkara Persidangan (Manual Input) -->
-            <div>
-              <div class="flex justify-between items-center mb-1.5">
-                <label for="sidang-cari-perkara" class="text-sm font-medium text-on-surface">Nomor Perkara Persidangan <span class="text-error">*</span></label>
-                <span class="text-xs text-outline">Wajib</span>
-              </div>
-              <div class="relative mb-2">
-                <span class="material-symbols-outlined text-outline text-[18px] absolute left-3.5 top-3">gavel</span>
-                <input id="sidang-cari-perkara" type="text" required placeholder="Contoh: 24/G/2026/PTUN.PLG" class="w-full h-11 pl-10 pr-4 rounded-lg border border-outline-variant bg-surface-container-low/40 focus:bg-white focus:border-primary-container text-sm font-mono transition-colors" />
-              </div>
-              <div id="sidang-jadwal-list" class="flex flex-col gap-2 max-h-56 overflow-y-auto"></div>
-              <p id="err-sidang-perkara" class="hidden text-xs text-error mt-1"></p>
-            </div>
-
-            <!-- Agenda Sidang (Wajib) -->
-            <div>
-              <div class="flex justify-between mb-1.5">
-                <label for="sidang-agenda" class="text-sm font-medium text-on-surface">Agenda Sidang <span class="text-error">*</span></label>
-                <span class="text-xs text-outline">Wajib</span>
-              </div>
-              <input id="sidang-agenda" type="text" required maxlength="200" placeholder="Contoh: Pembuktian Surat & Saksi / Putusan" class="w-full h-11 px-4 rounded-lg border border-outline-variant bg-surface-container-low/40 focus:bg-white focus:border-primary-container text-sm transition-colors" />
-              <p id="err-sidang-agenda" class="hidden text-xs text-error mt-1"></p>
-            </div>
-
-            <!-- Opsional Foto Kamera -->
-            <div class="p-4 rounded-xl bg-surface-container-low/60 border border-dashed border-outline-variant flex flex-col sm:flex-row items-center justify-between gap-3">
-              <div class="flex items-center gap-3">
-                <div id="sidang-foto-preview" class="w-12 h-12 rounded-lg bg-white border border-outline-variant flex items-center justify-center overflow-hidden shrink-0">
-                  <span class="material-symbols-outlined text-outline text-[20px]">photo_camera</span>
-                </div>
-                <div>
-                  <span class="block text-sm font-medium text-on-surface">Foto Kehadiran (Opsional)</span>
-                  <span class="text-xs text-on-surface-variant">Potret wajah opsional dari kamera Kiosk/HP</span>
-                </div>
-              </div>
-              <div class="flex items-center gap-2">
-                <button type="button" id="btn-sidang-kamera" class="px-4 h-9 rounded-lg bg-white border border-outline-variant hover:border-primary-container text-xs font-medium transition-colors">Ambil Foto</button>
-                <button type="button" id="btn-sidang-hapus-foto" class="hidden px-3 h-9 rounded-lg text-xs font-medium text-error hover:bg-error-container/40 transition-colors">Hapus</button>
-              </div>
-            </div>
-
-            <div class="p-4 rounded-xl bg-secondary-fixed/40 border border-secondary-fixed-dim/50 flex items-start gap-2.5 text-xs text-on-secondary-fixed">
-              <span class="material-symbols-outlined text-secondary text-[18px] shrink-0">info</span>
-              <span><strong>Tata tertib sidang:</strong> Para pihak dimohon mengenakan pakaian rapi, menonaktifkan nada dering ponsel, dan menunggu panggilan di ruang tunggu sidang. Ruang sidang ditentukan dan dipanggil oleh petugas saat persidangan dimulai.</span>
-            </div>
-
-            <div class="pt-2 flex flex-col sm:flex-row gap-3">
-              <button type="button" data-nav="kiosk" class="h-11 px-5 rounded-lg border border-outline-variant bg-surface-container-low hover:bg-surface-container text-sm font-medium transition-colors">Kembali</button>
-              <button type="submit" id="btn-sidang-submit" class="flex-1 h-11 px-5 rounded-lg bg-primary-container hover:bg-primary active:scale-[0.99] text-white font-medium text-sm flex items-center justify-center gap-2 transition-[background-color,transform] duration-150">
-                <span class="material-symbols-outlined text-[18px]">how_to_reg</span>
-                <span id="btn-sidang-submit-label">Konfirmasi Kehadiran Sidang</span>
-                <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================================================================== -->
-    <!-- VIEW 4: TIKET DIGITAL & CETAK STRUK THERMAL (MOMENT 2)             -->
-    <!-- ================================================================== -->
-    <section id="view-tiket" class="view-panel hidden max-w-xl mx-auto px-4 sm:px-6 py-8 flex flex-col gap-5">
-      <div id="tiket-empty-state" class="hidden bg-white rounded-2xl p-8 text-center border border-outline-variant">
-        <span class="material-symbols-outlined text-4xl text-outline mb-2">confirmation_number</span>
-        <h2 class="font-display text-lg font-semibold text-on-surface">Belum ada tiket aktif</h2>
-        <p class="text-sm text-on-surface-variant mt-1 mb-5">Lakukan registrasi pada jalur PTSP atau Persidangan terlebih dahulu untuk menerbitkan tiket digital</p>
-        <button type="button" data-nav="kiosk" class="px-5 h-10 rounded-lg bg-primary-container hover:bg-primary text-white font-medium text-sm transition-colors">Ke Beranda</button>
-      </div>
-
-      <div id="tiket-content-wrap" class="flex flex-col gap-5">
-        <div class="bg-white rounded-xl p-4 border border-outline-variant flex items-center gap-3">
-          <div class="w-10 h-10 rounded-lg bg-primary-fixed text-on-primary-fixed flex items-center justify-center shrink-0">
-            <span class="material-symbols-outlined text-[20px]">check_circle</span>
-          </div>
-          <div>
-            <div class="flex items-center gap-2">
-              <span class="font-display font-semibold text-sm text-on-surface">Registrasi berhasil</span>
-              <span class="px-2 py-0.5 rounded-md text-xs font-medium bg-primary-fixed text-on-primary-fixed">Aktif</span>
-            </div>
-            <p class="text-xs text-on-surface-variant mt-0.5">Nomor antrean telah diterbitkan dan langsung tampil pada layar pantau petugas</p>
-          </div>
-        </div>
-
-        <!-- Perforated Digital Ticket Card -->
-        <div class="ticket-perforated bg-white rounded-2xl shadow-[0_4px_16px_rgba(26,25,23,0.06)] border border-outline-variant border-t-2 border-t-secondary-container overflow-hidden">
-          <div class="p-6 text-center border-b border-dashed border-outline-variant">
-            <div id="tkt-logo-box" class="w-11 h-11 mx-auto rounded-lg bg-primary-container flex items-center justify-center mb-2 overflow-hidden">
-              <img src="img/logo-mahkamah-agung.svg" alt="Logo Mahkamah Agung" class="w-full h-full object-contain p-1" />
-            </div>
-            <h2 id="tkt-satker-nama" class="font-display font-semibold text-sm text-on-surface">Pengadilan Tata Usaha Negara</h2>
-            <p id="tkt-satker-alamat" class="text-xs text-on-surface-variant mt-0.5">-</p>
-          </div>
-
-          <div class="p-6 flex flex-col gap-4">
-            <div class="bg-surface-container-low rounded-xl p-5 text-center">
-              <span class="text-xs font-medium text-outline">Nomor antrean</span>
-              <div id="tkt-nomor-antrean" class="font-mono tabular-nums text-5xl font-semibold text-primary-container tracking-tight my-1">P-001</div>
-              <span id="tkt-badge-tujuan" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-medium bg-tertiary-fixed text-on-tertiary-fixed-variant">Loket e-Court</span>
-            </div>
-
-            <div class="divide-y divide-outline-variant/60 text-sm">
-              <div class="py-2.5 flex justify-between gap-3"><span class="text-on-surface-variant">Nama pengunjung</span><strong id="tkt-nama" class="text-right font-medium text-on-surface">-</strong></div>
-              <div class="py-2.5 flex justify-between gap-3"><span id="tkt-label-meta" class="text-on-surface-variant">Asal instansi</span><strong id="tkt-val-meta" class="text-right font-medium text-on-surface">-</strong></div>
-              <div class="py-2.5 flex justify-between gap-3"><span class="text-on-surface-variant">Waktu registrasi</span><strong id="tkt-waktu" class="text-right font-mono tabular-nums font-medium text-on-surface">-</strong></div>
-              <div class="py-2.5 flex justify-between gap-3"><span class="text-on-surface-variant">Status tiket</span><span id="tkt-status" class="px-2.5 py-0.5 rounded-md text-xs font-medium bg-secondary-fixed text-on-secondary-fixed-variant">Menunggu</span></div>
-            </div>
-
-            <div class="pt-2 flex flex-col items-center text-center">
-              <div id="tkt-qr-box" class="p-2.5 bg-white rounded-xl border border-outline-variant"></div>
-              <span id="tkt-id-code" class="mt-2 font-mono text-xs font-medium text-on-surface">Kode tiket: -</span>
-              <p class="text-xs text-on-surface-variant mt-1 max-w-xs">Pindai QR ini pada scanner petugas untuk verifikasi keaslian HMAC atau pencatatan check-out</p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Thermal & Action Buttons -->
+      <div class="w-full max-w-2xl bg-surface-container-lowest rounded-xl shadow-[0_12px_40px_rgba(1,45,29,0.06)] border border-outline-variant/20 p-6 sm:p-8 flex flex-col gap-6 relative">
         <div class="flex flex-col gap-3">
-          <button type="button" id="btn-tkt-cetak" class="w-full h-12 rounded-lg bg-primary-container hover:bg-primary active:scale-[0.99] text-white font-medium text-sm flex items-center justify-center gap-2 transition-[background-color,transform] duration-150">
-            <span class="material-symbols-outlined text-[18px]">print</span> Cetak Struk Thermal (58mm / 80mm)
-          </button>
-          <div class="bg-surface-container-low rounded-xl p-3 flex items-center justify-between gap-3">
-            <span class="text-xs text-on-surface-variant flex items-center gap-1.5">
-              <span class="material-symbols-outlined text-[16px]">timer</span>
-              Kembali ke Beranda dalam <strong id="tkt-countdown" class="font-mono tabular-nums text-on-surface">30</strong> detik
+          <div class="flex items-center justify-between flex-wrap gap-2">
+            <button type="button" data-nav="kiosk" class="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:text-primary-container transition-colors group">
+              <span class="material-symbols-outlined text-[18px] transition-transform group-hover:-translate-x-1">arrow_back</span>
+              <span>Kembali ke Layar Awal (Kiosk)</span>
+            </button>
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-fixed text-primary text-xs font-bold tracking-wide">
+              <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+              Jalur Pelayanan PTSP
             </span>
-            <button type="button" id="btn-tkt-selesai" class="px-3.5 h-8 rounded-lg bg-white border border-outline-variant hover:bg-surface-container-high text-xs font-medium transition-colors">
+          </div>
+
+          <div class="pt-1">
+            <h1 class="font-display text-2xl font-bold text-on-surface tracking-tight">Formulir Registrasi Tamu PTSP</h1>
+            <p class="text-[15px] text-on-surface-variant mt-1">
+              Isi data pengunjung dengan benar untuk mendapatkan nomor tiket antrean loket <span class="whitespace-nowrap">(<strong id="ptsp-next-badge" class="font-mono tabular-nums text-primary font-bold">P-001</strong>)</span>.
+            </p>
+          </div>
+
+          <div class="p-3.5 bg-surface-container-low rounded-lg flex items-start gap-3 mt-1">
+            <span class="material-symbols-outlined text-primary text-[20px] shrink-0 mt-0.5 icon-filled">verified_user</span>
+            <div class="flex flex-col">
+              <span class="text-xs text-primary font-bold">Protokol Kemudahan Layanan Publik:</span>
+              <span class="text-[13px] text-on-surface-variant leading-snug">Pengunjung <strong>TIDAK diwajibkan</strong> menginput NIK/KTP untuk menjaga privasi, kenyamanan, serta percepatan antrean di lobi utama.</span>
+            </div>
+          </div>
+        </div>
+
+        <form id="form-ptsp" class="flex flex-col gap-5" novalidate>
+          <div class="flex flex-col gap-1.5">
+            <div class="flex items-center justify-between">
+              <label for="ptsp-nama" class="text-sm font-semibold text-on-surface flex items-center gap-1">
+                <span>Nama Lengkap Pengunjung</span>
+                <span class="text-error">*</span>
+              </label>
+              <span class="text-xs text-outline font-medium">Wajib</span>
+            </div>
+            <div class="relative flex items-center">
+              <span class="material-symbols-outlined absolute left-3.5 text-outline text-[20px] pointer-events-none">person</span>
+              <input id="ptsp-nama" type="text" required placeholder="Contoh: Dr. Hendra Wijaya, S.H." class="w-full h-12 pl-11 pr-4 rounded-lg border border-outline-variant/40 bg-surface-container-lowest text-on-surface shadow-sm placeholder:text-outline/70 focus:bg-surface-container-low focus:border-primary text-[15px] transition-all" />
+            </div>
+            <p id="err-ptsp-nama" class="hidden text-xs text-error font-medium mt-0.5"></p>
+          </div>
+
+          <div class="flex flex-col gap-1.5">
+            <div class="flex items-center justify-between">
+              <label for="ptsp-instansi" class="text-sm font-semibold text-on-surface flex items-center gap-1">
+                <span>Asal Instansi / Kantor Hukum / Pribadi</span>
+                <span class="text-error">*</span>
+              </label>
+              <span class="text-xs text-outline font-medium">Wajib</span>
+            </div>
+            <div class="relative flex items-center">
+              <span class="material-symbols-outlined absolute left-3.5 text-outline text-[20px] pointer-events-none">corporate_fare</span>
+              <input id="ptsp-instansi" type="text" required placeholder="Contoh: PT Maju Bersama / Kantor Hukum Hendra / Pribadi" class="w-full h-12 pl-11 pr-4 rounded-lg border border-outline-variant/40 bg-surface-container-lowest text-on-surface shadow-sm placeholder:text-outline/70 focus:bg-surface-container-low focus:border-primary text-[15px] transition-all" />
+            </div>
+            <p id="err-ptsp-instansi" class="hidden text-xs text-error font-medium mt-0.5"></p>
+          </div>
+
+          <div class="flex flex-col gap-1.5">
+            <div class="flex items-center justify-between">
+              <label for="ptsp-hp" class="text-sm font-semibold text-on-surface">Nomor WhatsApp / HP</label>
+              <span class="text-xs text-secondary font-semibold">Kirim Tiket &amp; Notifikasi</span>
+            </div>
+            <div class="relative flex items-stretch shadow-sm rounded-lg overflow-hidden border border-outline-variant/40 focus-within:border-primary transition-all">
+              <span class="inline-flex items-center gap-1.5 px-3.5 h-12 bg-surface-container-high text-sm font-mono font-bold text-primary whitespace-nowrap shrink-0 select-none">
+                <span class="text-xs text-on-surface-variant font-sans font-semibold">ID</span>
+                <span>+62</span>
+              </span>
+              <input id="ptsp-hp" type="tel" inputmode="tel" autocomplete="tel-national" maxlength="16" placeholder="812-3456-7890" class="flex-1 min-w-0 h-12 px-3.5 bg-surface-container-lowest focus:bg-surface-container-low text-on-surface text-sm font-mono tabular-nums placeholder:text-outline/70 focus:outline-none transition-colors" />
+            </div>
+            <p class="text-xs text-outline flex items-center gap-1 mt-0.5">
+              <span class="material-symbols-outlined text-[15px]">sms</span>
+              Nomor aktif digunakan untuk mengirim notifikasi QR tiket digital dan panggilan loket.
+            </p>
+          </div>
+
+          <div class="flex flex-col gap-2 pt-1">
+            <div class="flex items-center justify-between">
+              <label class="text-sm font-semibold text-on-surface">Pilih Loket Layanan PTSP <span class="text-error">*</span></label>
+              <span id="ptsp-loket-terpilih" class="text-xs font-bold text-primary">e-Court Terpilih</span>
+            </div>
+            <div id="ptsp-loket-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <button type="button" data-loket="e-Court" class="loket-card text-left p-3.5 rounded-xl bg-primary text-on-primary shadow-md flex items-start gap-3 transition-all relative overflow-hidden">
+                <div class="w-10 h-10 rounded-lg bg-primary-container text-secondary-fixed flex items-center justify-center shrink-0">
+                  <span class="material-symbols-outlined text-[22px]">devices</span>
+                </div>
+                <div class="flex flex-col pr-5 min-w-0">
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    <span class="font-display font-bold text-sm leading-tight">Loket e-Court</span>
+                    <span class="px-1.5 py-0.5 rounded bg-secondary-fixed text-on-secondary-fixed text-[10px] font-bold">LOKET 1</span>
+                  </div>
+                  <p class="text-xs text-primary-fixed-dim leading-snug mt-1">Pendaftaran perkara online, e-Filing &amp; aktivasi akun</p>
+                </div>
+                <span class="material-symbols-outlined absolute top-3 right-3 text-secondary-fixed text-[20px]">check_circle</span>
+              </button>
+              <button type="button" data-loket="Informasi" class="loket-card text-left p-3.5 rounded-xl bg-surface-container-low text-on-surface hover:bg-surface-container flex items-start gap-3 transition-all relative overflow-hidden">
+                <div class="w-10 h-10 rounded-lg bg-surface-container-highest text-primary flex items-center justify-center shrink-0">
+                  <span class="material-symbols-outlined text-[22px]">gavel</span>
+                </div>
+                <div class="flex flex-col pr-5 min-w-0">
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    <span class="font-display font-bold text-sm leading-tight">Informasi &amp; Posbakum</span>
+                    <span class="px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant text-[10px] font-bold">LOKET 2</span>
+                  </div>
+                  <p class="text-xs text-on-surface-variant leading-snug mt-1">Informasi publik, PPID &amp; layanan konsultasi hukum</p>
+                </div>
+              </button>
+              <button type="button" data-loket="Hukum" class="loket-card text-left p-3.5 rounded-xl bg-surface-container-low text-on-surface hover:bg-surface-container flex items-start gap-3 transition-all relative overflow-hidden">
+                <div class="w-10 h-10 rounded-lg bg-surface-container-highest text-primary flex items-center justify-center shrink-0">
+                  <span class="material-symbols-outlined text-[22px]">description</span>
+                </div>
+                <div class="flex flex-col pr-5 min-w-0">
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    <span class="font-display font-bold text-sm leading-tight">Kepaniteraan Hukum</span>
+                    <span class="px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant text-[10px] font-bold">LOKET 3</span>
+                  </div>
+                  <p class="text-xs text-on-surface-variant leading-snug mt-1">Legalisasi surat kuasa, surat keterangan &amp; salinan putusan</p>
+                </div>
+              </button>
+              <button type="button" data-loket="Umum" class="loket-card text-left p-3.5 rounded-xl bg-surface-container-low text-on-surface hover:bg-surface-container flex items-start gap-3 transition-all relative overflow-hidden">
+                <div class="w-10 h-10 rounded-lg bg-surface-container-highest text-primary flex items-center justify-center shrink-0">
+                  <span class="material-symbols-outlined text-[22px]">folder_shared</span>
+                </div>
+                <div class="flex flex-col pr-5 min-w-0">
+                  <div class="flex items-center gap-1.5 flex-wrap">
+                    <span class="font-display font-bold text-sm leading-tight">Umum &amp; Kesekretariatan</span>
+                    <span class="px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant text-[10px] font-bold">LOKET 4</span>
+                  </div>
+                  <p class="text-xs text-on-surface-variant leading-snug mt-1">Surat masuk/keluar, kepegawaian &amp; audiensi kedinasan</p>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-1.5">
+            <div class="flex items-center justify-between">
+              <label for="ptsp-keperluan" class="text-sm font-semibold text-on-surface">Keperluan Singkat <span class="text-xs font-normal text-outline">(Opsional)</span></label>
+              <span class="text-xs text-outline">Maks. 200 karakter</span>
+            </div>
+            <textarea id="ptsp-keperluan" rows="3" maxlength="200" placeholder="Contoh: Mengambil salinan putusan perkara atau verifikasi akun advokat" class="w-full p-3.5 rounded-lg border border-outline-variant/40 bg-surface-container-lowest focus:bg-surface-container-low focus:border-primary shadow-sm text-[15px] placeholder:text-outline/70 transition-all resize-none"></textarea>
+          </div>
+
+          <!-- Opsional Foto Kamera -->
+          <div class="flex flex-col gap-2">
+            <div class="flex items-center justify-between">
+              <span class="text-sm font-semibold text-on-surface flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[18px] text-primary">photo_camera</span>
+                <span>Foto Pengunjung</span>
+              </span>
+              <span class="px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant text-xs font-semibold">Opsional untuk Arsip</span>
+            </div>
+            <div class="p-4 rounded-xl bg-surface-container-low hover:bg-surface-container-high/60 transition-colors flex flex-col sm:flex-row items-center justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <div id="ptsp-foto-preview" class="w-12 h-12 rounded-full bg-surface-container-highest text-primary flex items-center justify-center overflow-hidden shrink-0 shadow-sm">
+                  <span class="material-symbols-outlined text-[24px]">camera_alt</span>
+                </div>
+                <div>
+                  <span class="block text-sm font-semibold text-on-surface">Aktifkan Kamera Kiosk</span>
+                  <span class="text-xs text-outline">Ambil potret wajah cepat untuk lampiran arsip kunjungan tamu</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 shrink-0">
+                <button type="button" id="btn-ptsp-kamera" class="px-4 h-10 rounded-lg bg-surface-container-lowest text-primary hover:bg-primary hover:text-on-primary shadow-sm text-xs font-bold transition-all">Ambil Foto</button>
+                <button type="button" id="btn-ptsp-hapus-foto" class="hidden px-3 h-10 rounded-lg text-xs font-semibold text-error hover:bg-error-container/50 transition-colors">Hapus</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-3 flex flex-col-reverse sm:flex-row items-center justify-between gap-3">
+            <button type="button" id="btn-ptsp-reset" class="w-full sm:w-auto h-12 px-5 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface-variant font-semibold text-sm flex items-center justify-center gap-2 transition-colors">
+              <span class="material-symbols-outlined text-[18px]">restart_alt</span> Reset Form
+            </button>
+            <button type="submit" id="btn-ptsp-submit" class="w-full sm:flex-1 h-12 px-6 rounded-lg bg-primary hover:bg-primary-container active:scale-[0.99] text-on-primary font-bold text-base shadow-md hover:shadow-lg flex items-center justify-center gap-2 transition-all group">
+              <span class="material-symbols-outlined text-[22px]">confirmation_number</span>
+              <span id="btn-ptsp-submit-label">Terbitkan Tiket Antrean</span>
+              <span class="material-symbols-outlined text-[20px] transition-transform group-hover:translate-x-1">arrow_forward</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ================================================================== -->
+    <!-- VIEW 3: FORM REGISTRASI TAMU SIDANG (TANPA KOLOM NIK - STITCH UI)  -->
+    <!-- ================================================================== -->
+    <section id="view-form-sidang" class="view-panel hidden w-full py-8 px-4 sm:px-6 flex justify-center items-start">
+      <div class="w-full max-w-[640px] flex flex-col gap-5">
+        <!-- Top Navigation Bar Above Card -->
+        <div class="flex items-center justify-between flex-wrap gap-2">
+          <button type="button" data-nav="kiosk" class="inline-flex items-center gap-1.5 text-sm font-semibold text-on-surface-variant hover:text-primary transition-colors py-1">
+            <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+            <span>Kembali ke Layar Awal (Kiosk)</span>
+          </button>
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed font-mono text-xs font-bold">
+            <span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+            <span>Jalur Persidangan Aktif</span>
+          </div>
+        </div>
+
+        <!-- Main Card Container -->
+        <div class="bg-surface-container-lowest rounded-xl shadow-xl border border-outline-variant/20 overflow-hidden relative">
+          <div class="h-2 w-full bg-secondary-container"></div>
+          <div class="p-6 sm:p-8 flex flex-col gap-6">
+            <div class="flex flex-col gap-2">
+              <div class="flex items-center gap-2 flex-wrap">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary-fixed/60 text-secondary text-xs font-bold tracking-wide">
+                  <span class="material-symbols-outlined text-[16px]">gavel</span>
+                  Jalur Tamu Persidangan
+                </span>
+                <span class="text-outline-variant">•</span>
+                <span class="font-mono text-xs text-outline font-medium">Antrean Jalur S</span>
+              </div>
+              <h1 class="font-display text-2xl font-bold text-on-surface tracking-tight">Formulir Kehadiran Sidang</h1>
+              <p class="text-[15px] text-on-surface-variant leading-relaxed">
+                Konfirmasi kehadiran para pihak perkara untuk Petugas Sidang dan Majelis Hakim sebelum persidangan dibuka.
+              </p>
+            </div>
+
+            <form id="form-sidang" class="flex flex-col gap-5" novalidate>
+              <!-- 1. Peran Persidangan -->
+              <div class="flex flex-col gap-2.5">
+                <div class="flex items-center justify-between">
+                  <label class="text-sm font-semibold text-on-surface">Peran dalam Persidangan <span class="text-error">*</span></label>
+                  <span class="text-xs text-outline">Pilih satu yang mewakili</span>
+                </div>
+                <div id="sidang-peran-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  <button type="button" data-peran="Penggugat" class="peran-card flex items-center gap-2 px-3 py-3 rounded-lg text-left transition-all bg-primary-container text-on-primary shadow-sm">
+                    <span class="material-symbols-outlined text-[20px] text-secondary-fixed shrink-0">assignment_ind</span>
+                    <div class="flex flex-col min-w-0">
+                      <span class="font-display font-bold text-sm leading-tight truncate">Penggugat</span>
+                      <span class="text-[11px] opacity-80 leading-tight truncate">Pihak Utama</span>
+                    </div>
+                  </button>
+                  <button type="button" data-peran="Tergugat" class="peran-card flex items-center gap-2 px-3 py-3 rounded-lg text-left transition-all bg-surface-container-low text-on-surface hover:bg-surface-container">
+                    <span class="material-symbols-outlined text-[20px] text-outline shrink-0">shield_person</span>
+                    <div class="flex flex-col min-w-0">
+                      <span class="font-display font-semibold text-sm leading-tight truncate">Tergugat</span>
+                      <span class="text-[11px] text-outline leading-tight truncate">Instansi / Pejabat</span>
+                    </div>
+                  </button>
+                  <button type="button" data-peran="Turut Tergugat" class="peran-card flex items-center gap-2 px-3 py-3 rounded-lg text-left transition-all bg-surface-container-low text-on-surface hover:bg-surface-container">
+                    <span class="material-symbols-outlined text-[20px] text-outline shrink-0">supervised_user_circle</span>
+                    <div class="flex flex-col min-w-0">
+                      <span class="font-display font-semibold text-sm leading-tight truncate">Turut Tergugat</span>
+                      <span class="text-[11px] text-outline leading-tight truncate">Pihak Terkait</span>
+                    </div>
+                  </button>
+                  <button type="button" data-peran="Kuasa Hukum" class="peran-card flex items-center gap-2 px-3 py-3 rounded-lg text-left transition-all bg-surface-container-low text-on-surface hover:bg-surface-container">
+                    <span class="material-symbols-outlined text-[20px] text-outline shrink-0">business_center</span>
+                    <div class="flex flex-col min-w-0">
+                      <span class="font-display font-semibold text-sm leading-tight truncate">Kuasa Hukum</span>
+                      <span class="text-[11px] text-outline leading-tight truncate">Advokat / Jaksa TUN</span>
+                    </div>
+                  </button>
+                  <button type="button" data-peran="Saksi" class="peran-card flex items-center gap-2 px-3 py-3 rounded-lg text-left transition-all bg-surface-container-low text-on-surface hover:bg-surface-container">
+                    <span class="material-symbols-outlined text-[20px] text-outline shrink-0">visibility</span>
+                    <div class="flex flex-col min-w-0">
+                      <span class="font-display font-semibold text-sm leading-tight truncate">Saksi</span>
+                      <span class="text-[11px] text-outline leading-tight truncate">Fakta / Kejadian</span>
+                    </div>
+                  </button>
+                  <button type="button" data-peran="Ahli" class="peran-card flex items-center gap-2 px-3 py-3 rounded-lg text-left transition-all bg-surface-container-low text-on-surface hover:bg-surface-container">
+                    <span class="material-symbols-outlined text-[20px] text-outline shrink-0">school</span>
+                    <div class="flex flex-col min-w-0">
+                      <span class="font-display font-semibold text-sm leading-tight truncate">Ahli</span>
+                      <span class="text-[11px] text-outline leading-tight truncate">Keterangan Khusus</span>
+                    </div>
+                  </button>
+                </div>
+              </div>
+
+              <!-- 2. Nama Lengkap -->
+              <div class="flex flex-col gap-1.5">
+                <label for="sidang-nama" class="text-sm font-semibold text-on-surface">Nama Lengkap Sesuai Identitas / Berita Acara <span class="text-error">*</span></label>
+                <div class="relative flex items-center">
+                  <span class="material-symbols-outlined absolute left-3.5 text-outline text-[20px] pointer-events-none">person</span>
+                  <input id="sidang-nama" type="text" required placeholder="Contoh: Muhammad Rizky Pratama, S.H." class="w-full h-12 pl-11 pr-4 rounded-lg bg-surface-container-low text-on-surface text-[15px] focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary-container border border-outline-variant/30 transition-all" />
+                </div>
+                <span class="text-xs text-outline">Gunakan gelar jika bertindak sebagai Advokat / Kuasa Hukum resmi.</span>
+                <p id="err-sidang-nama" class="hidden text-xs text-error font-medium"></p>
+              </div>
+
+              <!-- 3. WhatsApp / HP -->
+              <div class="flex flex-col gap-1.5">
+                <label for="sidang-hp" class="text-sm font-semibold text-on-surface">Nomor WhatsApp / HP Aktif</label>
+                <div class="relative flex items-stretch rounded-lg overflow-hidden border border-outline-variant/30 bg-surface-container-low focus-within:bg-surface-container-lowest focus-within:ring-2 focus-within:ring-primary-container transition-all">
+                  <span class="inline-flex items-center gap-1.5 px-3.5 h-12 bg-surface-container-high text-sm font-mono font-bold text-primary whitespace-nowrap shrink-0 select-none">
+                    <span class="text-xs text-on-surface-variant font-sans font-semibold">ID</span>
+                    <span>+62</span>
+                  </span>
+                  <input id="sidang-hp" type="tel" inputmode="tel" autocomplete="tel-national" maxlength="16" placeholder="812-3456-7890" class="flex-1 min-w-0 h-12 px-3.5 bg-transparent text-on-surface text-sm font-mono tabular-nums focus:outline-none" />
+                  <div class="hidden sm:inline-flex items-center self-center mr-3 gap-1 text-[11px] font-semibold text-primary bg-primary-fixed px-2 py-0.5 rounded shrink-0">
+                    <span class="material-symbols-outlined text-[14px]">notifications_active</span> Notifikasi Panggilan
+                  </div>
+                </div>
+                <span class="text-xs text-outline">Nomor digunakan untuk pengiriman kode antrean &amp; notifikasi sidang dimulai.</span>
+              </div>
+
+              <!-- 4. Nomor Perkara & Jadwal Hari Ini -->
+              <div class="flex flex-col gap-2">
+                <div class="flex justify-between items-center">
+                  <label for="sidang-cari-perkara" class="text-sm font-semibold text-on-surface">Nomor Perkara Sidang Hari Ini <span class="text-error">*</span></label>
+                  <span class="text-xs text-secondary font-semibold">Wajib</span>
+                </div>
+                <div class="bg-surface-container-low rounded-xl p-3 flex flex-col gap-2.5 border border-outline-variant/25">
+                  <div class="relative flex items-center">
+                    <span class="material-symbols-outlined text-outline text-[18px] absolute left-3">search</span>
+                    <input id="sidang-cari-perkara" type="text" required placeholder="Ketik nomor perkara (contoh: 24/G/2026/PTUN.PLG)..." class="w-full h-11 pl-9 pr-4 rounded-lg bg-surface-container-lowest border border-outline-variant/40 focus:border-primary-container text-sm font-mono text-on-surface shadow-sm transition-all" />
+                  </div>
+                  <div id="sidang-jadwal-list" class="flex flex-col gap-1.5 max-h-56 overflow-y-auto"></div>
+                </div>
+                <p id="err-sidang-perkara" class="hidden text-xs text-error font-medium"></p>
+              </div>
+
+              <!-- 5. Agenda Sidang (Wajib sesuai aturan yang berlaku) -->
+              <div class="flex flex-col gap-1.5">
+                <div class="flex items-center justify-between">
+                  <label for="sidang-agenda" class="text-sm font-semibold text-on-surface">Agenda Sidang Hari Ini <span class="text-error">*</span></label>
+                  <span class="text-xs text-outline font-medium">Wajib</span>
+                </div>
+                <div class="relative flex items-center">
+                  <span class="material-symbols-outlined absolute left-3.5 text-secondary text-[20px] pointer-events-none">description</span>
+                  <input id="sidang-agenda" type="text" required maxlength="200" placeholder="Contoh: Pembuktian Surat &amp; Saksi / Putusan" class="w-full h-12 pl-11 pr-4 rounded-lg bg-surface-container-low text-on-surface text-[15px] focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary-container border border-outline-variant/30 transition-all" />
+                </div>
+                <p id="err-sidang-agenda" class="hidden text-xs text-error font-medium"></p>
+              </div>
+
+              <!-- 6. Opsional Foto Kamera -->
+              <div class="flex flex-col gap-2">
+                <div class="flex items-center justify-between">
+                  <span class="text-sm font-semibold text-on-surface">Foto Kehadiran <span class="text-outline font-normal text-xs">(Opsional)</span></span>
+                  <span class="text-xs text-outline">Untuk arsip verifikasi tamu sidang</span>
+                </div>
+                <div class="p-4 rounded-xl bg-surface-container-low flex flex-col sm:flex-row items-center gap-4">
+                  <div id="sidang-foto-preview" class="w-16 h-16 rounded-lg bg-surface-container-lowest border border-outline-variant/40 flex items-center justify-center overflow-hidden shrink-0 shadow-sm text-primary">
+                    <span class="material-symbols-outlined text-[24px]">photo_camera</span>
+                  </div>
+                  <div class="flex flex-col items-center sm:items-start text-center sm:text-left gap-1.5 flex-1">
+                    <span class="text-sm font-bold text-on-surface">Kamera Kiosk / Perangkat</span>
+                    <p class="text-xs text-on-surface-variant">Potret wajah opsional dari kamera untuk lampiran buku tamu persidangan.</p>
+                    <div class="flex items-center gap-2 mt-1">
+                      <button type="button" id="btn-sidang-kamera" class="px-3.5 py-1.5 rounded-lg bg-surface-container-highest hover:bg-surface-container text-on-surface text-xs font-semibold inline-flex items-center gap-1.5 transition-colors">
+                        <span class="material-symbols-outlined text-[16px]">photo_camera</span> Ambil Foto
+                      </button>
+                      <button type="button" id="btn-sidang-hapus-foto" class="hidden px-3 py-1.5 rounded-lg text-xs font-semibold text-error hover:bg-error-container/40 transition-colors">Hapus Foto</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tata Tertib Sidang -->
+              <div class="p-3.5 rounded-lg bg-secondary-fixed/35 border border-secondary-fixed-dim/40 flex items-start gap-2.5 text-xs text-on-secondary-fixed-variant leading-relaxed">
+                <span class="material-symbols-outlined text-secondary text-[20px] shrink-0 mt-0.5">info</span>
+                <div>
+                  <span class="font-bold text-secondary block">Ketentuan Tata Tertib Sidang PTUN:</span>
+                  Para pihak dimohon mengenakan pakaian rapi, menonaktifkan nada dering ponsel, dan menunggu panggilan di ruang tunggu sidang. Ruang sidang ditentukan dan dipanggil oleh petugas saat persidangan dimulai.
+                </div>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="pt-2 flex flex-col-reverse sm:flex-row items-center gap-3">
+                <button type="button" data-nav="kiosk" class="w-full sm:w-1/3 h-12 px-4 rounded-lg bg-surface-container hover:bg-surface-container-highest text-on-surface-variant font-semibold text-sm transition-colors">Kembali</button>
+                <button type="submit" id="btn-sidang-submit" class="w-full sm:w-2/3 h-12 px-6 rounded-lg bg-primary-container hover:bg-primary active:scale-[0.99] text-on-primary font-bold text-base shadow-md flex items-center justify-center gap-2 transition-all group">
+                  <span class="material-symbols-outlined text-[20px]">how_to_reg</span>
+                  <span id="btn-sidang-submit-label">Konfirmasi Kehadiran Sidang</span>
+                  <span class="material-symbols-outlined text-[20px] group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Quick Trust Strip -->
+        <div class="flex items-center justify-between text-on-surface-variant px-2 text-xs">
+          <div class="flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-[16px] text-primary">verified</span>
+            <span>Sistem Buku Tamu Terintegrasi MA-RI &amp; Ditjen Badilmiltun</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================== -->
+    <!-- VIEW 4: TIKET DIGITAL & CETAK STRUK THERMAL (STITCH UI)            -->
+    <!-- ================================================================== -->
+    <section id="view-tiket" class="view-panel hidden relative w-full py-8 px-4 sm:px-6 flex flex-col items-center justify-center overflow-hidden">
+      <div class="absolute top-12 left-1/2 -translate-x-1/2 w-[540px] h-[540px] bg-primary-fixed/20 rounded-full blur-3xl pointer-events-none -z-10"></div>
+      <div class="absolute bottom-10 left-1/3 w-[380px] h-[380px] bg-secondary-fixed/15 rounded-full blur-3xl pointer-events-none -z-10"></div>
+
+      <div id="tiket-empty-state" class="hidden w-full max-w-md bg-surface-container-lowest rounded-xl p-8 text-center shadow-md border border-outline-variant/25">
+        <div class="w-14 h-14 mx-auto rounded-full bg-surface-container-low text-primary flex items-center justify-center mb-3">
+          <span class="material-symbols-outlined text-3xl">confirmation_number</span>
+        </div>
+        <h2 class="font-display text-lg font-bold text-on-surface">Belum ada tiket aktif</h2>
+        <p class="text-sm text-on-surface-variant mt-1 mb-5">Lakukan registrasi pada jalur PTSP atau Persidangan terlebih dahulu untuk menerbitkan tiket digital.</p>
+        <button type="button" data-nav="kiosk" class="px-6 h-11 rounded-lg bg-primary hover:bg-primary-container text-on-primary font-bold text-sm shadow-sm transition-colors">Ke Layar Kiosk</button>
+      </div>
+
+      <div id="tiket-content-wrap" class="w-full max-w-[440px] flex flex-col items-center gap-4">
+        <!-- Mini Security Indicator Bar -->
+        <div class="w-full flex items-center justify-between px-1">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-high text-on-surface-variant text-xs font-semibold shadow-sm">
+            <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+            <span>Layanan Buku Tamu Digital</span>
+          </div>
+          <div class="inline-flex items-center gap-1 font-mono text-xs text-outline font-medium">
+            <span class="material-symbols-outlined text-[15px] text-secondary">verified_user</span>
+            <span>HMAC-VALIDATED</span>
+          </div>
+        </div>
+
+        <!-- Success Header Banner -->
+        <div class="w-full p-4 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20 flex items-center gap-3.5">
+          <div class="w-12 h-12 rounded-full bg-[#DCFCE7] flex items-center justify-center shrink-0 shadow-inner">
+            <span class="material-symbols-outlined text-[#166534] text-[28px] icon-filled">check_circle</span>
+          </div>
+          <div class="flex flex-col min-w-0">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="font-display text-base text-[#166534] font-bold tracking-tight">REGISTRASI BERHASIL!</span>
+              <span class="px-2 py-0.5 rounded-full bg-[#DCFCE7] text-[#166534] text-[11px] font-bold">AKTIF</span>
+            </div>
+            <p class="text-xs text-on-surface-variant mt-0.5 leading-snug">Nomor antrean Anda telah diterbitkan dan langsung tampil pada layar pantau petugas.</p>
+          </div>
+        </div>
+
+        <!-- Thermal Receipt Perforated Card (Exact Stitch Design) -->
+        <div class="ticket-perforated w-full bg-surface-container-lowest rounded-xl shadow-xl overflow-hidden relative border border-outline-variant/20">
+          <!-- Top Jagged Edge Emulation -->
+          <div class="w-full h-2.5 bg-surface-container-high relative overflow-hidden opacity-60">
+            <div class="w-full h-full thermal-jagged-top"></div>
+          </div>
+
+          <div class="p-6 pt-4 flex flex-col items-center text-center">
+            <!-- Emblem & Satker Header -->
+            <div class="flex flex-col items-center mb-2">
+              <div id="tkt-logo-box" class="w-14 h-14 rounded-full p-1.5 bg-surface-container-low shadow-sm flex items-center justify-center mb-2 overflow-hidden">
+                <img src="img/logo-mahkamah-agung.svg" alt="Logo Mahkamah Agung" class="w-full h-full object-contain" />
+              </div>
+              <h2 id="tkt-satker-nama" class="font-display text-[13px] font-bold text-on-surface tracking-wider uppercase">PENGADILAN TATA USAHA NEGARA</h2>
+              <p id="tkt-satker-alamat" class="text-[11px] text-on-surface-variant font-medium mt-0.5">-</p>
+            </div>
+
+            <!-- Dashed Perforated Tear Line with Semicircle Notches -->
+            <div class="relative w-full my-3 py-1 flex items-center justify-center">
+              <div class="absolute -left-8 w-5 h-5 rounded-full bg-surface"></div>
+              <div class="w-full border-b-2 border-dashed border-outline-variant/60"></div>
+              <div class="absolute -right-8 w-5 h-5 rounded-full bg-surface"></div>
+            </div>
+
+            <!-- Oversized Queue Number Box -->
+            <div class="w-full bg-surface-container-low rounded-xl py-4 px-4 flex flex-col items-center justify-center shadow-inner">
+              <span class="text-xs uppercase font-semibold tracking-widest text-on-surface-variant">NOMOR ANTREAN</span>
+              <div id="tkt-nomor-antrean" class="font-display tabular-nums text-[56px] sm:text-[64px] font-extrabold text-primary-container leading-none tracking-tight my-1.5 select-all">P-001</div>
+              <span id="tkt-badge-tujuan" class="mt-1 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#DBEAFE] text-[#1D4ED8] text-xs font-semibold">Loket e-Court</span>
+            </div>
+
+            <!-- Key-Value Details -->
+            <div class="w-full mt-4 space-y-2 text-left text-on-surface">
+              <div class="flex items-start justify-between gap-3 bg-surface-container-low/50 p-2 rounded-lg">
+                <span class="text-xs text-on-surface-variant shrink-0">Nama Pengunjung</span>
+                <strong id="tkt-nama" class="text-sm font-bold text-on-surface text-right">-</strong>
+              </div>
+              <div class="flex items-start justify-between gap-3 px-2 py-0.5">
+                <span id="tkt-label-meta" class="text-xs text-on-surface-variant shrink-0">Asal Instansi</span>
+                <strong id="tkt-val-meta" class="text-xs font-semibold text-on-surface text-right">-</strong>
+              </div>
+              <div class="flex items-start justify-between gap-3 px-2 py-0.5">
+                <span class="text-xs text-on-surface-variant shrink-0">Waktu Registrasi</span>
+                <strong id="tkt-waktu" class="font-mono tabular-nums text-xs font-semibold text-on-surface text-right">-</strong>
+              </div>
+              <div class="flex items-center justify-between gap-3 px-2 py-0.5">
+                <span class="text-xs text-on-surface-variant shrink-0">Status Tiket</span>
+                <span id="tkt-status" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#DCFCE7] text-[#166534]">Menunggu</span>
+              </div>
+            </div>
+
+            <!-- High-Contrast QR Box -->
+            <div class="w-full mt-4 pt-2 flex flex-col items-center">
+              <div id="tkt-qr-box" class="p-3 bg-surface-container-lowest rounded-xl shadow-md border border-outline-variant/25"></div>
+              <span id="tkt-id-code" class="mt-2.5 font-mono text-xs font-bold text-primary tracking-wider uppercase">KODE TIKET: -</span>
+              <p class="text-[12px] text-on-surface-variant max-w-[320px] mt-1 text-center">
+                Pindai QR ini pada scanner petugas untuk verifikasi keaslian HMAC atau pencatatan check-out satpam.
+              </p>
+            </div>
+
+            <div class="w-full my-4 border-b border-dashed border-outline-variant/70"></div>
+            <p class="text-[11px] text-outline leading-tight text-center max-w-[340px]">
+              Simpan struk ini selama berada di lingkungan gedung pengadilan. Terima kasih atas ketertiban Anda.
+            </p>
+          </div>
+
+          <!-- Bottom Jagged Edge Emulation -->
+          <div class="w-full h-3 bg-surface-container-high relative overflow-hidden opacity-60">
+            <div class="w-full h-full thermal-jagged-top rotate-180"></div>
+          </div>
+        </div>
+
+        <!-- Thermal Print & Share Actions -->
+        <div class="w-full flex flex-col gap-2.5 mt-1">
+          <button type="button" id="btn-tkt-cetak" class="w-full h-[52px] rounded-lg bg-primary hover:bg-primary-container active:scale-[0.99] text-on-primary font-display font-bold text-[15px] shadow-md hover:shadow-lg flex items-center justify-center gap-2 transition-all cursor-pointer">
+            <span class="material-symbols-outlined text-[22px]">print</span>
+            <span>Cetak Struk Thermal (58mm / 80mm)</span>
+          </button>
+          <button type="button" id="btn-tkt-wa" class="w-full h-[46px] rounded-lg bg-surface-container-lowest hover:bg-surface-container text-primary font-display font-semibold text-sm shadow-sm border border-outline-variant/30 active:scale-[0.99] flex items-center justify-center gap-2 transition-all cursor-pointer">
+            <span class="material-symbols-outlined text-[20px] text-[#166534]">chat</span>
+            <span>Kirim Struk ke WhatsApp</span>
+          </button>
+          <div class="w-full p-3 rounded-lg bg-surface-container-low flex flex-col sm:flex-row items-center justify-between gap-2.5 shadow-sm border border-outline-variant/20">
+            <span class="text-xs text-on-surface-variant flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-secondary text-[18px]">timer</span>
+              Kembali ke Kiosk dalam <strong id="tkt-countdown" class="font-mono tabular-nums font-bold text-primary text-sm">30</strong> detik
+            </span>
+            <button type="button" id="btn-tkt-selesai" class="px-3.5 py-1.5 rounded-lg bg-surface-container-highest hover:bg-surface-dim text-on-surface text-xs font-bold transition-colors shrink-0">
               Selesai Sekarang
             </button>
           </div>
         </div>
+
+        <!-- Supplementary Info Cards Grid -->
+        <div class="w-full grid grid-cols-2 gap-3 mt-1">
+          <div class="p-3 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20 flex items-start gap-2">
+            <span class="material-symbols-outlined text-secondary text-[20px] shrink-0 mt-0.5">tv</span>
+            <div class="flex flex-col text-left">
+              <span class="text-xs font-bold text-on-surface">Layar Monitor</span>
+              <span class="text-[11px] text-on-surface-variant leading-tight">Perhatikan nomor antrean Anda pada layar panggilan TV ruang tunggu.</span>
+            </div>
+          </div>
+          <div class="p-3 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/20 flex items-start gap-2">
+            <span class="material-symbols-outlined text-primary text-[20px] shrink-0 mt-0.5">headset_mic</span>
+            <div class="flex flex-col text-left">
+              <span class="text-xs font-bold text-on-surface">Bantuan Petugas</span>
+              <span class="text-[11px] text-on-surface-variant leading-tight">Hubungi Duta Layanan atau resepsionis bila membutuhkan panduan.</span>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
     <!-- ================================================================== -->
-    <!-- VIEW 5: LAYAR PANTAU PETUGAS REAL-TIME (PTSP / PANITERA / SATPAM)  -->
+    <!-- VIEW 5: LAYAR PANTAU PETUGAS REAL-TIME (STITCH UI)                 -->
     <!-- ================================================================== -->
-    <section id="view-pantau" class="view-panel hidden max-w-[1440px] mx-auto px-4 sm:px-6 py-6 flex flex-col gap-6">
-      <!-- Role Bar + Live Indicator -->
-      <div class="bg-white rounded-xl p-3 border border-outline-variant flex flex-wrap items-center justify-between gap-3">
-        <div class="flex flex-wrap items-center gap-1.5" id="pantau-mode-tabs">
-          <button type="button" data-pview="PTSP" class="pview-tab px-4 h-9 rounded-lg text-sm font-medium flex items-center gap-2 bg-primary-container text-white transition-colors">
-            <span class="material-symbols-outlined text-[18px]">support_agent</span> Petugas PTSP
+    <section id="view-pantau" class="view-panel hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-6">
+      <!-- Top Live Control & Role Switcher Bar -->
+      <div class="bg-surface-container-low rounded-xl p-3 border border-outline-variant/30 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+        <div class="flex flex-wrap items-center gap-1.5 p-1 bg-surface-container rounded-xl shrink-0 shadow-sm" id="pantau-mode-tabs">
+          <button type="button" data-pview="PTSP" class="pview-tab px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-2 bg-primary text-on-primary shadow-sm transition-all whitespace-nowrap">
+            <span class="material-symbols-outlined text-[18px]">desk</span> Petugas PTSP
           </button>
-          <button type="button" data-pview="SIDANG" class="pview-tab px-4 h-9 rounded-lg text-sm font-medium flex items-center gap-2 text-on-surface-variant hover:bg-surface-container-low transition-colors">
+          <button type="button" data-pview="SIDANG" class="pview-tab px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-all whitespace-nowrap">
             <span class="material-symbols-outlined text-[18px]">gavel</span> Petugas Sidang
           </button>
-          <button type="button" data-pview="SATPAM" class="pview-tab px-4 h-9 rounded-lg text-sm font-medium flex items-center gap-2 text-on-surface-variant hover:bg-surface-container-low transition-colors">
-            <span class="material-symbols-outlined text-[18px]">shield</span> Pos Keamanan / Satpam
+          <button type="button" data-pview="SATPAM" class="pview-tab px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-all whitespace-nowrap">
+            <span class="material-symbols-outlined text-[18px]">badge</span> Pos Keamanan / Satpam
           </button>
         </div>
-        <div class="flex items-center gap-3">
-          <span class="text-xs font-medium text-on-primary-fixed flex items-center gap-1.5">
-            <span class="w-2 h-2 rounded-full bg-emerald-600"></span> Sinkron aktif
-          </span>
-          <button type="button" id="btn-pantau-refresh" class="w-9 h-9 rounded-lg border border-outline-variant bg-white hover:bg-surface-container-low flex items-center justify-center transition-colors" title="Muat Ulang Data">
-            <span class="material-symbols-outlined text-[18px] text-on-surface-variant">refresh</span>
-          </button>
+
+        <div class="flex items-center gap-3 shrink-0 flex-wrap">
+          <div class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg bg-surface-container-lowest shadow-sm border border-outline-variant/25">
+            <span class="relative flex h-2.5 w-2.5">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-600"></span>
+            </span>
+            <div class="flex flex-col text-left">
+              <span class="text-xs font-semibold text-on-surface leading-tight">Live Sync Aktif</span>
+              <span class="font-mono text-[11px] text-outline leading-none">Pembaruan otomatis</span>
+            </div>
+            <button type="button" id="btn-pantau-refresh" class="ml-1 p-1.5 text-on-surface-variant hover:text-primary hover:bg-surface-container rounded-lg transition-colors" title="Muat Ulang Data">
+              <span class="material-symbols-outlined text-[18px]">sync</span>
+            </button>
+          </div>
         </div>
       </div>
 
-      <!-- 4 KPI Cards (Numbers only, quiet hairlines) -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="bg-white rounded-xl p-5 border border-outline-variant">
-          <span class="text-xs font-medium text-outline">Menunggu panggilan</span>
-          <div id="pt-kpi-menunggu" class="font-mono tabular-nums text-3xl font-semibold text-on-surface mt-2">0</div>
-          <span class="text-xs text-on-surface-variant mt-1 block">Antrean aktif belum dipanggil</span>
+      <!-- 4 KPI Summary Cards (Exact Stitch Accent Bars & Icon Badges) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-surface-container-lowest p-5 rounded-xl shadow-sm border border-outline-variant/30 flex items-start justify-between relative overflow-hidden hover:shadow-md transition-shadow">
+          <div class="flex flex-col">
+            <span class="text-xs font-semibold text-outline uppercase tracking-wider">Menunggu Panggilan</span>
+            <div class="flex items-baseline gap-1.5 mt-2">
+              <span id="pt-kpi-menunggu" class="font-display tabular-nums text-3xl font-bold text-on-surface">0</span>
+              <span class="text-xs text-outline">Orang</span>
+            </div>
+            <div class="flex items-center gap-1.5 mt-2">
+              <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+              <span class="text-xs text-on-surface-variant">Antrean aktif belum dipanggil</span>
+            </div>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-[#FEF9C3] text-[#854D0E] flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[24px]">hourglass_top</span>
+          </div>
+          <div class="absolute bottom-0 left-0 right-0 h-1 bg-amber-400"></div>
         </div>
-        <div class="bg-white rounded-xl p-5 border border-outline-variant">
-          <span class="text-xs font-medium text-outline">Sedang dilayani / sidang</span>
-          <div id="pt-kpi-dilayani" class="font-mono tabular-nums text-3xl font-semibold text-primary-container mt-2">0</div>
-          <span class="text-xs text-on-surface-variant mt-1 block">Berlangsung di loket / ruang sidang</span>
+
+        <div class="bg-surface-container-lowest p-5 rounded-xl shadow-sm border border-outline-variant/30 flex items-start justify-between relative overflow-hidden hover:shadow-md transition-shadow">
+          <div class="flex flex-col">
+            <span class="text-xs font-semibold text-outline uppercase tracking-wider">Sedang Dilayani</span>
+            <div class="flex items-baseline gap-1.5 mt-2">
+              <span id="pt-kpi-dilayani" class="font-display tabular-nums text-3xl font-bold text-on-surface">0</span>
+              <span class="text-xs text-outline">Orang</span>
+            </div>
+            <div class="flex items-center gap-1.5 mt-2">
+              <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+              <span class="text-xs text-on-surface-variant">Loket PTSP / Ruang Sidang</span>
+            </div>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-[#DBEAFE] text-[#1D4ED8] flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[24px]">record_voice_over</span>
+          </div>
+          <div class="absolute bottom-0 left-0 right-0 h-1 bg-blue-500"></div>
         </div>
-        <div class="bg-white rounded-xl p-5 border border-outline-variant">
-          <span class="text-xs font-medium text-outline">Selesai hari ini</span>
-          <div id="pt-kpi-selesai" class="font-mono tabular-nums text-3xl font-semibold text-emerald-700 mt-2">0</div>
-          <span class="text-xs text-on-surface-variant mt-1 block">Layanan / persidangan rampung</span>
+
+        <div class="bg-surface-container-lowest p-5 rounded-xl shadow-sm border border-outline-variant/30 flex items-start justify-between relative overflow-hidden hover:shadow-md transition-shadow">
+          <div class="flex flex-col">
+            <span class="text-xs font-semibold text-outline uppercase tracking-wider">Selesai Hari Ini</span>
+            <div class="flex items-baseline gap-1.5 mt-2">
+              <span id="pt-kpi-selesai" class="font-display tabular-nums text-3xl font-bold text-on-surface">0</span>
+              <span class="text-xs text-outline">Pengunjung</span>
+            </div>
+            <div class="flex items-center gap-1.5 mt-2">
+              <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+              <span class="text-xs text-on-surface-variant">Layanan / sidang rampung</span>
+            </div>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-[#DCFCE7] text-[#166534] flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[24px]">task_alt</span>
+          </div>
+          <div class="absolute bottom-0 left-0 right-0 h-1 bg-emerald-600"></div>
         </div>
-        <div class="bg-white rounded-xl p-5 border border-outline-variant">
-          <span class="text-xs font-medium text-outline">Tamu masih di gedung</span>
-          <div id="pt-kpi-digedung" class="font-mono tabular-nums text-3xl font-semibold text-secondary mt-2">0</div>
-          <span class="text-xs text-on-surface-variant mt-1 block">Belum melakukan check-out keluar</span>
+
+        <div class="bg-surface-container-lowest p-5 rounded-xl shadow-sm border border-outline-variant/30 flex items-start justify-between relative overflow-hidden hover:shadow-md transition-shadow">
+          <div class="flex flex-col">
+            <span class="text-xs font-semibold text-outline uppercase tracking-wider">Tamu Masih di Gedung</span>
+            <div class="flex items-baseline gap-1.5 mt-2">
+              <span id="pt-kpi-digedung" class="font-display tabular-nums text-3xl font-bold text-on-surface">0</span>
+              <span class="text-xs text-outline">Orang</span>
+            </div>
+            <div class="flex items-center gap-1.5 mt-2">
+              <span class="w-2 h-2 rounded-full bg-primary-container"></span>
+              <span class="text-xs text-on-surface-variant">Belum check-out keluar</span>
+            </div>
+          </div>
+          <div class="w-12 h-12 rounded-xl bg-surface-container-high text-primary flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-[24px]">security</span>
+          </div>
+          <div class="absolute bottom-0 left-0 right-0 h-1 bg-primary"></div>
         </div>
       </div>
 
-      <!-- Filter & Search -->
-      <div class="bg-white rounded-xl p-4 border border-outline-variant flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
+      <!-- Quick Filter & Search Bar -->
+      <div class="bg-surface-container-lowest p-4 rounded-xl shadow-sm border border-outline-variant/30 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
         <div class="relative flex-1 max-w-md">
-          <span class="material-symbols-outlined text-outline text-[18px] absolute left-3 top-2.5">search</span>
-          <input id="pantau-search" type="text" placeholder="Cari nama, tiket, atau nomor perkara" class="w-full h-10 pl-10 pr-4 rounded-lg border border-outline-variant bg-surface-container-low/40 focus:bg-white text-sm transition-colors" />
+          <span class="material-symbols-outlined text-outline text-[20px] absolute left-3.5 top-1/2 -translate-y-1/2">search</span>
+          <input id="pantau-search" type="text" placeholder="Cari nama, tiket, instansi, atau no. perkara..." class="w-full h-10 pl-10 pr-4 rounded-lg border border-outline-variant/40 bg-surface-container-low focus:bg-surface-container-lowest focus:ring-2 focus:ring-primary text-sm transition-all" />
         </div>
         <div id="pantau-filter-chips" class="flex items-center gap-1.5 overflow-x-auto no-scrollbar"></div>
       </div>
 
-      <!-- Main Live Table -->
-      <div class="bg-white rounded-xl border border-outline-variant overflow-hidden">
-        <div class="px-5 py-4 border-b border-outline-variant flex flex-wrap items-center justify-between gap-2">
-          <h2 class="font-display font-semibold text-base text-on-surface">Daftar antrean &amp; kehadiran tamu hari ini</h2>
-          <span id="pantau-count-label" class="text-xs font-mono tabular-nums text-on-surface-variant">0 Pengunjung</span>
+      <!-- Main Live Queue Table -->
+      <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/30 overflow-hidden flex flex-col">
+        <div class="px-5 py-4 bg-surface-container-low border-b border-outline-variant/30 flex flex-wrap items-center justify-between gap-2">
+          <div class="flex items-center gap-2">
+            <span class="material-symbols-outlined text-primary text-[20px]">table_rows</span>
+            <h2 class="font-display font-bold text-base text-on-surface">Daftar Antrean &amp; Kehadiran Tamu Pengadilan</h2>
+          </div>
+          <span id="pantau-count-label" class="font-mono text-xs tabular-nums text-outline font-medium">0 Pengunjung</span>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-left border-collapse">
             <thead>
-              <tr class="bg-surface-container-low border-b border-outline-variant text-xs font-medium text-outline">
-                <th class="py-3 px-4">No. antrean &amp; masuk</th>
-                <th class="py-3 px-4">Nama tamu &amp; asal / peran</th>
-                <th class="py-3 px-4">Tujuan / no. perkara &amp; ruang</th>
-                <th class="py-3 px-4">Status</th>
-                <th class="py-3 px-4 text-right">Aksi petugas</th>
+              <tr class="bg-surface-container-low/70 border-b border-outline-variant/30 text-[11px] uppercase tracking-wider font-semibold text-outline">
+                <th class="py-3.5 px-4">No. Tiket &amp; Masuk</th>
+                <th class="py-3.5 px-4">Nama Tamu &amp; Instansi / Peran</th>
+                <th class="py-3.5 px-4">Tujuan / No. Perkara &amp; Ruang</th>
+                <th class="py-3.5 px-4">Status</th>
+                <th class="py-3.5 px-4 text-right">Aksi Cepat Petugas</th>
               </tr>
             </thead>
-            <tbody id="pantau-tbody" class="divide-y divide-outline-variant/60 text-sm"></tbody>
+            <tbody id="pantau-tbody" class="divide-y divide-outline-variant/25 text-sm"></tbody>
           </table>
         </div>
       </div>
 
-      <!-- Bottom 2-Column Live Summary: Rol Sidang & Status Loket -->
+      <!-- Bottom 2-Column Live Widgets: Rol Sidang & Status Loket PTSP -->
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        <div class="lg:col-span-7 bg-white rounded-xl p-5 border border-outline-variant">
-          <div class="mb-4">
-            <h3 class="font-display font-semibold text-base text-on-surface">Jadwal kehadiran sidang hari ini</h3>
-            <p class="text-xs text-on-surface-variant mt-0.5">Pengelompokan otomatis kehadiran pihak per nomor perkara</p>
+        <div class="lg:col-span-7 bg-surface-container-lowest rounded-xl p-5 shadow-sm border border-outline-variant/30 flex flex-col gap-4">
+          <div class="flex items-center gap-2.5 border-b border-outline-variant/25 pb-3">
+            <span class="material-symbols-outlined text-secondary text-[22px]">balance</span>
+            <div>
+              <h3 class="font-display font-bold text-base text-on-surface">Jadwal Kehadiran Sidang PTUN (Live Rol Sidang)</h3>
+              <p class="text-xs text-outline">Pengelompokan otomatis kehadiran pihak per nomor perkara</p>
+            </div>
           </div>
           <div id="pantau-rol-sidang" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
         </div>
-        <div class="lg:col-span-5 bg-white rounded-xl p-5 border border-outline-variant">
-          <div class="mb-4">
-            <h3 class="font-display font-semibold text-base text-on-surface">Status antrean loket PTSP</h3>
+        <div class="lg:col-span-5 bg-surface-container-lowest rounded-xl p-5 shadow-sm border border-outline-variant/30 flex flex-col gap-4">
+          <div class="flex items-center gap-2 border-b border-outline-variant/25 pb-3">
+            <span class="material-symbols-outlined text-primary text-[22px]">counter_1</span>
+            <h3 class="font-display font-bold text-base text-on-surface">Status Loket PTSP</h3>
           </div>
           <div id="pantau-loket-status" class="flex flex-col gap-2.5"></div>
         </div>
@@ -1080,147 +1419,225 @@
     </section>
 
     <!-- ================================================================== -->
-    <!-- VIEW 6: DASHBOARD ANALITIK & LAPORAN PIMPINAN (ADMIN)              -->
+    <!-- VIEW 6: DASHBOARD ANALITIK & LAPORAN PIMPINAN (ADMIN - STITCH UI)  -->
     <!-- ================================================================== -->
-    <section id="view-dashboard" class="view-panel hidden max-w-[1440px] mx-auto px-4 sm:px-6 py-6 flex flex-col gap-6">
+    <section id="view-dashboard" class="view-panel hidden max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-6">
       
       <!-- Header Khusus Pengaturan Lengkap -->
-      <div id="dash-settings-header" class="hidden flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-outline-variant no-print">
+      <div id="dash-settings-header" class="hidden flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-5 bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/25 no-print">
         <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-lg bg-primary-container text-white flex items-center justify-center shrink-0">
+          <div class="w-10 h-10 rounded-lg bg-primary text-secondary-fixed flex items-center justify-center shrink-0 shadow-sm">
             <span id="dash-settings-header-icon" class="material-symbols-outlined text-[20px]">settings</span>
           </div>
           <div>
-            <h1 id="dash-settings-header-title" class="font-display text-xl font-semibold text-on-surface">Pengaturan sistem &amp; layanan</h1>
+            <h1 id="dash-settings-header-title" class="font-display text-xl font-bold text-on-surface">Pengaturan sistem &amp; layanan</h1>
             <p id="dash-settings-header-desc" class="text-xs text-on-surface-variant">Konfigurasi operasional aplikasi, display antrean, printer struk, ruang sidang, dan hak akses</p>
           </div>
         </div>
-        <button type="button" id="btn-back-to-analytics" class="h-9 px-3.5 rounded-lg border border-outline-variant bg-white hover:bg-surface-container-low text-xs font-medium text-on-surface flex items-center gap-1.5 self-start sm:self-auto transition-colors">
-          <span class="material-symbols-outlined text-[16px] text-on-surface-variant">analytics</span>
+        <button type="button" id="btn-back-to-analytics" class="h-10 px-4 rounded-lg bg-surface-container hover:bg-surface-container-high text-xs font-bold text-primary flex items-center gap-1.5 self-start sm:self-auto transition-colors">
+          <span class="material-symbols-outlined text-[18px]">analytics</span>
           <span>Dashboard &amp; Laporan</span>
         </button>
       </div>
 
       <!-- SECTION DASHBOARD ANALITIK & KPI -->
       <div id="dash-analytics-section" class="flex flex-col gap-6">
-        <!-- Header + Export -->
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div>
-            <h1 class="font-display text-2xl font-semibold text-on-surface">Analitik &amp; Rekapitulasi Buku Tamu</h1>
-            <p class="text-sm text-on-surface-variant mt-1">Laporan terpadu kunjungan PTSP dan kehadiran persidangan <span id="dash-satker-name">Pengadilan Tata Usaha Negara</span></p>
+        <!-- Top Executive Header Strip & Toolbar (Exact Stitch Design) -->
+        <div class="w-full bg-surface-container-lowest rounded-xl p-5 sm:p-6 shadow-sm border border-outline-variant/25 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-5">
+          <div class="flex flex-col gap-1">
+            <div class="flex items-center gap-2.5 flex-wrap">
+              <span class="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-primary text-secondary-fixed shadow-sm shrink-0">
+                <span class="material-symbols-outlined text-[20px]">analytics</span>
+              </span>
+              <h1 class="font-display text-xl sm:text-2xl text-on-surface tracking-tight font-bold">
+                Dashboard Analitik &amp; Rekapitulasi Buku Tamu
+              </h1>
+              <span class="bg-secondary-fixed text-on-secondary-fixed text-[11px] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">
+                Eksekutif Pimpinan
+              </span>
+            </div>
+            <p class="text-sm text-on-surface-variant mt-0.5">
+              Laporan Terpadu Kunjungan PTSP dan Kehadiran Persidangan <span id="dash-satker-name" class="font-semibold text-on-surface">Pengadilan Tata Usaha Negara</span>
+            </p>
           </div>
+
           <div class="flex flex-wrap items-center gap-2 no-print">
-            <input id="dash-start" type="date" class="h-9 px-3 rounded-lg border border-outline-variant bg-white text-xs font-medium font-mono" />
-            <span class="text-xs text-outline">s/d</span>
-            <input id="dash-end" type="date" class="h-9 px-3 rounded-lg border border-outline-variant bg-white text-xs font-medium font-mono" />
-            <select id="dash-jalur" class="h-9 px-3 rounded-lg border border-outline-variant bg-white text-xs font-medium">
+            <div class="inline-flex items-center gap-1.5 bg-surface-container-low px-2.5 py-1.5 rounded-lg border border-outline-variant/25">
+              <span class="material-symbols-outlined text-outline text-[17px]">calendar_month</span>
+              <input id="dash-start" type="date" class="bg-transparent text-xs font-semibold font-mono text-on-surface focus:outline-none" />
+              <span class="text-xs text-outline">-</span>
+              <input id="dash-end" type="date" class="bg-transparent text-xs font-semibold font-mono text-on-surface focus:outline-none" />
+            </div>
+            <select id="dash-jalur" class="h-9 px-3 rounded-lg bg-surface-container-low border border-outline-variant/25 text-xs font-semibold text-on-surface focus:outline-none">
               <option value="ALL">Semua Jalur Layanan</option>
               <option value="PTSP">Khusus PTSP</option>
               <option value="SIDANG">Khusus Persidangan</option>
             </select>
-            <button type="button" id="btn-dash-filter" class="h-9 px-3.5 rounded-lg bg-primary-container hover:bg-primary text-white text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer" title="Terapkan Filter">
+            <button type="button" id="btn-dash-filter" class="h-9 px-3.5 rounded-lg bg-primary-container hover:bg-primary text-on-primary text-xs font-bold flex items-center gap-1.5 shadow-sm transition-all cursor-pointer" title="Terapkan Filter">
               <span class="material-symbols-outlined text-[16px]" id="icon-dash-filter">filter_alt</span>
               <span id="label-dash-filter">Terapkan</span>
             </button>
-            <button type="button" id="btn-export-csv" class="h-9 px-3.5 rounded-lg border border-outline-variant bg-white hover:bg-surface-container-low text-xs font-medium flex items-center gap-1.5 transition-colors">
-              <span class="material-symbols-outlined text-[16px] text-on-surface-variant">table_view</span> Ekspor CSV
+            <button type="button" id="btn-export-csv" class="h-9 px-3.5 rounded-lg bg-surface-container-highest hover:bg-surface-dim text-on-surface text-xs font-semibold flex items-center gap-1.5 shadow-sm transition-all">
+              <span class="material-symbols-outlined text-primary-container text-[17px]">table_chart</span> Unduh Excel (.csv)
             </button>
-            <button type="button" id="btn-export-pdf" class="h-9 px-3.5 rounded-lg bg-primary-container hover:bg-primary text-white text-xs font-medium flex items-center gap-1.5 transition-colors">
-              <span class="material-symbols-outlined text-[16px]">picture_as_pdf</span> Cetak PDF
+            <button type="button" id="btn-export-pdf" class="h-9 px-4 rounded-lg bg-primary hover:bg-primary-container text-on-primary text-xs font-bold flex items-center gap-1.5 shadow-md transition-all">
+              <span class="material-symbols-outlined text-secondary-fixed text-[17px]">print</span> Cetak Rekap PDF
             </button>
           </div>
         </div>
 
         <!-- Pengaturan Cepat Nama Pengadilan -->
-        <form id="form-dash-nama-pengadilan" class="bg-white rounded-xl p-4 sm:p-5 border border-outline-variant flex flex-col md:flex-row md:items-end justify-between gap-3 no-print">
+        <form id="form-dash-nama-pengadilan" class="bg-surface-container-lowest rounded-xl p-4 sm:p-5 shadow-sm border border-outline-variant/25 flex flex-col md:flex-row md:items-end justify-between gap-3 no-print">
           <div class="flex-1">
-            <label for="dash-nama-pengadilan" class="block text-xs font-medium text-outline mb-1.5">Nama pengadilan (tampil di Kiosk, Header, Tiket &amp; Struk)</label>
-            <input id="dash-nama-pengadilan" type="text" required placeholder="Contoh: Pengadilan Tata Usaha Negara Palembang" class="w-full h-10 px-3.5 rounded-lg border border-outline-variant bg-surface-container-low/40 focus:bg-white text-sm font-medium text-on-surface transition-colors" />
+            <label for="dash-nama-pengadilan" class="block text-xs font-semibold uppercase tracking-wider text-outline mb-1.5">Nama Pengadilan (Tampil di Kiosk, Header, Tiket &amp; Struk)</label>
+            <input id="dash-nama-pengadilan" type="text" required placeholder="Contoh: Pengadilan Tata Usaha Negara Palembang" class="w-full h-10 px-3.5 rounded-lg border border-outline-variant/40 bg-surface-container-low focus:bg-surface-container-lowest text-sm font-semibold text-on-surface transition-colors" />
           </div>
           <div class="flex items-center gap-2 shrink-0">
-            <button type="submit" id="btn-simpan-nama-pengadilan" class="h-10 px-4 rounded-lg bg-primary-container hover:bg-primary text-white text-xs font-medium flex items-center gap-1.5 transition-colors">
+            <button type="submit" id="btn-simpan-nama-pengadilan" class="h-10 px-4 rounded-lg bg-primary hover:bg-primary-container text-on-primary text-xs font-bold flex items-center gap-1.5 shadow-sm transition-colors">
               <span class="material-symbols-outlined text-[16px]">save</span> Simpan Nama
             </button>
           </div>
         </form>
 
-        <!-- 4 KPI Cards -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div class="bg-white rounded-xl p-5 border border-outline-variant">
-            <span class="text-xs font-medium text-outline">Total pengunjung</span>
-            <div id="d-kpi-total" class="font-mono tabular-nums text-3xl font-semibold text-on-surface mt-2">0</div>
-            <span class="text-xs text-on-surface-variant mt-1 block">Akumulasi rentang terpilih</span>
+        <!-- 4 KPI Metric Cards (Exact Stitch Design with Icons & Progress Bars) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+          <div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm border border-outline-variant/25 flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-xs text-on-surface-variant uppercase tracking-wider font-semibold">Total Pengunjung</span>
+              <div class="w-10 h-10 rounded-lg bg-surface-container-high flex items-center justify-center text-primary shrink-0">
+                <span class="material-symbols-outlined text-[22px]">group</span>
+              </div>
+            </div>
+            <div class="mt-3 flex flex-col">
+              <div class="flex items-baseline gap-1.5">
+                <span id="d-kpi-total" class="font-display tabular-nums text-3xl font-bold text-on-surface tracking-tight">0</span>
+                <span class="text-xs font-semibold text-on-surface-variant">Orang</span>
+              </div>
+              <span class="text-xs text-on-surface-variant mt-1.5">Akumulasi rentang terpilih</span>
+            </div>
+            <div class="w-full h-1 bg-surface-container mt-4 rounded-full overflow-hidden">
+              <div class="h-full bg-primary rounded-full w-4/5"></div>
+            </div>
           </div>
-          <div class="bg-white rounded-xl p-5 border border-outline-variant">
-            <span class="text-xs font-medium text-outline">Tamu pelayanan PTSP</span>
-            <div id="d-kpi-ptsp" class="font-mono tabular-nums text-3xl font-semibold text-primary-container mt-2">0</div>
-            <span id="d-kpi-ptsp-pct" class="text-xs text-on-surface-variant mt-1 block">0% dari total kunjungan</span>
+
+          <div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm border border-outline-variant/25 flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-xs text-on-surface-variant uppercase tracking-wider font-semibold">Tamu Pelayanan PTSP</span>
+              <div class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center text-primary-container shrink-0">
+                <span class="material-symbols-outlined text-[22px]">counter_1</span>
+              </div>
+            </div>
+            <div class="mt-3 flex flex-col">
+              <div class="flex items-baseline gap-1.5">
+                <span id="d-kpi-ptsp" class="font-display tabular-nums text-3xl font-bold text-on-surface tracking-tight">0</span>
+                <span class="text-xs font-semibold text-on-surface-variant">Tamu</span>
+              </div>
+              <span id="d-kpi-ptsp-pct" class="text-xs text-primary font-semibold mt-1.5">0% dari total kunjungan</span>
+            </div>
+            <div class="w-full h-1 bg-surface-container mt-4 rounded-full overflow-hidden">
+              <div class="h-full bg-primary-container rounded-full w-2/3"></div>
+            </div>
           </div>
-          <div class="bg-white rounded-xl p-5 border border-outline-variant">
-            <span class="text-xs font-medium text-outline">Tamu persidangan</span>
-            <div id="d-kpi-sidang" class="font-mono tabular-nums text-3xl font-semibold text-secondary mt-2">0</div>
-            <span id="d-kpi-sidang-pct" class="text-xs text-on-surface-variant mt-1 block">0% dari total kunjungan</span>
+
+          <div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm border border-outline-variant/25 flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-xs text-on-surface-variant uppercase tracking-wider font-semibold">Tamu Persidangan</span>
+              <div class="w-10 h-10 rounded-lg bg-secondary-fixed/60 flex items-center justify-center text-secondary shrink-0">
+                <span class="material-symbols-outlined text-[22px]">gavel</span>
+              </div>
+            </div>
+            <div class="mt-3 flex flex-col">
+              <div class="flex items-baseline gap-1.5">
+                <span id="d-kpi-sidang" class="font-display tabular-nums text-3xl font-bold text-on-surface tracking-tight">0</span>
+                <span class="text-xs font-semibold text-on-surface-variant">Tamu</span>
+              </div>
+              <span id="d-kpi-sidang-pct" class="text-xs text-secondary font-semibold mt-1.5">0% dari total kunjungan</span>
+            </div>
+            <div class="w-full h-1 bg-surface-container mt-4 rounded-full overflow-hidden">
+              <div class="h-full bg-secondary-container rounded-full w-1/3"></div>
+            </div>
           </div>
-          <div class="bg-white rounded-xl p-5 border border-outline-variant">
-            <span class="text-xs font-medium text-outline">Rata-rata durasi layanan</span>
-            <div id="d-kpi-durasi" class="font-mono tabular-nums text-3xl font-semibold text-on-surface mt-2">0 m</div>
-            <span class="text-xs text-on-surface-variant mt-1 block">Check-in s/d Check-out</span>
+
+          <div class="bg-surface-container-lowest rounded-xl p-5 shadow-sm border border-outline-variant/25 flex flex-col justify-between hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-xs text-on-surface-variant uppercase tracking-wider font-semibold">Rata-rata Durasi</span>
+              <div class="w-10 h-10 rounded-lg bg-primary-fixed/60 flex items-center justify-center text-primary shrink-0">
+                <span class="material-symbols-outlined text-[22px]">timer</span>
+              </div>
+            </div>
+            <div class="mt-3 flex flex-col">
+              <div class="flex items-baseline gap-1.5">
+                <span id="d-kpi-durasi" class="font-display tabular-nums text-3xl font-bold text-primary tracking-tight">0 m</span>
+                <span class="text-xs font-medium text-on-surface-variant">/ Tamu</span>
+              </div>
+              <span class="text-xs text-on-surface-variant mt-1.5">Check-in s/d Check-out</span>
+            </div>
+            <div class="w-full h-1 bg-surface-container mt-4 rounded-full overflow-hidden">
+              <div class="h-full bg-primary-fixed-dim rounded-full w-3/4"></div>
+            </div>
           </div>
         </div>
 
         <!-- Charts Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <div class="lg:col-span-8 bg-white rounded-xl p-5 border border-outline-variant">
-            <h2 class="font-display font-semibold text-base text-on-surface mb-0.5">Tren kunjungan harian</h2>
-            <p class="text-xs text-on-surface-variant mb-4">Perbandingan volume kunjungan PTSP dan kehadiran sidang</p>
+          <div class="lg:col-span-8 bg-surface-container-lowest rounded-xl p-5 sm:p-6 shadow-sm border border-outline-variant/25">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+              <div>
+                <h2 class="font-display font-bold text-lg text-on-surface">Tren Kunjungan Harian</h2>
+                <p class="text-xs text-on-surface-variant">Perbandingan volume kunjungan PTSP dan kehadiran persidangan</p>
+              </div>
+              <div class="flex items-center gap-4 text-xs font-semibold">
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-primary"></span> PTSP</span>
+                <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-secondary-container"></span> Sidang</span>
+              </div>
+            </div>
             <div class="h-64"><canvas id="chart-tren"></canvas></div>
           </div>
-          <div class="lg:col-span-4 bg-white rounded-xl p-5 border border-outline-variant">
-            <h2 class="font-display font-semibold text-base text-on-surface mb-0.5">Distribusi layanan PTSP</h2>
+          <div class="lg:col-span-4 bg-surface-container-lowest rounded-xl p-5 sm:p-6 shadow-sm border border-outline-variant/25">
+            <div class="flex items-center justify-between mb-1">
+              <h2 class="font-display font-bold text-lg text-on-surface">Distribusi Layanan</h2>
+              <span class="text-[11px] bg-surface-container text-primary font-semibold px-2.5 py-0.5 rounded-full">PTSP</span>
+            </div>
             <p class="text-xs text-on-surface-variant mb-4">Proporsi permohonan per loket tujuan</p>
             <div class="h-64 flex items-center justify-center"><canvas id="chart-distribusi"></canvas></div>
           </div>
         </div>
       </div>
 
-      <!-- Admin Sub-Tabs -->
-      <div class="bg-white rounded-xl border border-outline-variant overflow-hidden">
-        <div class="p-4 border-b border-outline-variant bg-surface-container-low/50 no-print">
-          <div class="flex items-center justify-between gap-2 mb-3">
-            <span class="text-xs font-medium text-on-surface">Menu &amp; pengaturan</span>
-            <span class="text-xs text-on-surface-variant hidden sm:inline-block">Juga tersedia di sidebar Pengaturan</span>
-          </div>
-          <div class="flex flex-wrap items-center gap-1.5 sm:gap-2" id="admin-subtabs">
-            <button type="button" data-atab="riwayat" class="atab-btn px-3 sm:px-3.5 py-2 text-xs sm:text-sm font-bold rounded-xl bg-primary-container text-white shadow-sm flex items-center gap-1.5 transition-all">
-              <span class="material-symbols-outlined text-[18px]">bar_chart</span>
+      <!-- Admin Sub-Tabs (Stitch Folder-Tab Style) -->
+      <div class="bg-surface-container-lowest rounded-xl shadow-sm border border-outline-variant/25 overflow-hidden">
+        <div class="px-4 sm:px-6 pt-3 bg-surface-container-low border-b border-outline-variant/30 no-print">
+          <div class="flex flex-wrap items-center gap-1.5" id="admin-subtabs">
+            <button type="button" data-atab="riwayat" class="atab-btn inline-flex items-center gap-1.5 px-3.5 py-2.5 border-b-2 text-xs sm:text-sm font-bold border-primary text-primary bg-surface-container-lowest rounded-t-lg shadow-sm transition-all">
+              <span class="material-symbols-outlined text-[18px]">history</span>
               <span>Riwayat Tamu</span>
             </button>
-            <button type="button" data-atab="display" class="atab-btn px-3 sm:px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-white hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface border border-outline-variant/60 flex items-center gap-1.5 transition-all">
-              <span class="material-symbols-outlined text-[18px] text-secondary">smart_display</span>
+            <button type="button" data-atab="display" class="atab-btn inline-flex items-center gap-1.5 px-3.5 py-2.5 border-b-2 text-xs sm:text-sm font-medium border-transparent text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-t-lg transition-all">
+              <span class="material-symbols-outlined text-[18px]">smart_display</span>
               <span>Display Antrean TV</span>
             </button>
-            <button type="button" data-atab="pengaturan" class="atab-btn px-3 sm:px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-white hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface border border-outline-variant/60 flex items-center gap-1.5 transition-all">
-              <span class="material-symbols-outlined text-[18px] text-primary">tune</span>
+            <button type="button" data-atab="pengaturan" class="atab-btn inline-flex items-center gap-1.5 px-3.5 py-2.5 border-b-2 text-xs sm:text-sm font-medium border-transparent text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-t-lg transition-all">
+              <span class="material-symbols-outlined text-[18px]">tune</span>
               <span>Sistem, Printer &amp; Footer</span>
             </button>
-            <button type="button" data-atab="ruang" class="atab-btn px-3 sm:px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-white hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface border border-outline-variant/60 flex items-center gap-1.5 transition-all">
-              <span class="material-symbols-outlined text-[18px] text-primary">meeting_room</span>
+            <button type="button" data-atab="ruang" class="atab-btn inline-flex items-center gap-1.5 px-3.5 py-2.5 border-b-2 text-xs sm:text-sm font-medium border-transparent text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-t-lg transition-all">
+              <span class="material-symbols-outlined text-[18px]">meeting_room</span>
               <span>Kelola Ruang Sidang</span>
             </button>
-            <button type="button" data-atab="jadwal" class="atab-btn px-3 sm:px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-white hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface border border-outline-variant/60 flex items-center gap-1.5 transition-all">
-              <span class="material-symbols-outlined text-[18px] text-primary">calendar_month</span>
+            <button type="button" data-atab="jadwal" class="atab-btn inline-flex items-center gap-1.5 px-3.5 py-2.5 border-b-2 text-xs sm:text-sm font-medium border-transparent text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-t-lg transition-all">
+              <span class="material-symbols-outlined text-[18px]">calendar_view_day</span>
               <span>Kelola Jadwal Sidang</span>
             </button>
-            <button type="button" data-atab="users" class="atab-btn px-3 sm:px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-white hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface border border-outline-variant/60 flex items-center gap-1.5 transition-all">
-              <span class="material-symbols-outlined text-[18px] text-primary">group</span>
+            <button type="button" data-atab="users" class="atab-btn inline-flex items-center gap-1.5 px-3.5 py-2.5 border-b-2 text-xs sm:text-sm font-medium border-transparent text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-t-lg transition-all">
+              <span class="material-symbols-outlined text-[18px]">badge</span>
               <span>Manajemen Pengguna</span>
             </button>
-            <button type="button" data-atab="crm" class="atab-btn px-3 sm:px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-white hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface border border-outline-variant/60 flex items-center gap-1.5 transition-all">
-              <span class="material-symbols-outlined text-[18px] text-emerald-600">forum</span>
+            <button type="button" data-atab="crm" class="atab-btn inline-flex items-center gap-1.5 px-3.5 py-2.5 border-b-2 text-xs sm:text-sm font-medium border-transparent text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-t-lg transition-all">
+              <span class="material-symbols-outlined text-[18px]">forum</span>
               <span>WhatsApp CRM &amp; Blast</span>
             </button>
-            <button type="button" data-atab="migrasi" class="atab-btn px-3 sm:px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-white hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface border border-outline-variant/60 flex items-center gap-1.5 transition-all">
-              <span class="material-symbols-outlined text-[18px] text-primary">database</span>
+            <button type="button" data-atab="migrasi" class="atab-btn inline-flex items-center gap-1.5 px-3.5 py-2.5 border-b-2 text-xs sm:text-sm font-medium border-transparent text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-t-lg transition-all">
+              <span class="material-symbols-outlined text-[18px]">database</span>
               <span>Rahasia &amp; Migrasi</span>
             </button>
           </div>

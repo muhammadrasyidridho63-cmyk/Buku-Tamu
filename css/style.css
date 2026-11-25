@@ -36,9 +36,9 @@
   scrollbar-width: none;
 }
 
-/* Animasi Skeleton Shimmer (Warm neutral) */
+/* Animasi Skeleton Shimmer (Stitch Surface Neutral) */
 .skeleton-shimmer {
-  background: linear-gradient(90deg, #eae6dd 25%, #f1eee7 50%, #eae6dd 75%);
+  background: linear-gradient(90deg, #e9edff 25%, #f1f3ff 50%, #e9edff 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s infinite linear;
 }
@@ -64,19 +64,23 @@
   }
 }
 
-/* Kartu Tiket Perforasi Kertas Thermal */
+/* Kartu Tiket Perforasi Kertas Thermal (Stitch Design) */
 .ticket-perforated {
   position: relative;
-  background-image: radial-gradient(circle at 0 50%, #f7f5f0 10px, transparent 10.5px),
-                    radial-gradient(circle at 100% 50%, #f7f5f0 10px, transparent 10.5px);
+}
+
+.thermal-jagged-top {
+  background-image: radial-gradient(ellipse at center, transparent 45%, #ffffff 50%);
+  background-size: 14px 10px;
+  background-repeat: repeat-x;
 }
 
 .thermal-paper-preview {
   font-family: 'IBM Plex Mono', 'Courier New', Courier, monospace;
   background: #ffffff;
-  color: #1a1917;
+  color: #141b2b;
   line-height: 1.4;
-  box-shadow: 0 4px 16px rgba(26, 25, 23, 0.08);
+  box-shadow: 0 4px 16px rgba(1, 45, 29, 0.08);
 }
 
 .thermal-paper-58 {
@@ -90,7 +94,7 @@
 }
 
 .thermal-box-highlight {
-  background: #1a1917;
+  background: #012d1d;
   color: #ffffff;
   padding: 2px 8px;
   display: inline-block;
@@ -98,14 +102,19 @@
   border-radius: 4px;
 }
 
-/* Fokus Keyboard Aksesibel */
+/* Fokus Keyboard Aksesibel (Judicial Gold #D4A017) */
 button:focus-visible,
 a:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline: 2px solid #c9971c;
+  outline: 2px solid #d4a017;
   outline-offset: 2px;
+}
+
+/* Material Symbols Filled helper */
+.icon-filled {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
 
 /* ==========================================================================
@@ -283,13 +292,13 @@ body.is-staff-view #view-tiket {
   }
 }
 
-/* Sorotan Kartu Antrean Saat Nomor Berganti (Halus, tanpa glow neon) */
+/* Sorotan Kartu Antrean Saat Nomor Berganti */
 @keyframes queue-pulse-glow {
   0%, 100% {
-    border-color: rgba(20, 61, 44, 0.25);
+    border-color: rgba(27, 67, 50, 0.25);
   }
   50% {
-    border-color: #c9971c;
+    border-color: #ffc641;
   }
 }
 
@@ -303,7 +312,7 @@ body.is-staff-view #view-tiket {
     color: #012d1d;
   }
   50% {
-    color: #8a6400;
+    color: #795900;
   }
 }
 

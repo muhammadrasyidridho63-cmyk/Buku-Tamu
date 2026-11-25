@@ -118,6 +118,17 @@ window.AppUI = (function () {
     }).join('');
   }
 
+  function getPeranIcon(nama) {
+    const n = String(nama || '').toLowerCase();
+    if (n.indexOf('penggugat') > -1 || n.indexOf('pemohon') > -1) return 'assignment_ind';
+    if (n.indexOf('turut') > -1) return 'supervised_user_circle';
+    if (n.indexOf('tergugat') > -1 || n.indexOf('termohon') > -1) return 'shield_person';
+    if (n.indexOf('kuasa') > -1 || n.indexOf('advokat') > -1) return 'business_center';
+    if (n.indexOf('saksi') > -1) return 'visibility';
+    if (n.indexOf('ahli') > -1) return 'school';
+    return 'person';
+  }
+
   function renderSidangPeranGrid() {
     const grid = document.getElementById('sidang-peran-grid');
     if (!grid) return;
@@ -129,10 +140,14 @@ window.AppUI = (function () {
 
     grid.innerHTML = list.map(function (p) {
       const active = p.nama === state.sidangPeran;
-      return '<button type="button" data-peran="' + esc(p.nama) + '" class="peran-card p-3 rounded-xl border-2 text-left transition-all ' +
-        (active ? 'bg-primary-container text-white border-primary-container shadow-sm' : 'bg-surface-container-low/60 text-on-surface border-transparent hover:border-outline-variant') + '">' +
-        '<span class="block font-display font-bold text-sm">' + esc(p.nama) + '</span>' +
-        '<span class="block text-[11px] ' + (active ? 'opacity-80' : 'text-on-surface-variant') + '">' + esc(p.keterangan || 'Pihak Persidangan') + '</span>' +
+      const icon = getPeranIcon(p.nama);
+      return '<button type="button" data-peran="' + esc(p.nama) + '" class="peran-card flex items-center gap-2 px-3 py-3 rounded-lg text-left transition-all ' +
+        (active ? 'bg-primary-container text-on-primary shadow-sm' : 'bg-surface-container-low text-on-surface hover:bg-surface-container') + '">' +
+        '<span class="material-symbols-outlined text-[20px] shrink-0 ' + (active ? 'text-secondary-fixed' : 'text-outline') + '">' + icon + '</span>' +
+        '<div class="flex flex-col min-w-0">' +
+          '<span class="font-display ' + (active ? 'font-bold' : 'font-semibold') + ' text-sm leading-tight truncate">' + esc(p.nama) + '</span>' +
+          '<span class="text-[11px] leading-tight truncate ' + (active ? 'opacity-80' : 'text-outline') + '">' + esc(p.keterangan || 'Pihak Persidangan') + '</span>' +
+        '</div>' +
       '</button>';
     }).join('');
 
@@ -153,6 +168,16 @@ window.AppUI = (function () {
       } catch (e) {}
     }
     return DEFAULT_LOKET_PTSP.slice();
+  }
+
+  function getLoketIcon(kode, idx) {
+    const k = String(kode || '').toLowerCase();
+    if (k.indexOf('court') > -1) return 'devices';
+    if (k.indexOf('info') > -1 || k.indexOf('posbakum') > -1) return 'gavel';
+    if (k.indexOf('hukum') > -1) return 'description';
+    if (k.indexOf('umum') > -1 || k.indexOf('sekretariat') > -1) return 'folder_shared';
+    const fallbacks = ['devices', 'gavel', 'description', 'folder_shared', 'support_agent'];
+    return fallbacks[idx % fallbacks.length];
   }
 
   function renderKioskLoketPills() {
@@ -178,13 +203,20 @@ window.AppUI = (function () {
     grid.innerHTML = list.map(function (l, idx) {
       const active = l.kode === state.ptspLoket;
       const badge = l.badge || ('LOKET ' + (idx + 1));
-      return '<button type="button" data-loket="' + esc(l.kode) + '" class="loket-card text-left p-4 rounded-xl border-2 transition-all ' +
-        (active ? 'bg-primary-container text-white border-primary-container shadow-sm' : 'bg-surface-container-low/60 text-on-surface border-transparent hover:border-outline-variant') + '">' +
-        '<div class="flex items-center justify-between gap-2 mb-1">' +
-          '<span class="font-display font-bold text-sm">' + esc(l.nama || l.kode) + '</span>' +
-          '<span class="text-[10px] px-2 py-0.5 rounded font-bold shrink-0 ' + (active ? 'bg-secondary-container text-on-secondary-fixed' : 'bg-white text-outline') + '">' + esc(badge) + '</span>' +
+      const icon = getLoketIcon(l.kode, idx);
+      return '<button type="button" data-loket="' + esc(l.kode) + '" class="loket-card text-left p-3.5 rounded-xl flex items-start gap-3 transition-all relative overflow-hidden ' +
+        (active ? 'bg-primary text-on-primary shadow-md' : 'bg-surface-container-low text-on-surface hover:bg-surface-container') + '">' +
+        '<div class="w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ' + (active ? 'bg-primary-container text-secondary-fixed' : 'bg-surface-container-highest text-primary') + '">' +
+          '<span class="material-symbols-outlined text-[22px]">' + icon + '</span>' +
         '</div>' +
-        '<p class="text-xs ' + (active ? 'opacity-85' : 'text-on-surface-variant') + '">' + esc(l.deskripsi || 'Layanan loket ' + l.kode) + '</p>' +
+        '<div class="flex flex-col pr-5 min-w-0">' +
+          '<div class="flex items-center gap-1.5 flex-wrap">' +
+            '<span class="font-display font-bold text-sm leading-tight">' + esc(l.nama || l.kode) + '</span>' +
+            '<span class="text-[10px] px-1.5 py-0.5 rounded font-bold shrink-0 ' + (active ? 'bg-secondary-fixed text-on-secondary-fixed' : 'bg-surface-container text-on-surface-variant') + '">' + esc(badge) + '</span>' +
+          '</div>' +
+          '<p class="text-xs leading-snug mt-1 ' + (active ? 'text-primary-fixed-dim' : 'text-on-surface-variant') + '">' + esc(l.deskripsi || 'Layanan loket ' + l.kode) + '</p>' +
+        '</div>' +
+        (active ? '<span class="material-symbols-outlined absolute top-3 right-3 text-secondary-fixed text-[20px]">check_circle</span>' : '') +
       '</button>';
     }).join('');
 
@@ -333,14 +365,14 @@ window.AppUI = (function () {
     updateLayoutMode();
     closeSidebarMobile();
 
-    // Update active state nav pills
+    // Update active state nav pills (Stitch GovTech Dark Pill Tray)
     document.querySelectorAll('.nav-pill').forEach(function (b) {
       const active = b.getAttribute('data-nav') === target;
       const isDisplay = b.getAttribute('data-nav') === 'display';
       const extra = isDisplay ? ' flex items-center gap-1.5' : '';
       b.className = active
-        ? 'nav-pill px-3 h-9 rounded-lg text-sm font-medium bg-white/15 text-white transition-colors' + extra
-        : 'nav-pill px-3 h-9 rounded-lg text-sm font-medium text-primary-fixed-dim hover:text-white hover:bg-white/10 transition-colors' + extra;
+        ? 'nav-pill px-3 py-1.5 rounded-lg text-sm font-bold bg-primary text-secondary-fixed shadow-inner whitespace-nowrap transition-all' + extra
+        : 'nav-pill px-3 py-1.5 rounded-lg text-sm font-semibold text-primary-fixed-dim hover:text-on-primary hover:bg-primary/50 whitespace-nowrap transition-all' + extra;
     });
     document.querySelectorAll('.nav-pill-mob').forEach(function (b) {
       const active = b.getAttribute('data-nav') === target;
@@ -830,18 +862,22 @@ window.AppUI = (function () {
     });
 
     if (!filtered.length) {
-      listEl.innerHTML = '<div class="p-3 rounded-xl bg-surface-container-low text-xs text-on-surface-variant flex items-center gap-2"><span class="material-symbols-outlined text-outline text-[18px]">edit_note</span>Silakan isi nomor perkara persidangan secara manual pada kolom di atas (contoh: 24/G/2026/PTUN.PLG).</div>';
+      listEl.innerHTML = '<div class="p-3 rounded-lg bg-surface-container-lowest text-xs text-on-surface-variant flex items-center gap-2"><span class="material-symbols-outlined text-secondary text-[18px]">edit_note</span>Silakan ketik nomor perkara persidangan secara manual pada kolom di atas (contoh: 24/G/2026/PTUN.PLG).</div>';
       return;
     }
 
     listEl.innerHTML = filtered.map(function (j) {
       const selected = String(state.sidangPerkara).trim() === String(j.Nomor_Perkara).trim();
-      return '<button type="button" data-perkara="' + esc(j.Nomor_Perkara) + '" data-ruang="' + esc(j.Ruang_Sidang) + '" data-agenda="' + esc(j.Agenda) + '" class="jadwal-opt w-full text-left p-3.5 rounded-xl border transition-all ' + (selected ? 'bg-primary-container text-white border-primary-container shadow-sm' : 'bg-surface-container-low/50 hover:bg-surface-container-low border-outline-variant/50') + '">' +
-        '<div class="flex items-center justify-between gap-2">' +
-        '  <span class="font-display font-bold text-sm">' + esc(j.Nomor_Perkara) + '</span>' +
-        '  <span class="text-[11px] px-2 py-0.5 rounded-full font-semibold ' + (selected ? 'bg-secondary-container text-on-secondary-fixed' : 'bg-white text-primary-container') + '">' + esc(j.Ruang_Sidang) + '</span>' +
+      return '<button type="button" data-perkara="' + esc(j.Nomor_Perkara) + '" data-ruang="' + esc(j.Ruang_Sidang) + '" data-agenda="' + esc(j.Agenda) + '" class="jadwal-opt w-full text-left p-3 rounded-lg flex items-start justify-between gap-3 transition-all ' +
+        (selected ? 'bg-primary-container text-on-primary shadow-sm' : 'bg-surface-container-lowest hover:bg-surface-container text-on-surface') + '">' +
+        '<div class="flex items-start gap-2.5 min-w-0">' +
+          '<span class="material-symbols-outlined text-[20px] mt-0.5 shrink-0 ' + (selected ? 'text-secondary-fixed' : 'text-outline') + '">' + (selected ? 'check_circle' : 'radio_button_unchecked') + '</span>' +
+          '<div class="flex flex-col min-w-0">' +
+            '<span class="font-mono text-sm font-bold truncate ' + (selected ? 'text-on-primary' : 'text-on-surface') + '">' + esc(j.Nomor_Perkara) + '</span>' +
+            '<span class="text-xs line-clamp-1 mt-0.5 ' + (selected ? 'text-primary-fixed-dim' : 'text-on-surface-variant') + '">' + esc(j.Agenda || 'Persidangan Umum') + '</span>' +
+          '</div>' +
         '</div>' +
-        '<div class="text-xs mt-1 ' + (selected ? 'text-primary-fixed-dim' : 'text-on-surface-variant') + '">' + esc(j.Agenda || 'Persidangan Umum') + '</div>' +
+        '<span class="px-2 py-0.5 rounded text-[11px] font-bold shrink-0 ' + (selected ? 'bg-primary text-secondary-fixed' : 'bg-surface-container-low text-primary') + '">' + (selected ? 'Terpilih' : esc(j.Ruang_Sidang)) + '</span>' +
       '</button>';
     }).join('');
 
@@ -1045,9 +1081,13 @@ window.AppUI = (function () {
   }
 
   function statusBadge(st) {
-    if (st === 'Selesai') return '<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-primary-fixed text-on-primary-fixed">● Selesai</span>';
-    if (st === 'Dilayani' || st === 'Masuk Ruang Sidang') return '<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800">● ' + esc(st) + '</span>';
-    return '<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-secondary-fixed text-on-secondary-fixed-variant">● ' + esc(st) + '</span>';
+    if (st === 'Selesai') {
+      return '<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#DCFCE7] text-[#166534]"><span class="w-1.5 h-1.5 rounded-full bg-[#166534]"></span>Selesai</span>';
+    }
+    if (st === 'Dilayani' || st === 'Masuk Ruang Sidang') {
+      return '<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#DBEAFE] text-[#1D4ED8]"><span class="w-1.5 h-1.5 rounded-full bg-[#1D4ED8] animate-pulse"></span>' + esc(st) + '</span>';
+    }
+    return '<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#FEF9C3] text-[#854D0E]"><span class="w-1.5 h-1.5 rounded-full bg-[#854D0E]"></span>' + esc(st) + '</span>';
   }
 
   function panggilSuara(teks, onEndCallback) {
@@ -1091,13 +1131,13 @@ window.AppUI = (function () {
     const sidang = state.pantau.sidang || [];
     const jadwal = state.pantau.jadwal || [];
 
-    // Update mode tab styles
+    // Update mode tab styles (Stitch Role Switcher)
     document.querySelectorAll('.pview-tab').forEach(function (b) {
       const m = b.getAttribute('data-pview');
       const active = m === state.pantauMode;
       b.className = active
-        ? 'pview-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 bg-primary-container text-white shadow-sm'
-        : 'pview-tab px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 text-on-surface-variant hover:bg-surface-container-low';
+        ? 'pview-tab px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-2 bg-primary text-on-primary shadow-sm transition-all whitespace-nowrap'
+        : 'pview-tab px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-2 text-on-surface-variant hover:text-primary hover:bg-surface-container-high transition-all whitespace-nowrap';
     });
 
     // KPIs
@@ -1130,7 +1170,7 @@ window.AppUI = (function () {
     chipsBox.innerHTML = chips.map(function (c) {
       const label = c === 'ALL' ? 'Semua' : (c === 'BELUM_CHECKOUT' ? 'Masih di Gedung' : c);
       const active = state.pantauFilter === c;
-      return '<button type="button" data-fchip="' + esc(c) + '" class="fchip shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ' + (active ? 'bg-primary-container text-white border-primary-container' : 'bg-white text-on-surface-variant border-outline-variant hover:bg-surface-container-low') + '">' + esc(label) + '</button>';
+      return '<button type="button" data-fchip="' + esc(c) + '" class="fchip shrink-0 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ' + (active ? 'bg-primary text-on-primary shadow-sm' : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container') + '">' + esc(label) + '</button>';
     }).join('');
 
     chipsBox.querySelectorAll('.fchip').forEach(function (b) {
@@ -1218,7 +1258,7 @@ window.AppUI = (function () {
       });
     }
 
-    // Bottom Rol Sidang Cards
+    // Bottom Rol Sidang Cards (Stitch Design)
     const rolBox = document.getElementById('pantau-rol-sidang');
     if (!jadwal.length) {
       rolBox.innerHTML = '<div class="text-xs text-on-surface-variant col-span-2">Belum ada jadwal sidang hari ini.</div>';
@@ -1226,24 +1266,27 @@ window.AppUI = (function () {
       rolBox.innerHTML = jadwal.map(function (j) {
         const hadir = sidang.filter(function (s) { return String(s.Nomor_Perkara).trim() === String(j.Nomor_Perkara).trim(); });
         const peranList = hadir.map(function (h) { return h.Peran_Sidang + ' (' + h.Nomor_Antrean + ')'; }).join(', ') || 'Belum ada pihak check-in';
-        return '<div class="p-4 rounded-xl border border-outline-variant/50 bg-surface-container-low/40 flex flex-col justify-between gap-2">' +
-          '<div class="flex items-center justify-between gap-2"><span class="text-xs font-bold text-primary-container">' + esc(j.Ruang_Sidang) + '</span><span class="px-2 py-0.5 rounded-full text-[10px] font-bold ' + (hadir.length ? 'bg-primary-fixed text-on-primary-fixed' : 'bg-secondary-fixed text-on-secondary-fixed-variant') + '">' + hadir.length + ' Pihak Hadir</span></div>' +
+        return '<div class="p-4 rounded-lg border border-outline-variant/25 bg-surface-container-low flex flex-col justify-between gap-2">' +
+          '<div class="flex items-center justify-between gap-2"><span class="font-mono text-xs font-bold text-primary">' + esc(j.Ruang_Sidang) + '</span><span class="px-2 py-0.5 rounded-full text-[10px] font-bold ' + (hadir.length ? 'bg-[#DCFCE7] text-[#166534]' : 'bg-secondary-fixed text-on-secondary-fixed') + '">' + hadir.length + ' Pihak Hadir</span></div>' +
           '<div class="font-display font-bold text-sm text-on-surface">' + esc(j.Nomor_Perkara) + '</div>' +
           '<div class="text-xs text-on-surface-variant">' + esc(j.Agenda || '-') + '</div>' +
-          '<div class="text-[11px] font-medium text-emerald-800 pt-1 border-t border-outline-variant/30">' + esc(peranList) + '</div>' +
+          '<div class="text-[11px] font-semibold text-[#166534] pt-2 border-t border-outline-variant/25">' + esc(peranList) + '</div>' +
         '</div>';
       }).join('');
     }
 
-    // Bottom Status Loket PTSP (Dinamis sesuai pengaturan loket)
+    // Bottom Status Loket PTSP (Stitch Design)
     const lokets = getLoketList();
     document.getElementById('pantau-loket-status').innerHTML = lokets.map(function (l) {
       const lk = l.kode;
       const active = ptsp.find(function (r) { return r.Loket_Tujuan === lk && r.Status_Layanan === 'Dilayani'; });
       const wait = ptsp.filter(function (r) { return r.Loket_Tujuan === lk && r.Status_Layanan === 'Menunggu'; }).length;
-      return '<div class="p-3.5 rounded-xl border border-outline-variant/40 bg-surface-container-low/40 flex items-center justify-between">' +
-        '<div><div class="font-display font-bold text-sm text-on-surface">' + esc(l.nama || ('Loket ' + lk)) + '</div><div class="text-xs text-on-surface-variant">' + (active ? ('Melayani ' + esc(active.Nomor_Antrean) + ' (' + esc(active.Nama_Lengkap) + ')') : ('Siap melayani • ' + wait + ' menunggu')) + '</div></div>' +
-        '<span class="px-2.5 py-1 rounded-full text-[11px] font-bold ' + (active ? 'bg-blue-100 text-blue-800' : 'bg-primary-fixed text-on-primary-fixed') + '">' + (active ? 'Melayani' : 'Siap') + '</span>' +
+      return '<div class="p-3.5 rounded-lg border border-outline-variant/25 bg-surface-container-low flex items-center justify-between gap-3">' +
+        '<div class="flex items-center gap-2.5 min-w-0">' +
+          '<span class="w-2.5 h-2.5 rounded-full shrink-0 ' + (active ? 'bg-[#1D4ED8]' : 'bg-[#166534]') + '"></span>' +
+          '<div class="min-w-0"><div class="font-display font-bold text-sm text-on-surface truncate">' + esc(l.nama || ('Loket ' + lk)) + '</div><div class="text-xs text-on-surface-variant truncate">' + (active ? ('Melayani ' + esc(active.Nomor_Antrean) + ' (' + esc(active.Nama_Lengkap) + ')') : ('Siap melayani • ' + wait + ' menunggu')) + '</div></div>' +
+        '</div>' +
+        '<span class="px-2.5 py-1 rounded-full text-[11px] font-bold shrink-0 ' + (active ? 'bg-[#DBEAFE] text-[#1D4ED8]' : 'bg-[#DCFCE7] text-[#166534]') + '">' + (active ? 'Melayani' : 'Siap') + '</span>' +
       '</div>';
     }).join('');
   }
@@ -1610,14 +1653,15 @@ window.AppUI = (function () {
       const isPtsp = r.jalur === 'PTSP';
       const st = isPtsp ? r.Status_Layanan : r.Status_Kehadiran;
       const tujuan = isPtsp ? ('PTSP • Loket ' + r.Loket_Tujuan) : ('Sidang • ' + r.Nomor_Perkara + ' (' + r.Peran_Sidang + ')');
-      return '<tr class="hover:bg-surface-container-low/40">' +
-        '<td class="py-3 px-3 font-mono text-xs font-bold">' + esc(r.Nomor_Antrean) + '<div class="text-[10px] text-outline">' + esc(r.ID_Tiket) + '</div></td>' +
-        '<td class="py-3 px-3 font-semibold text-on-surface">' + esc(r.Nama_Lengkap) + '<div class="text-xs font-normal text-on-surface-variant">' + esc(isPtsp ? r.Asal_Instansi : r.Ruang_Sidang) + '</div></td>' +
-        '<td class="py-3 px-3 text-xs">' + esc(tujuan) + '</td>' +
-        '<td class="py-3 px-3 text-xs">' + fmtTglJam(r.Waktu_Masuk) + '</td>' +
-        '<td class="py-3 px-3 text-xs">' + (r.Waktu_Keluar ? fmtJam(r.Waktu_Keluar) : '-') + '</td>' +
-        '<td class="py-3 px-3">' + statusBadge(st) + '</td>' +
-        '<td class="py-3 px-3 text-right no-print"><button type="button" data-print-id="' + esc(r.ID_Tiket) + '" class="btn-hist-print px-2.5 py-1.5 rounded-lg border border-outline-variant hover:border-primary-container text-xs font-semibold">Struk</button></td>' +
+      const initials = String(r.Nama_Lengkap || 'T').trim().split(/\s+/).slice(0, 2).map(function (w) { return w.charAt(0).toUpperCase(); }).join('') || 'T';
+      return '<tr class="hover:bg-surface-container-low transition-colors">' +
+        '<td class="py-3.5 px-3"><span class="font-mono text-xs font-bold px-2.5 py-1 rounded ' + (isPtsp ? 'text-primary bg-primary-fixed/40' : 'text-secondary bg-secondary-fixed/50') + '">' + esc(r.Nomor_Antrean) + '</span><div class="text-[10px] font-mono text-outline mt-1">' + esc(r.ID_Tiket) + '</div></td>' +
+        '<td class="py-3.5 px-3"><div class="flex items-center gap-2.5"><div class="w-7 h-7 rounded-full shrink-0 font-bold text-xs flex items-center justify-center ' + (isPtsp ? 'bg-primary-fixed text-primary' : 'bg-secondary-fixed text-secondary') + '">' + esc(initials) + '</div><div><div class="font-semibold text-on-surface">' + esc(r.Nama_Lengkap) + '</div><div class="text-xs font-normal text-on-surface-variant">' + esc(isPtsp ? r.Asal_Instansi : r.Ruang_Sidang) + '</div></div></div></td>' +
+        '<td class="py-3.5 px-3 text-xs font-medium text-on-surface">' + esc(tujuan) + '</td>' +
+        '<td class="py-3.5 px-3 font-mono text-xs text-on-surface">' + fmtTglJam(r.Waktu_Masuk) + '</td>' +
+        '<td class="py-3.5 px-3 font-mono text-xs text-on-surface">' + (r.Waktu_Keluar ? fmtJam(r.Waktu_Keluar) : '-') + '</td>' +
+        '<td class="py-3.5 px-3">' + statusBadge(st) + '</td>' +
+        '<td class="py-3.5 px-3 text-right no-print"><button type="button" data-print-id="' + esc(r.ID_Tiket) + '" class="btn-hist-print px-2.5 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-primary text-xs font-semibold transition-colors">Struk</button></td>' +
       '</tr>';
     }).join('');
 
@@ -1705,8 +1749,8 @@ window.AppUI = (function () {
     document.querySelectorAll('.atab-btn').forEach(function (b) {
       const active = b.getAttribute('data-atab') === t;
       b.className = active
-        ? 'atab-btn px-3 sm:px-3.5 py-2 text-xs sm:text-sm font-bold rounded-xl bg-primary-container text-white shadow-sm flex items-center gap-1.5 transition-all'
-        : 'atab-btn px-3 sm:px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-xl bg-white hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface border border-outline-variant/60 flex items-center gap-1.5 transition-all';
+        ? 'atab-btn inline-flex items-center gap-1.5 px-3.5 py-2.5 border-b-2 text-xs sm:text-sm font-bold border-primary text-primary bg-surface-container-lowest rounded-t-lg shadow-sm transition-all'
+        : 'atab-btn inline-flex items-center gap-1.5 px-3.5 py-2.5 border-b-2 text-xs sm:text-sm font-medium border-transparent text-on-surface-variant hover:text-on-surface hover:bg-surface-container rounded-t-lg transition-all';
     });
     document.querySelectorAll('.atab-pane').forEach(function (p) {
       p.classList.toggle('hidden', p.id !== 'atab-' + t);
