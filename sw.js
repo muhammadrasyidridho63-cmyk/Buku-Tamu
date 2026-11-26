@@ -7,7 +7,7 @@
  * - Aset statis lokal memakai Stale-While-Revalidate (tampil instan 0ms + update latar belakang)
  * ============================================================================
  */
-const CACHE_NAME = 'etamu-ptun-pwa-v2.4';
+const CACHE_NAME = 'etamu-ptun-pwa-v2.5';
 const STATIC_ASSETS = [
   './',
   './index.html',

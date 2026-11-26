@@ -732,14 +732,6 @@
               Isi data pengunjung dengan benar untuk mendapatkan nomor tiket antrean loket <span class="whitespace-nowrap">(<strong id="ptsp-next-badge" class="font-mono tabular-nums text-primary font-bold">P-001</strong>)</span>.
             </p>
           </div>
-
-          <div class="p-3.5 bg-surface-container-low rounded-lg flex items-start gap-3 mt-1">
-            <span class="material-symbols-outlined text-primary text-[20px] shrink-0 mt-0.5 icon-filled">verified_user</span>
-            <div class="flex flex-col">
-              <span class="text-xs text-primary font-bold">Protokol Kemudahan Layanan Publik:</span>
-              <span class="text-[13px] text-on-surface-variant leading-snug">Pengunjung <strong>TIDAK diwajibkan</strong> menginput NIK/KTP untuk menjaga privasi, kenyamanan, serta percepatan antrean di lobi utama.</span>
-            </div>
-          </div>
         </div>
 
         <form id="form-ptsp" class="flex flex-col gap-5" novalidate>
@@ -1024,7 +1016,7 @@
                     <span class="material-symbols-outlined text-outline text-[18px] absolute left-3">search</span>
                     <input id="sidang-cari-perkara" type="text" required placeholder="Ketik nomor perkara (contoh: 24/G/2026/PTUN.PLG)..." class="w-full h-11 pl-9 pr-4 rounded-lg bg-surface-container-lowest border border-outline-variant/40 focus:border-primary-container text-sm font-mono text-on-surface shadow-sm transition-all" />
                   </div>
-                  <div id="sidang-jadwal-list" class="flex flex-col gap-1.5 max-h-56 overflow-y-auto"></div>
+                  <div id="sidang-jadwal-list" class="hidden flex flex-col gap-1.5 max-h-56 overflow-y-auto"></div>
                 </div>
                 <p id="err-sidang-perkara" class="hidden text-xs text-error font-medium"></p>
               </div>

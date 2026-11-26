@@ -862,9 +862,11 @@ window.AppUI = (function () {
     });
 
     if (!filtered.length) {
-      listEl.innerHTML = '<div class="p-3 rounded-lg bg-surface-container-lowest text-xs text-on-surface-variant flex items-center gap-2"><span class="material-symbols-outlined text-secondary text-[18px]">edit_note</span>Silakan ketik nomor perkara persidangan secara manual pada kolom di atas (contoh: 24/G/2026/PTUN.PLG).</div>';
+      listEl.innerHTML = '';
+      listEl.classList.add('hidden');
       return;
     }
+    listEl.classList.remove('hidden');
 
     listEl.innerHTML = filtered.map(function (j) {
       const selected = String(state.sidangPerkara).trim() === String(j.Nomor_Perkara).trim();
